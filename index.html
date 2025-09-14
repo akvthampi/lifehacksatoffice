@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Life Hacks at Office - Office Productivity Suite</title>
+    <style>
+        /* Remove all margin/padding and ensure full-page background */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; width: 100%; background: #10221f; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #1a3323; }
+        body { min-height: 100vh; }
+
+        .container {
+            width: 100vw;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        h1 {
+            color: #e0e0e0;
+            font-weight: 600;
+            margin: 30px 0 40px 40px;
+            font-size: 2rem;
+            border-left: 4px solid #21a35d;
+            padding-left: 18px;
+            letter-spacing: 1px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 30px;
+            padding: 0 40px 40px 40px;
+            width: 100%;
+        }
+
+        .tile {
+            background: #1bb161;
+            border-radius: 24px;
+            padding: 38px 25px 28px 25px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 6px 24px rgba(27,177,97,0.14);
+            position: relative;
+            font-size: 1.18rem;
+            font-weight: 500;
+            color: #044814;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .tile:hover {
+            transform: translateY(-3px) scale(1.04);
+            box-shadow: 0 18px 40px rgba(27,177,97,0.23);
+        }
+
+        .tile-icon {
+            font-size: 2.3rem;
+            margin-bottom: 18px;
+        }
+
+        .tile-text {
+            min-height: 46px;
+            display: flex;
+            align-items: flex-end;
+        }
+
+        /* Plus sign at top-right of tile */
+        .plus-circle {
+            position: absolute;
+            top: 18px;
+            right: 20px;
+            width: 30px;
+            height: 30px;
+            background: rgba(20,42,32,0.32);
+            color: #fff;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+            pointer-events: none;
+        }
+
+        @media (max-width: 700px) {
+            .grid { grid-template-columns: 1fr; padding: 0 12px 24px 12px; }
+            h1 { margin-left: 16px; font-size: 1.15rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Life Hacks at Office</h1>
+        <div class="grid">
+            <a href="imms.html" target="_blank" class="tile" title="Incoming Mail Management System">
+                <div class="plus-circle">+</div>
+                <div class="tile-icon">📩</div>
+                <div class="tile-text">Incoming Mail Management System</div>
+            </a>
+            <a href="omms.html" target="_blank" class="tile" title="Outgoing Mail Management System">
+                <div class="plus-circle">+</div>
+                <div class="tile-icon">📤</div>
+                <div class="tile-text">Outgoing Mail Management System</div>
+            </a>
+            <a href="dpms.html" target="_blank" class="tile" title="Disciplinary Proceedings Management System">
+                <div class="plus-circle">+</div>
+                <div class="tile-icon">⚖️</div>
+                <div class="tile-text">Disciplinary Proceedings Management System</div>
+            </a>
+            <a href="taskmgr.html" target="_blank" class="tile" title="Task Manager">
+                <div class="plus-circle">+</div>
+                <div class="tile-icon">📋</div>
+                <div class="tile-text">Task Manager</div>
+            </a>
+            <a href="chart.html" target="_blank" class="tile" title="Chart Preparation Tool">
+                <div class="plus-circle">+</div>
+                <div class="tile-icon">📊</div>
+                <div class="tile-text">Chart Preparation Tool</div>
+            </a>
+            <a href="fmru.html" target="_blank" class="tile" title="File Movement Record Utility">
+                <div class="plus-circle">+</div>
+                <div class="tile-icon">📂</div>
+                <div class="tile-text">File Movement Record Utility</div>
+            </a>
+            <a href="firu.html" target="_blank" class="tile" title="File Index Record Utility">
+                <div class="plus-circle">+</div>
+                <div class="tile-icon">📁</div>
+                <div class="tile-text">File Index Record Utility</div>
+            </a>
+        </div>
+           <p style="text-align: right; color: white;">
+             <small>by Anil Kumar VT</small>
+            </p>
+    </div>
+ 
+</body>
+</html>

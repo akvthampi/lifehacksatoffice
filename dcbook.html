@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Digital Cash Book</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -98,6 +96,11 @@
         
         .btn-payment {
             background: linear-gradient(to right, #F44336, #C62828);
+            color: white;
+        }
+        
+        .btn-print {
+            background: linear-gradient(to right, #9C27B0, #7B1FA2);
             color: white;
         }
         
@@ -381,6 +384,18 @@
             gap: 8px;
         }
         
+        .print-controls {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: end;
+        }
+        
         @media (max-width: 1024px) {
             .cash-book-container {
                 flex-direction: column;
@@ -417,6 +432,68 @@
             .actions {
                 flex-direction: column;
             }
+            
+            .print-controls {
+                flex-direction: column;
+            }
+        }
+        
+        /* Print styles */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            
+            #printable-cashbook, #printable-cashbook * {
+                visibility: visible;
+            }
+            
+            #printable-cashbook {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+            
+            .no-print {
+                display: none !important;
+            }
+        }
+        
+        .print-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            font-family: Arial, sans-serif;
+        }
+        
+        .print-table th, .print-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        
+        .print-table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        
+        .print-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .print-period {
+            text-align: center;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        
+        .print-summary {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
         }
     </style>
 </head>
@@ -424,11 +501,11 @@
     <div class="container">
         <header>
             <h1>Digital Cash Book</h1>
-            <p class="description">Track your cash transactions with this SQLite-based cash book</p>
+            <p class="description">Track your cash transactions with printing functionality</p>
         </header>
         
-        <div class="database-actions">
-            <input type="file" id="dbFile" accept=".db,.sqlite,.sqlite3" class="file-input">
+        <div class="database-actions no-print">
+            <input type="file" id="dbFile" accept=".json" class="file-input">
             <label for="dbFile" class="file-label">
                 <span class="icon">📁</span>Load Cash Book
             </label>
@@ -443,7 +520,7 @@
             </button>
         </div>
         
-        <div class="summary-cards">
+        <div class="summary-cards no-print">
             <div class="summary-card receipts">
                 <h3>Total Receipts</h3>
                 <div class="amount" id="totalReceipts">₹0.00</div>
@@ -458,7 +535,27 @@
             </div>
         </div>
         
-        <div class="form-container">
+        <div class="print-controls no-print">
+            <div class="form-group">
+                <label for="startDate">Start Date</label>
+                <input type="date" id="startDate">
+            </div>
+            <div class="form-group">
+                <label for="endDate">End Date</label>
+                <input type="date" id="endDate">
+            </div>
+            <div class="form-group">
+                <label for="companyName">Company Name</label>
+                <input type="text" id="companyName" placeholder="Enter company name">
+            </div>
+            <div class="form-group">
+                <button id="printBtn" class="btn btn-print">
+                    <span class="icon">🖨️</span>Print Cash Book
+                </button>
+            </div>
+        </div>
+        
+        <div class="form-container no-print">
             <div class="form-title">
                 <span id="formTitle">Add Transaction</span>
                 <button type="button" id="cancelEdit" class="btn btn-secondary btn-sm hidden">
@@ -518,14 +615,14 @@
             </form>
         </div>
         
-        <div class="search-container">
+        <div class="search-container no-print">
             <input type="text" id="searchInput" class="search-input" placeholder="Search transactions...">
             <button id="clearSearch" class="btn btn-secondary">
                 <span class="icon">✖</span>Clear
             </button>
         </div>
         
-        <div class="cash-book-container">
+        <div class="cash-book-container no-print">
             <div class="cash-book-side">
                 <div class="cash-book-header receipts-header">Receipts</div>
                 <div class="transaction-table-container">
@@ -573,9 +670,46 @@
             </div>
         </div>
         
-        <div class="status-bar">
+        <div class="status-bar no-print">
             <div class="status-message" id="statusMessage">No cash book loaded</div>
             <div id="rowCount">0 transactions</div>
+        </div>
+        
+        <!-- Printable cash book section (hidden by default) -->
+        <div id="printable-cashbook" style="display: none;">
+            <div class="print-header">
+                <h2 id="print-company-name">Company Name</h2>
+                <h3>Cash Book</h3>
+                <div class="print-period" id="print-period">For the period: </div>
+            </div>
+            
+            <table class="print-table">
+                <thead>
+                    <tr>
+                        <th colspan="4" style="text-align: center; background-color: #E8F5E9;">Cash Inflow (Receipts)</th>
+                        <th colspan="4" style="text-align: center; background-color: #FFEBEE;">Cash Outflow (Payments)</th>
+                    </tr>
+                    <tr>
+                        <th>Date</th>
+                        <th>Transaction Details</th>
+                        <th>Invoice</th>
+                        <th>Amount</th>
+                        <th>Date</th>
+                        <th>Transaction Details</th>
+                        <th>Invoice</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody id="print-table-body">
+                    <!-- Will be populated by JavaScript -->
+                </tbody>
+            </table>
+            
+            <div class="print-summary">
+                <p>Total Receipts: <span id="print-total-receipts">₹0.00</span></p>
+                <p>Total Payments: <span id="print-total-payments">₹0.00</span></p>
+                <p>Closing Balance: <span id="print-closing-balance">₹0.00</span></p>
+            </div>
         </div>
     </div>
     
@@ -583,76 +717,73 @@
     
     <script>
         // Global variables
-        let db = null;
-        let isDbLoaded = false;
-        let SQL = null;
+        let transactions = [];
+        let nextId = 1;
 
         // Initialize the application
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize SQL.js first
-            initSqlJs({
-                locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${file}`
-            }).then(function(sql) {
-                SQL = sql;
-                console.log("SQL.js initialized successfully");
-                
-                // Set today's date as default
-                document.getElementById('date').valueAsDate = new Date();
-                
-                // Event listeners
-                document.getElementById('createDb').addEventListener('click', createDatabase);
-                document.getElementById('saveDb').addEventListener('click', saveDatabase);
-                document.getElementById('dbFile').addEventListener('change', loadDatabase);
-                document.getElementById('exampleData').addEventListener('click', loadExampleData);
-                document.getElementById('transactionForm').addEventListener('submit', saveTransaction);
-                document.getElementById('cancelEdit').addEventListener('click', cancelEdit);
-                document.getElementById('searchInput').addEventListener('input', filterTransactions);
-                document.getElementById('clearSearch').addEventListener('click', clearSearch);
-                
-                // Update transaction type UI
-                document.getElementById('type').addEventListener('change', function() {
-                    updateFormUI();
-                });
-                
-                // Initial UI update
+            // Set today's date as default
+            const today = new Date();
+            document.getElementById('date').valueAsDate = today;
+            
+            // Set default date range for printing (current month)
+            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+            const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+            
+            document.getElementById('startDate').valueAsDate = firstDay;
+            document.getElementById('endDate').valueAsDate = lastDay;
+            
+            // Event listeners
+            document.getElementById('createDb').addEventListener('click', createDatabase);
+            document.getElementById('saveDb').addEventListener('click', saveDatabase);
+            document.getElementById('dbFile').addEventListener('change', loadDatabase);
+            document.getElementById('exampleData').addEventListener('click', loadExampleData);
+            document.getElementById('transactionForm').addEventListener('submit', saveTransaction);
+            document.getElementById('cancelEdit').addEventListener('click', cancelEdit);
+            document.getElementById('searchInput').addEventListener('input', filterTransactions);
+            document.getElementById('clearSearch').addEventListener('click', clearSearch);
+            document.getElementById('printBtn').addEventListener('click', printCashBook);
+            
+            // Update transaction type UI
+            document.getElementById('type').addEventListener('change', function() {
                 updateFormUI();
-                
-            }).catch(function(e) {
-                console.error("Error initializing SQL.js:", e);
-                showNotification('Error initializing database engine: ' + e.message, 'error');
             });
+            
+            // Initial UI update
+            updateFormUI();
+            
+            // Create a new database on load
+            createDatabase();
         });
         
         // Create a new database
         function createDatabase() {
+            transactions = [];
+            nextId = 1;
+            updateUI();
+            showNotification('New cash book created successfully.', 'success');
+        }
+        
+        // Save database to file
+        function saveDatabase() {
+            if (transactions.length === 0) {
+                showNotification('No transactions to save.', 'error');
+                return;
+            }
+            
             try {
-                // Close existing database if any
-                if (db) {
-                    db.close();
-                }
+                const data = {
+                    transactions: transactions,
+                    nextId: nextId
+                };
                 
-                // Create new in-memory database
-                db = new SQL.Database();
+                const dataStr = JSON.stringify(data);
+                const dataBlob = new Blob([dataStr], {type: 'application/json'});
                 
-                // Create transactions table
-                db.run(`
-                    CREATE TABLE transactions (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        date TEXT NOT NULL,
-                        type TEXT NOT NULL,
-                        description TEXT NOT NULL,
-                        amount REAL NOT NULL,
-                        category TEXT,
-                        notes TEXT,
-                        is_contra INTEGER DEFAULT 0
-                    )
-                `);
-                
-                isDbLoaded = true;
-                updateUI();
-                showNotification('New cash book created successfully.', 'success');
+                saveAs(dataBlob, 'cashbook.json');
+                showNotification('Cash book saved successfully.', 'success');
             } catch (error) {
-                showNotification('Error creating database: ' + error.message, 'error');
+                showNotification('Error saving database: ' + error.message, 'error');
             }
         }
         
@@ -662,51 +793,25 @@
             if (!file) return;
             
             const reader = new FileReader();
-            reader.onload = function() {
+            reader.onload = function(e) {
                 try {
-                    const Uints = new Uint8Array(reader.result);
-                    if (db) {
-                        db.close();
-                    }
-                    db = new SQL.Database(Uints);
-                    isDbLoaded = true;
+                    const data = JSON.parse(e.target.result);
+                    transactions = data.transactions;
+                    nextId = data.nextId;
+                    
                     updateUI();
                     showNotification('Cash book loaded successfully.', 'success');
                 } catch (error) {
                     showNotification('Error loading database: ' + error.message, 'error');
                 }
             };
-            reader.readAsArrayBuffer(file);
-        }
-        
-        // Save database to file
-        function saveDatabase() {
-            if (!isDbLoaded) {
-                showNotification('No cash book to save.', 'error');
-                return;
-            }
-            
-            try {
-                const data = db.export();
-                const buffer = new Blob([data], {type: 'application/octet-stream'});
-                const fileName = `cashbook_${new Date().toISOString().slice(0,10)}.db`;
-                saveAs(buffer, fileName);
-                showNotification('Cash book saved successfully.', 'success');
-            } catch (error) {
-                showNotification('Error saving database: ' + error.message, 'error');
-            }
+            reader.readAsText(file);
         }
         
         // Load example data
         function loadExampleData() {
-            if (!isDbLoaded) {
-                createDatabase();
-            }
+            createDatabase();
             
-            // Clear existing data
-            db.run("DELETE FROM transactions;");
-            
-            // Add sample transactions
             const today = new Date();
             const yesterday = new Date(today);
             yesterday.setDate(yesterday.getDate() - 1);
@@ -714,33 +819,15 @@
             lastWeek.setDate(lastWeek.getDate() - 7);
             
             const sampleTransactions = [
-                {date: lastWeek.toISOString().slice(0,10), type: 'Receipt', description: 'Cash Sales', amount: 12500.00, category: 'Cash Sale', notes: 'Daily sales'},
-                {date: yesterday.toISOString().slice(0,10), type: 'Payment', description: 'Office Supplies', amount: 3500.00, category: 'Cash Expense', notes: 'Paper, pens, etc.'},
-                {date: yesterday.toISOString().slice(0,10), type: 'Payment', description: 'Bank Deposit', amount: 8000.00, category: 'Bank Deposit', is_contra: 1, notes: 'Cash deposit to bank account'},
-                {date: today.toISOString().slice(0,10), type: 'Receipt', description: 'Customer Payment', amount: 7500.00, category: 'Cash Receipt', notes: 'Payment from ABC Corp'},
-                {date: today.toISOString().slice(0,10), type: 'Payment', description: 'Utility Bills', amount: 4200.00, category: 'Cash Expense', notes: 'Electricity and water bills'},
-                {date: today.toISOString().slice(0,10), type: 'Receipt', description: 'Bank Withdrawal', amount: 5000.00, category: 'Bank Withdrawal', is_contra: 1, notes: 'Cash withdrawal from bank'},
+                {id: nextId++, date: lastWeek.toISOString().slice(0,10), type: 'Receipt', description: 'Cash Sales', amount: 5000.00, category: 'Cash Sale', notes: 'Daily sales', isContra: false},
+                {id: nextId++, date: yesterday.toISOString().slice(0,10), type: 'Payment', description: 'Office Supplies', amount: 3500.00, category: 'Cash Expense', notes: 'Paper, pens, etc.', isContra: false},
+                {id: nextId++, date: yesterday.toISOString().slice(0,10), type: 'Payment', description: 'Bank Deposit', amount: 8000.00, category: 'Bank Deposit', notes: 'Cash deposit to bank account', isContra: true},
+                {id: nextId++, date: today.toISOString().slice(0,10), type: 'Receipt', description: 'Customer Payment', amount: 7500.00, category: 'Cash Receipt', notes: 'Payment from ABC Corp', isContra: false},
+                {id: nextId++, date: today.toISOString().slice(0,10), type: 'Payment', description: 'Utility Bills', amount: 4200.00, category: 'Cash Expense', notes: 'Electricity and water bills', isContra: false},
+                {id: nextId++, date: today.toISOString().slice(0,10), type: 'Receipt', description: 'Bank Withdrawal', amount: 5000.00, category: 'Bank Withdrawal', notes: 'Cash withdrawal from bank', isContra: true},
             ];
             
-            sampleTransactions.forEach(transaction => {
-                const stmt = db.prepare(`
-                    INSERT INTO transactions (date, type, description, amount, category, notes, is_contra)
-                    VALUES (?, ?, ?, ?, ?, ?, ?)
-                `);
-                
-                stmt.run([
-                    transaction.date,
-                    transaction.type,
-                    transaction.description,
-                    transaction.amount,
-                    transaction.category,
-                    transaction.notes,
-                    transaction.is_contra || 0
-                ]);
-                
-                stmt.free();
-            });
-            
+            transactions = sampleTransactions;
             updateUI();
             showNotification('Example data loaded successfully.', 'success');
         }
@@ -748,11 +835,6 @@
         // Save transaction to database
         function saveTransaction(event) {
             event.preventDefault();
-            
-            if (!isDbLoaded) {
-                showNotification('Please create or load a cash book first.', 'error');
-                return;
-            }
             
             try {
                 const editId = document.getElementById('editId').value;
@@ -762,29 +844,37 @@
                 const amount = parseFloat(document.getElementById('amount').value);
                 const category = document.getElementById('category').value;
                 const notes = document.getElementById('notes').value;
-                const isContra = document.getElementById('isContra').checked ? 1 : 0;
+                const isContra = document.getElementById('isContra').checked;
                 
                 if (editId) {
                     // Update existing transaction
-                    const stmt = db.prepare(`
-                        UPDATE transactions 
-                        SET date = ?, type = ?, description = ?, amount = ?, category = ?, notes = ?, is_contra = ?
-                        WHERE id = ?
-                    `);
-                    
-                    stmt.run([date, type, description, amount, category, notes, isContra, editId]);
-                    stmt.free();
+                    const index = transactions.findIndex(t => t.id == editId);
+                    if (index !== -1) {
+                        transactions[index] = {
+                            id: parseInt(editId),
+                            date,
+                            type,
+                            description,
+                            amount,
+                            category,
+                            notes,
+                            isContra
+                        };
+                    }
                     
                     showNotification('Transaction updated successfully.', 'success');
                 } else {
                     // Insert new transaction
-                    const stmt = db.prepare(`
-                        INSERT INTO transactions (date, type, description, amount, category, notes, is_contra)
-                        VALUES (?, ?, ?, ?, ?, ?, ?)
-                    `);
-                    
-                    stmt.run([date, type, description, amount, category, notes, isContra]);
-                    stmt.free();
+                    transactions.push({
+                        id: nextId++,
+                        date,
+                        type,
+                        description,
+                        amount,
+                        category,
+                        notes,
+                        isContra
+                    });
                     
                     showNotification('Transaction saved successfully.', 'success');
                 }
@@ -805,12 +895,8 @@
         // Edit transaction
         function editTransaction(id) {
             try {
-                const stmt = db.prepare('SELECT * FROM transactions WHERE id = ?');
-                stmt.bind([id]);
-                
-                if (stmt.step()) {
-                    const transaction = stmt.getAsObject();
-                    
+                const transaction = transactions.find(t => t.id === id);
+                if (transaction) {
                     document.getElementById('editId').value = transaction.id;
                     document.getElementById('date').value = transaction.date;
                     document.getElementById('type').value = transaction.type;
@@ -818,15 +904,13 @@
                     document.getElementById('amount').value = transaction.amount;
                     document.getElementById('category').value = transaction.category || '';
                     document.getElementById('notes').value = transaction.notes || '';
-                    document.getElementById('isContra').checked = transaction.is_contra === 1;
+                    document.getElementById('isContra').checked = transaction.isContra;
                     
                     document.getElementById('formTitle').textContent = 'Edit Transaction';
                     document.getElementById('cancelEdit').classList.remove('hidden');
                     
                     updateFormUI();
                 }
-                
-                stmt.free();
             } catch (error) {
                 showNotification('Error loading transaction: ' + error.message, 'error');
             }
@@ -839,10 +923,7 @@
             }
             
             try {
-                const stmt = db.prepare('DELETE FROM transactions WHERE id = ?');
-                stmt.run([id]);
-                stmt.free();
-                
+                transactions = transactions.filter(t => t.id !== id);
                 updateUI();
                 showNotification('Transaction deleted successfully.', 'success');
             } catch (error) {
@@ -883,114 +964,190 @@
             }
         }
         
-        // Update UI with data from database
-        function updateUI() {
-            if (!isDbLoaded) {
+        // Print cash book
+        function printCashBook() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const companyName = document.getElementById('companyName').value || 'Company Name';
+            
+            if (!startDate || !endDate) {
+                showNotification('Please select start and end dates for the period.', 'error');
                 return;
             }
             
-            try {
-                // Get search term
-                const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            // Filter transactions by date range
+            const filteredTransactions = transactions.filter(t => {
+                return t.date >= startDate && t.date <= endDate;
+            });
+            
+            // Sort transactions by date
+            filteredTransactions.sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            // Separate receipts and payments
+            const receipts = filteredTransactions.filter(t => t.type === 'Receipt');
+            const payments = filteredTransactions.filter(t => t.type === 'Payment');
+            
+            // Calculate totals
+            const totalReceipts = receipts.reduce((sum, t) => sum + t.amount, 0);
+            const totalPayments = payments.reduce((sum, t) => sum + t.amount, 0);
+            const closingBalance = totalReceipts - totalPayments;
+            
+            // Update printable section
+            document.getElementById('print-company-name').textContent = companyName;
+            document.getElementById('print-period').textContent = `For the period: ${formatDateForPrint(startDate)} to ${formatDateForPrint(endDate)}`;
+            document.getElementById('print-total-receipts').textContent = `₹${totalReceipts.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+            document.getElementById('print-total-payments').textContent = `₹${totalPayments.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+            document.getElementById('print-closing-balance').textContent = `₹${closingBalance.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+            
+            // Create the printable table
+            const tableBody = document.getElementById('print-table-body');
+            tableBody.innerHTML = '';
+            
+            const maxRows = Math.max(receipts.length, payments.length);
+            
+            for (let i = 0; i < maxRows; i++) {
+                const receipt = receipts[i];
+                const payment = payments[i];
                 
-                // Get all transactions
-                let query = 'SELECT * FROM transactions ORDER BY date DESC, id DESC';
-                let transactions = [];
+                const row = document.createElement('tr');
                 
-                const stmt = db.prepare(query);
-                while (stmt.step()) {
-                    transactions.push(stmt.getAsObject());
-                }
-                stmt.free();
-                
-                // Filter transactions if search term exists
-                if (searchTerm) {
-                    transactions = transactions.filter(t => 
-                        t.description.toLowerCase().includes(searchTerm) ||
-                        (t.category && t.category.toLowerCase().includes(searchTerm)) ||
-                        (t.notes && t.notes.toLowerCase().includes(searchTerm))
-                    );
-                }
-                
-                // Separate receipts and payments
-                const receipts = transactions.filter(t => t.type === 'Receipt');
-                const payments = transactions.filter(t => t.type === 'Payment');
-                
-                // Calculate totals
-                const totalReceipts = receipts.reduce((sum, t) => sum + t.amount, 0);
-                const totalPayments = payments.reduce((sum, t) => sum + t.amount, 0);
-                const closingBalance = totalReceipts - totalPayments;
-                
-                // Update summary cards
-                document.getElementById('totalReceipts').textContent = '₹' + totalReceipts.toLocaleString('en-IN', {minimumFractionDigits: 2});
-                document.getElementById('totalPayments').textContent = '₹' + totalPayments.toLocaleString('en-IN', {minimumFractionDigits: 2});
-                document.getElementById('closingBalance').textContent = '₹' + closingBalance.toLocaleString('en-IN', {minimumFractionDigits: 2});
-                
-                // Update receipt table
-                const receiptTable = document.getElementById('receiptTable').querySelector('tbody');
-                receiptTable.innerHTML = '';
-                
-                if (receipts.length === 0) {
-                    receiptTable.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 20px;">No receipt transactions found.</td></tr>';
+                // Receipt columns
+                if (receipt) {
+                    row.innerHTML += `
+                        <td>${formatDateForPrint(receipt.date)}</td>
+                        <td>${receipt.description}</td>
+                        <td>${receipt.category || ''}</td>
+                        <td>₹${receipt.amount.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+                    `;
                 } else {
-                    receipts.forEach(transaction => {
-                        const row = receiptTable.insertRow();
-                        if (transaction.is_contra === 1) {
-                            row.classList.add('contra-entry');
-                        }
-                        
-                        row.innerHTML = `
-                            <td>${formatDate(transaction.date)}</td>
-                            <td>
-                                <div><strong>${transaction.description}</strong></div>
-                                <small>${transaction.category || 'No category'}</small>
-                                ${transaction.notes ? `<div><small>${transaction.notes}</small></div>` : ''}
-                            </td>
-                            <td>₹${transaction.amount.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
-                            <td class="actions">
-                                <button class="btn btn-secondary btn-sm" onclick="editTransaction(${transaction.id})">✏️</button>
-                                <button class="btn btn-secondary btn-sm" onclick="deleteTransaction(${transaction.id})">🗑️</button>
-                            </td>
-                        `;
-                    });
+                    row.innerHTML += '<td></td><td></td><td></td><td></td>';
                 }
                 
-                // Update payment table
-                const paymentTable = document.getElementById('paymentTable').querySelector('tbody');
-                paymentTable.innerHTML = '';
-                
-                if (payments.length === 0) {
-                    paymentTable.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 20px;">No payment transactions found.</td></tr>';
+                // Payment columns
+                if (payment) {
+                    row.innerHTML += `
+                        <td>${formatDateForPrint(payment.date)}</td>
+                        <td>${payment.description}</td>
+                        <td>${payment.category || ''}</td>
+                        <td>₹${payment.amount.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+                    `;
                 } else {
-                    payments.forEach(transaction => {
-                        const row = paymentTable.insertRow();
-                        if (transaction.is_contra === 1) {
-                            row.classList.add('contra-entry');
-                        }
-                        
-                        row.innerHTML = `
-                            <td>${formatDate(transaction.date)}</td>
-                            <td>
-                                <div><strong>${transaction.description}</strong></div>
-                                <small>${transaction.category || 'No category'}</small>
-                                ${transaction.notes ? `<div><small>${transaction.notes}</small></div>` : ''}
-                            </td>
-                            <td>₹${transaction.amount.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
-                            <td class="actions">
-                                <button class="btn btn-secondary btn-sm" onclick="editTransaction(${transaction.id})">✏️</button>
-                                <button class="btn btn-secondary btn-sm" onclick="deleteTransaction(${transaction.id})">🗑️</button>
-                            </td>
-                        `;
-                    });
+                    row.innerHTML += '<td></td><td></td><td></td><td></td>';
                 }
                 
-                // Update status bar
-                document.getElementById('statusMessage').textContent = 'Cash book loaded';
-                document.getElementById('rowCount').textContent = `${transactions.length} transactions`;
-                
-            } catch (error) {
-                showNotification('Error updating UI: ' + error.message, 'error');
+                tableBody.appendChild(row);
             }
+            
+            // Show the printable section and print
+            const printableElement = document.getElementById('printable-cashbook');
+            printableElement.style.display = 'block';
+            
+            window.print();
+            
+            // Hide the printable section after printing
+            printableElement.style.display = 'none';
+        }
+        
+        // Format date for printing
+        function formatDateForPrint(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-IN', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric'
+            });
+        }
+        
+        // Update UI with data from database
+        function updateUI() {
+            // Get search term
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            // Filter transactions if search term exists
+            let filteredTransactions = transactions;
+            if (searchTerm) {
+                filteredTransactions = transactions.filter(t => 
+                    t.description.toLowerCase().includes(searchTerm) ||
+                    (t.category && t.category.toLowerCase().includes(searchTerm)) ||
+                    (t.notes && t.notes.toLowerCase().includes(searchTerm))
+                );
+            }
+            
+            // Separate receipts and payments
+            const receipts = filteredTransactions.filter(t => t.type === 'Receipt');
+            const payments = filteredTransactions.filter(t => t.type === 'Payment');
+            
+            // Calculate totals
+            const totalReceipts = receipts.reduce((sum, t) => sum + t.amount, 0);
+            const totalPayments = payments.reduce((sum, t) => sum + t.amount, 0);
+            const closingBalance = totalReceipts - totalPayments;
+            
+            // Update summary cards
+            document.getElementById('totalReceipts').textContent = '₹' + totalReceipts.toLocaleString('en-IN', {minimumFractionDigits: 2});
+            document.getElementById('totalPayments').textContent = '₹' + totalPayments.toLocaleString('en-IN', {minimumFractionDigits: 2});
+            document.getElementById('closingBalance').textContent = '₹' + closingBalance.toLocaleString('en-IN', {minimumFractionDigits: 2});
+            
+            // Update receipt table
+            const receiptTable = document.getElementById('receiptTable').querySelector('tbody');
+            receiptTable.innerHTML = '';
+            
+            if (receipts.length === 0) {
+                receiptTable.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 20px;">No receipt transactions found.</td></tr>';
+            } else {
+                receipts.forEach(transaction => {
+                    const row = receiptTable.insertRow();
+                    if (transaction.isContra) {
+                        row.classList.add('contra-entry');
+                    }
+                    
+                    row.innerHTML = `
+                        <td>${formatDate(transaction.date)}</td>
+                        <td>
+                            <div><strong>${transaction.description}</strong></div>
+                            <small>${transaction.category || 'No category'}</small>
+                            ${transaction.notes ? `<div><small>${transaction.notes}</small></div>` : ''}
+                        </td>
+                        <td>₹${transaction.amount.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+                        <td class="actions">
+                            <button class="btn btn-secondary btn-sm" onclick="editTransaction(${transaction.id})">✏️</button>
+                            <button class="btn btn-secondary btn-sm" onclick="deleteTransaction(${transaction.id})">🗑️</button>
+                        </td>
+                    `;
+                });
+            }
+            
+            // Update payment table
+            const paymentTable = document.getElementById('paymentTable').querySelector('tbody');
+            paymentTable.innerHTML = '';
+            
+            if (payments.length === 0) {
+                paymentTable.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 20px;">No payment transactions found.</td></tr>';
+            } else {
+                payments.forEach(transaction => {
+                    const row = paymentTable.insertRow();
+                    if (transaction.isContra) {
+                        row.classList.add('contra-entry');
+                    }
+                    
+                    row.innerHTML = `
+                        <td>${formatDate(transaction.date)}</td>
+                        <td>
+                            <div><strong>${transaction.description}</strong></div>
+                            <small>${transaction.category || 'No category'}</small>
+                            ${transaction.notes ? `<div><small>${transaction.notes}</small></div>` : ''}
+                        </td>
+                        <td>₹${transaction.amount.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+                        <td class="actions">
+                            <button class="btn btn-secondary btn-sm" onclick="editTransaction(${transaction.id})">✏️</button>
+                            <button class="btn btn-secondary btn-sm" onclick="deleteTransaction(${transaction.id})">🗑️</button>
+                        </td>
+                    `;
+                });
+            }
+            
+            // Update status bar
+            document.getElementById('statusMessage').textContent = 'Cash book loaded';
+            document.getElementById('rowCount').textContent = `${transactions.length} transactions`;
         }
         
         // Format date for display

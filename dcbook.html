@@ -453,10 +453,121 @@
                 left: 0;
                 top: 0;
                 width: 100%;
+                font-family: "Arial", Arial, sans-serif !important;
+                font-size: 12px !important;
             }
             
             .no-print {
                 display: none !important;
+            }
+            
+            .print-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 10px;
+                font-family: "Arial", Arial, sans-serif !important;
+                font-size: 14px !important;
+            }
+            
+            .print-table th, .print-table td {
+                border: 1px solid #ddd;
+                padding: 4px;
+                text-align: left;
+                font-size: 10px !important;
+            }
+            
+            .print-table th {
+                background-color: #f2f2f2;
+                font-weight: bold;
+                font-size: 10px !important;
+            }
+            
+            .print-header {
+                text-align: center;
+                margin-bottom: 10px;
+                font-family: "Arial", Arial, sans-serif !important;
+                font-size: 14px !important;
+            }
+            
+            .print-header h2, .print-header h3 {
+                font-family: "Arial", Arial, sans-serif !important;
+                font-size: 16px !important;
+                margin: 5px 0;
+            }
+            
+            .print-period {
+                text-align: center;
+                margin-bottom: 8px;
+                font-weight: bold;
+                font-size: 10px !important;
+            }
+            
+            .print-summary {
+                margin-top: 10px;
+                padding: 6px;
+                border: 1px solid #ddd;
+                background-color: #f9f9f9;
+                font-size: 10px !important;
+                width: 50%;
+                margin-left: auto;
+            }
+            
+            .print-summary p {
+                margin: 3px 0;
+                font-size: 10px !important;
+                display: flex;
+                justify-content: space-between;
+            }
+            
+            .print-summary-label {
+                font-weight: bold;
+                min-width: 60%;
+            }
+            
+            .print-opening-balance {
+                font-weight: bold;
+                margin-bottom: 5px;
+                font-size: 10px !important;
+            }
+            
+            /* Ensure center alignment of the two sides */
+            .print-table-container {
+                width: 100%;
+                display: flex;
+            }
+            
+            .print-receipts-side, .print-payments-side {
+                width: 50%;
+                border: 1px solid #ddd;
+            }
+            
+            .print-receipts-side {
+                border-right: none;
+            }
+            
+            .print-side-header {
+                background-color: #f2f2f2;
+                font-weight: bold;
+                text-align: center;
+                padding: 4px;
+                border-bottom: 1px solid #ddd;
+            }
+            
+            .print-side-table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            
+            .print-side-table th, .print-side-table td {
+                border: 1px solid #ddd;
+                padding: 4px;
+                text-align: left;
+                font-size: 10px !important;
+            }
+            
+            .print-side-table th {
+                background-color: #f2f2f2;
+                font-weight: bold;
             }
         }
         
@@ -683,32 +794,47 @@
                 <div class="print-period" id="print-period">For the period: </div>
             </div>
             
-            <table class="print-table">
-                <thead>
-                    <tr>
-                        <th colspan="4" style="text-align: center; background-color: #E8F5E9;">Cash Inflow (Receipts)</th>
-                        <th colspan="4" style="text-align: center; background-color: #FFEBEE;">Cash Outflow (Payments)</th>
-                    </tr>
-                    <tr>
-                        <th>Date</th>
-                        <th>Transaction Details</th>
-                        <th>Invoice</th>
-                        <th>Amount</th>
-                        <th>Date</th>
-                        <th>Transaction Details</th>
-                        <th>Invoice</th>
-                        <th>Amount</th>
-                    </tr>
-                </thead>
-                <tbody id="print-table-body">
-                    <!-- Will be populated by JavaScript -->
-                </tbody>
-            </table>
+            <div class="print-table-container">
+                <div class="print-receipts-side">
+                    <div class="print-side-header">Cash Inflow (Receipts)</div>
+                    <table class="print-side-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Category</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="print-receipts-body">
+                            <!-- Will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="print-payments-side">
+                    <div class="print-side-header">Cash Outflow (Payments)</div>
+                    <table class="print-side-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Category</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="print-payments-body">
+                            <!-- Will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
             
             <div class="print-summary">
-                <p>Total Receipts: <span id="print-total-receipts">₹0.00</span></p>
-                <p>Total Payments: <span id="print-total-payments">₹0.00</span></p>
-                <p>Closing Balance: <span id="print-closing-balance">₹0.00</span></p>
+                <p><span class="print-summary-label">Opening Balance:</span> <span id="print-opening-balance">₹0.00</span></p>
+                <p><span class="print-summary-label">Total Receipts during the Period:</span> <span id="print-total-receipts">₹0.00</span></p>
+                <p><span class="print-summary-label">Total Payments during the Period:</span> <span id="print-total-payments">₹0.00</span></p>
+                <p><span class="print-summary-label">Closing Balance:</span> <span id="print-closing-balance">₹0.00</span></p>
             </div>
         </div>
     </div>
@@ -985,66 +1111,88 @@
             }
             
             // Filter transactions by date range
-            const filteredTransactions = transactions.filter(t => {
+            const periodTransactions = transactions.filter(t => {
                 return t.date >= startDate && t.date <= endDate;
             });
             
-            // Sort transactions by date
-            filteredTransactions.sort((a, b) => new Date(a.date) - new Date(b.date));
+            // Get all transactions before the start date to calculate opening balance
+            const openingBalanceTransactions = transactions.filter(t => {
+                return t.date < startDate;
+            });
             
-            // Separate receipts and payments
-            const receipts = filteredTransactions.filter(t => t.type === 'Receipt');
-            const payments = filteredTransactions.filter(t => t.type === 'Payment');
+            // Calculate opening balance (balance before start date)
+            const openingReceipts = openingBalanceTransactions
+                .filter(t => t.type === 'Receipt')
+                .reduce((sum, t) => sum + t.amount, 0);
+                
+            const openingPayments = openingBalanceTransactions
+                .filter(t => t.type === 'Payment')
+                .reduce((sum, t) => sum + t.amount, 0);
+                
+            const openingBalance = openingReceipts - openingPayments;
             
-            // Calculate totals
-            const totalReceipts = receipts.reduce((sum, t) => sum + t.amount, 0);
-            const totalPayments = payments.reduce((sum, t) => sum + t.amount, 0);
-            const closingBalance = totalReceipts - totalPayments;
+            // Sort period transactions by date
+            periodTransactions.sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            // Separate receipts and payments for the period
+            const receipts = periodTransactions.filter(t => t.type === 'Receipt');
+            const payments = periodTransactions.filter(t => t.type === 'Payment');
+            
+            // Calculate period totals
+            const periodReceipts = receipts.reduce((sum, t) => sum + t.amount, 0);
+            const periodPayments = payments.reduce((sum, t) => sum + t.amount, 0);
+            
+            // Calculate closing balance
+            const closingBalance = openingBalance + periodReceipts - periodPayments;
             
             // Update printable section
             document.getElementById('print-company-name').textContent = companyName;
             document.getElementById('print-period').textContent = `For the period: ${formatDateForPrint(startDate)} to ${formatDateForPrint(endDate)}`;
-            document.getElementById('print-total-receipts').textContent = `₹${totalReceipts.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
-            document.getElementById('print-total-payments').textContent = `₹${totalPayments.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+            document.getElementById('print-opening-balance').textContent = `₹${openingBalance.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+            document.getElementById('print-total-receipts').textContent = `₹${periodReceipts.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+            document.getElementById('print-total-payments').textContent = `₹${periodPayments.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
             document.getElementById('print-closing-balance').textContent = `₹${closingBalance.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
             
-            // Create the printable table
-            const tableBody = document.getElementById('print-table-body');
-            tableBody.innerHTML = '';
+            // Update receipts table
+            const receiptsBody = document.getElementById('print-receipts-body');
+            if (receipts.length > 0) {
+                receiptsBody.innerHTML = receipts.map(t => `
+                    <tr>
+                        <td>${formatDateForPrint(t.date)}</td>
+                        <td>${t.description}</td>
+                        <td>${t.category || ''}</td>
+                        <td>₹${t.amount.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+                    </tr>
+                `).join('');
+            } else {
+                receiptsBody.innerHTML = `
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 10px;">
+                            No receipt transactions
+                        </td>
+                    </tr>
+                `;
+            }
             
-            const maxRows = Math.max(receipts.length, payments.length);
-            
-            for (let i = 0; i < maxRows; i++) {
-                const receipt = receipts[i];
-                const payment = payments[i];
-                
-                const row = document.createElement('tr');
-                
-                // Receipt columns
-                if (receipt) {
-                    row.innerHTML += `
-                        <td>${formatDateForPrint(receipt.date)}</td>
-                        <td>${receipt.description}</td>
-                        <td>${receipt.category || ''}</td>
-                        <td>₹${receipt.amount.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
-                    `;
-                } else {
-                    row.innerHTML += '<td></td><td></td><td></td><td></td>';
-                }
-                
-                // Payment columns
-                if (payment) {
-                    row.innerHTML += `
-                        <td>${formatDateForPrint(payment.date)}</td>
-                        <td>${payment.description}</td>
-                        <td>${payment.category || ''}</td>
-                        <td>₹${payment.amount.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
-                    `;
-                } else {
-                    row.innerHTML += '<td></td><td></td><td></td><td></td>';
-                }
-                
-                tableBody.appendChild(row);
+            // Update payments table
+            const paymentsBody = document.getElementById('print-payments-body');
+            if (payments.length > 0) {
+                paymentsBody.innerHTML = payments.map(t => `
+                    <tr>
+                        <td>${formatDateForPrint(t.date)}</td>
+                        <td>${t.description}</td>
+                        <td>${t.category || ''}</td>
+                        <td>₹${t.amount.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+                    </tr>
+                `).join('');
+            } else {
+                paymentsBody.innerHTML = `
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 10px;">
+                            No payment transactions
+                        </td>
+                    </tr>
+                `;
             }
             
             // Show the printable section and print

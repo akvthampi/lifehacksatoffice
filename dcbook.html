@@ -780,7 +780,16 @@
                 const dataStr = JSON.stringify(data);
                 const dataBlob = new Blob([dataStr], {type: 'application/json'});
                 
-                saveAs(dataBlob, 'cashbook.json');
+                // Create a download link and trigger it
+                const url = URL.createObjectURL(dataBlob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'cashbook.json';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
                 showNotification('Cash book saved successfully.', 'success');
             } catch (error) {
                 showNotification('Error saving database: ' + error.message, 'error');
@@ -1083,71 +1092,69 @@
             const closingBalance = totalReceipts - totalPayments;
             
             // Update summary cards
-            document.getElementById('totalReceipts').textContent = '₹' + totalReceipts.toLocaleString('en-IN', {minimumFractionDigits: 2});
-            document.getElementById('totalPayments').textContent = '₹' + totalPayments.toLocaleString('en-IN', {minimumFractionDigits: 2});
-            document.getElementById('closingBalance').textContent = '₹' + closingBalance.toLocaleString('en-IN', {minimumFractionDigits: 2});
+            document.getElementById('totalReceipts').textContent = `₹${totalReceipts.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+            document.getElementById('totalPayments').textContent = `₹${totalPayments.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+            document.getElementById('closingBalance').textContent = `₹${closingBalance.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
             
-            // Update receipt table
-            const receiptTable = document.getElementById('receiptTable').querySelector('tbody');
-            receiptTable.innerHTML = '';
-            
-            if (receipts.length === 0) {
-                receiptTable.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 20px;">No receipt transactions found.</td></tr>';
-            } else {
-                receipts.forEach(transaction => {
-                    const row = receiptTable.insertRow();
-                    if (transaction.isContra) {
-                        row.classList.add('contra-entry');
-                    }
-                    
-                    row.innerHTML = `
-                        <td>${formatDate(transaction.date)}</td>
-                        <td>
-                            <div><strong>${transaction.description}</strong></div>
-                            <small>${transaction.category || 'No category'}</small>
-                            ${transaction.notes ? `<div><small>${transaction.notes}</small></div>` : ''}
-                        </td>
-                        <td>₹${transaction.amount.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+            // Update receipts table
+            const receiptTableBody = document.getElementById('receiptTable').querySelector('tbody');
+            if (receipts.length > 0) {
+                receiptTableBody.innerHTML = receipts.map(t => `
+                    <tr class="${t.isContra ? 'contra-entry' : ''}">
+                        <td>${formatDate(t.date)}</td>
+                        <td>${t.description}</td>
+                        <td>₹${t.amount.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
                         <td class="actions">
-                            <button class="btn btn-secondary btn-sm" onclick="editTransaction(${transaction.id})">✏️</button>
-                            <button class="btn btn-secondary btn-sm" onclick="deleteTransaction(${transaction.id})">🗑️</button>
+                            <button class="btn btn-primary btn-sm" onclick="editTransaction(${t.id})">
+                                <span class="icon">✏️</span>Edit
+                            </button>
+                            <button class="btn btn-secondary btn-sm" onclick="deleteTransaction(${t.id})">
+                                <span class="icon">🗑️</span>Delete
+                            </button>
                         </td>
-                    `;
-                });
+                    </tr>
+                `).join('');
+            } else {
+                receiptTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 20px;">
+                            No receipt transactions found.
+                        </td>
+                    </tr>
+                `;
             }
             
-            // Update payment table
-            const paymentTable = document.getElementById('paymentTable').querySelector('tbody');
-            paymentTable.innerHTML = '';
-            
-            if (payments.length === 0) {
-                paymentTable.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 20px;">No payment transactions found.</td></tr>';
-            } else {
-                payments.forEach(transaction => {
-                    const row = paymentTable.insertRow();
-                    if (transaction.isContra) {
-                        row.classList.add('contra-entry');
-                    }
-                    
-                    row.innerHTML = `
-                        <td>${formatDate(transaction.date)}</td>
-                        <td>
-                            <div><strong>${transaction.description}</strong></div>
-                            <small>${transaction.category || 'No category'}</small>
-                            ${transaction.notes ? `<div><small>${transaction.notes}</small></div>` : ''}
-                        </td>
-                        <td>₹${transaction.amount.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+            // Update payments table
+            const paymentTableBody = document.getElementById('paymentTable').querySelector('tbody');
+            if (payments.length > 0) {
+                paymentTableBody.innerHTML = payments.map(t => `
+                    <tr class="${t.isContra ? 'contra-entry' : ''}">
+                        <td>${formatDate(t.date)}</td>
+                        <td>${t.description}</td>
+                        <td>₹${t.amount.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
                         <td class="actions">
-                            <button class="btn btn-secondary btn-sm" onclick="editTransaction(${transaction.id})">✏️</button>
-                            <button class="btn btn-secondary btn-sm" onclick="deleteTransaction(${transaction.id})">🗑️</button>
+                            <button class="btn btn-primary btn-sm" onclick="editTransaction(${t.id})">
+                                <span class="icon">✏️</span>Edit
+                            </button>
+                            <button class="btn btn-secondary btn-sm" onclick="deleteTransaction(${t.id})">
+                                <span class="icon">🗑️</span>Delete
+                            </button>
                         </td>
-                    `;
-                });
+                    </tr>
+                `).join('');
+            } else {
+                paymentTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 20px;">
+                            No payment transactions found.
+                        </td>
+                    </tr>
+                `;
             }
             
             // Update status bar
-            document.getElementById('statusMessage').textContent = 'Cash book loaded';
-            document.getElementById('rowCount').textContent = `${transactions.length} transactions`;
+            document.getElementById('statusMessage').textContent = `Cash book loaded with ${transactions.length} transactions`;
+            document.getElementById('rowCount').textContent = `${filteredTransactions.length} transactions`;
         }
         
         // Format date for display

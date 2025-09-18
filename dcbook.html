@@ -104,6 +104,11 @@
             color: white;
         }
         
+        .btn-danger {
+            background: linear-gradient(to right, #ff5f6d, #ff3a4a);
+            color: white;
+        }
+        
         .summary-cards {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -396,6 +401,42 @@
             align-items: end;
         }
         
+        .auto-save-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .confirmation-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            width: 100%;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
         @media (max-width: 1024px) {
             .cash-book-container {
                 flex-direction: column;
@@ -629,6 +670,14 @@
             <button id="exampleData" class="btn btn-secondary">
                 <span class="icon">🔍</span>Example Data
             </button>
+            <button id="clearAll" class="btn btn-danger">
+                <span class="icon">🗑️</span>Clear All
+            </button>
+        </div>
+        
+        <div class="auto-save-toggle no-print">
+            <input type="checkbox" id="autoSave">
+            <label for="autoSave">Enable Auto-Save (saves to browser storage)</label>
         </div>
         
         <div class="summary-cards no-print">
@@ -742,13 +791,14 @@
                             <tr>
                                 <th>Date</th>
                                 <th>Description</th>
+                                <th>Category</th>
                                 <th>Amount (₹)</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td colspan="4" style="text-align: center; padding: 20px;">
+                                <td colspan="5" style="text-align: center; padding: 20px;">
                                     No receipt transactions found.
                                 </td>
                             </tr>
@@ -765,13 +815,14 @@
                             <tr>
                                 <th>Date</th>
                                 <th>Description</th>
+                                <th>Category</th>
                                 <th>Amount (₹)</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td colspan="4" style="text-align: center; padding: 20px;">
+                                <td colspan="5" style="text-align: center; padding: 20px;">
                                     No payment transactions found.
                                 </td>
                             </tr>
@@ -784,6 +835,7 @@
         <div class="status-bar no-print">
             <div class="status-message" id="statusMessage">No cash book loaded</div>
             <div id="rowCount">0 transactions</div>
+            <div id="lastSaved">Last saved: Never</div>
         </div>
         
         <!-- Printable cash book section (hidden by default) -->
@@ -839,12 +891,26 @@
         </div>
     </div>
     
+    <!-- Confirmation Modal -->
+    <div class="confirmation-modal" id="confirmationModal">
+        <div class="modal-content">
+            <h3 id="modalTitle">Confirm Action</h3>
+            <p id="modalMessage">Are you sure you want to perform this action?</p>
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" id="modalCancel">Cancel</button>
+                <button class="btn btn-danger" id="modalConfirm">Confirm</button>
+            </div>
+        </div>
+    </div>
+    
     <div class="notification" id="notification"></div>
     
     <script>
         // Global variables
         let transactions = [];
         let nextId = 1;
+        let autoSaveEnabled = false;
+        let lastSavedTimestamp = null;
 
         // Initialize the application
         document.addEventListener('DOMContentLoaded', function() {
@@ -869,25 +935,100 @@
             document.getElementById('searchInput').addEventListener('input', filterTransactions);
             document.getElementById('clearSearch').addEventListener('click', clearSearch);
             document.getElementById('printBtn').addEventListener('click', printCashBook);
+            document.getElementById('clearAll').addEventListener('click', confirmClearAll);
+            document.getElementById('autoSave').addEventListener('change', toggleAutoSave);
+            document.getElementById('modalCancel').addEventListener('click', closeModal);
+            document.getElementById('modalConfirm').addEventListener('click', executeModalAction);
             
             // Update transaction type UI
             document.getElementById('type').addEventListener('change', function() {
                 updateFormUI();
             });
             
+            // Check for saved data in localStorage
+            checkForSavedData();
+            
             // Initial UI update
             updateFormUI();
-            
-            // Create a new database on load
-            createDatabase();
         });
+        
+        // Check for saved data in localStorage
+        function checkForSavedData() {
+            const savedData = localStorage.getItem('cashbookData');
+            if (savedData) {
+                if (confirm('Saved data found in browser storage. Would you like to load it?')) {
+                    try {
+                        const data = JSON.parse(savedData);
+                        transactions = data.transactions;
+                        nextId = data.nextId;
+                        lastSavedTimestamp = data.timestamp;
+                        
+                        updateUI();
+                        showNotification('Cash book loaded from browser storage.', 'success');
+                        updateLastSavedDisplay();
+                    } catch (error) {
+                        showNotification('Error loading from browser storage: ' + error.message, 'error');
+                    }
+                } else {
+                    // Create a new database if user doesn't want to load saved data
+                    createDatabase();
+                }
+            } else {
+                // Create a new database if no saved data
+                createDatabase();
+            }
+        }
+        
+        // Toggle auto-save feature
+        function toggleAutoSave() {
+            autoSaveEnabled = document.getElementById('autoSave').checked;
+            if (autoSaveEnabled) {
+                saveToLocalStorage();
+                showNotification('Auto-save enabled. Data will be saved to browser storage.', 'success');
+            } else {
+                showNotification('Auto-save disabled.', 'success');
+            }
+        }
+        
+        // Save to localStorage
+        function saveToLocalStorage() {
+            try {
+                const data = {
+                    transactions: transactions,
+                    nextId: nextId,
+                    timestamp: new Date().getTime()
+                };
+                
+                localStorage.setItem('cashbookData', JSON.stringify(data));
+                lastSavedTimestamp = data.timestamp;
+                updateLastSavedDisplay();
+            } catch (error) {
+                showNotification('Error saving to browser storage: ' + error.message, 'error');
+            }
+        }
+        
+        // Update last saved display
+        function updateLastSavedDisplay() {
+            const lastSavedElement = document.getElementById('lastSaved');
+            if (lastSavedTimestamp) {
+                const date = new Date(lastSavedTimestamp);
+                lastSavedElement.textContent = 'Last saved: ' + date.toLocaleString();
+            } else {
+                lastSavedElement.textContent = 'Last saved: Never';
+            }
+        }
         
         // Create a new database
         function createDatabase() {
             transactions = [];
             nextId = 1;
+            document.getElementById('searchInput').value = '';
             updateUI();
             showNotification('New cash book created successfully.', 'success');
+            
+            if (autoSaveEnabled) {
+                saveToLocalStorage();
+            }
         }
         
         // Save database to file
@@ -900,7 +1041,8 @@
             try {
                 const data = {
                     transactions: transactions,
-                    nextId: nextId
+                    nextId: nextId,
+                    timestamp: new Date().getTime()
                 };
                 
                 const dataStr = JSON.stringify(data);
@@ -910,12 +1052,14 @@
                 const url = URL.createObjectURL(dataBlob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = 'cashbook.json';
+                a.download = 'cashbook_' + new Date().toISOString().slice(0, 10) + '.json';
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
                 
+                lastSavedTimestamp = data.timestamp;
+                updateLastSavedDisplay();
                 showNotification('Cash book saved successfully.', 'success');
             } catch (error) {
                 showNotification('Error saving database: ' + error.message, 'error');
@@ -933,12 +1077,24 @@
                     const data = JSON.parse(e.target.result);
                     transactions = data.transactions;
                     nextId = data.nextId;
+                    lastSavedTimestamp = data.timestamp || new Date().getTime();
+                    
+                    // Clear search input to show all transactions
+                    document.getElementById('searchInput').value = '';
                     
                     updateUI();
+                    updateLastSavedDisplay();
                     showNotification('Cash book loaded successfully.', 'success');
+                    
+                    if (autoSaveEnabled) {
+                        saveToLocalStorage();
+                    }
                 } catch (error) {
                     showNotification('Error loading database: ' + error.message, 'error');
                 }
+                
+                // Reset file input
+                event.target.value = '';
             };
             reader.readAsText(file);
         }
@@ -965,6 +1121,10 @@
             transactions = sampleTransactions;
             updateUI();
             showNotification('Example data loaded successfully.', 'success');
+            
+            if (autoSaveEnabled) {
+                saveToLocalStorage();
+            }
         }
         
         // Save transaction to database
@@ -1022,6 +1182,10 @@
                 document.getElementById('formTitle').textContent = 'Add Transaction';
                 
                 updateUI();
+                
+                if (autoSaveEnabled) {
+                    saveToLocalStorage();
+                }
             } catch (error) {
                 showNotification('Error saving transaction: ' + error.message, 'error');
             }
@@ -1061,9 +1225,59 @@
                 transactions = transactions.filter(t => t.id !== id);
                 updateUI();
                 showNotification('Transaction deleted successfully.', 'success');
+                
+                if (autoSaveEnabled) {
+                    saveToLocalStorage();
+                }
             } catch (error) {
                 showNotification('Error deleting transaction: ' + error.message, 'error');
             }
+        }
+        
+        // Confirm clear all data
+        function confirmClearAll() {
+            if (transactions.length === 0) {
+                showNotification('No transactions to clear.', 'error');
+                return;
+            }
+            
+            showModal(
+                'Clear All Data',
+                'Are you sure you want to clear all transactions? This action cannot be undone.',
+                clearAllData
+            );
+        }
+        
+        // Clear all data
+        function clearAllData() {
+            createDatabase();
+            if (autoSaveEnabled) {
+                localStorage.removeItem('cashbookData');
+                lastSavedTimestamp = null;
+                updateLastSavedDisplay();
+            }
+        }
+        
+        // Show confirmation modal
+        function showModal(title, message, confirmCallback) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalMessage').textContent = message;
+            document.getElementById('modalConfirm').setAttribute('data-action', confirmCallback.name);
+            document.getElementById('confirmationModal').style.display = 'flex';
+        }
+        
+        // Close modal
+        function closeModal() {
+            document.getElementById('confirmationModal').style.display = 'none';
+        }
+        
+        // Execute modal action
+        function executeModalAction() {
+            const actionName = this.getAttribute('data-action');
+            if (actionName === 'clearAllData') {
+                clearAllData();
+            }
+            closeModal();
         }
         
         // Cancel edit
@@ -1251,6 +1465,7 @@
                     <tr class="${t.isContra ? 'contra-entry' : ''}">
                         <td>${formatDate(t.date)}</td>
                         <td>${t.description}</td>
+                        <td>${t.category || ''}</td>
                         <td>₹${t.amount.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
                         <td class="actions">
                             <button class="btn btn-primary btn-sm" onclick="editTransaction(${t.id})">
@@ -1265,8 +1480,8 @@
             } else {
                 receiptTableBody.innerHTML = `
                     <tr>
-                        <td colspan="4" style="text-align: center; padding: 20px;">
-                            No receipt transactions found.
+                        <td colspan="5" style="text-align: center; padding: 20px;">
+                            ${searchTerm ? 'No matching receipt transactions found.' : 'No receipt transactions found.'}
                         </td>
                     </tr>
                 `;
@@ -1279,6 +1494,7 @@
                     <tr class="${t.isContra ? 'contra-entry' : ''}">
                         <td>${formatDate(t.date)}</td>
                         <td>${t.description}</td>
+                        <td>${t.category || ''}</td>
                         <td>₹${t.amount.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
                         <td class="actions">
                             <button class="btn btn-primary btn-sm" onclick="editTransaction(${t.id})">
@@ -1293,8 +1509,8 @@
             } else {
                 paymentTableBody.innerHTML = `
                     <tr>
-                        <td colspan="4" style="text-align: center; padding: 20px;">
-                            No payment transactions found.
+                        <td colspan="5" style="text-align: center; padding: 20px;">
+                            ${searchTerm ? 'No matching payment transactions found.' : 'No payment transactions found.'}
                         </td>
                     </tr>
                 `;

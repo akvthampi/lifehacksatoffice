@@ -481,12 +481,19 @@
         
         /* Print styles */
         @media print {
+            @page {
+                size: A4 landscape;
+                margin: 2.5cm;
+            }
+            
             body * {
                 visibility: hidden;
+                font-family: Tahoma, sans-serif !important;
             }
             
             #printable-cashbook, #printable-cashbook * {
                 visibility: visible;
+                font-family: Tahoma, sans-serif !important;
             }
             
             #printable-cashbook {
@@ -494,63 +501,84 @@
                 left: 0;
                 top: 0;
                 width: 100%;
-                
+                font-size: 12px !important;
             }
             
             .no-print {
                 display: none !important;
             }
             
-            .print-table {
-                width: 100%;
-                border-collapse: collapse;
-                margin-bottom: 10px;
-                
+            .print-header h2 {
+                font-size: 16px !important;
+                margin: 8px 0;
             }
             
-            .print-table th, .print-table td {
-                border: 1px solid #ddd;
-                padding: 4px;
-                text-align: left;
-                font-size: 10px !important;
-            }
-            
-            .print-table th {
-                background-color: #f2f2f2;
-                font-weight: bold;
-                font-size: 10px !important;
-            }
-            
-            .print-header {
-                text-align: center;
-                margin-bottom: 10px;
-                
-            }
-            
-            .print-header h2, .print-header h3 {
-                margin: 5px 0;
+            .print-header h3 {
+                font-size: 14px !important;
+                margin: 6px 0;
             }
             
             .print-period {
-                text-align: center;
-                margin-bottom: 8px;
+                font-size: 12px !important;
+                margin-bottom: 10px;
+            }
+            
+            .print-table-container {
+                width: 100%;
+                display: flex;
+            }
+            
+            .print-receipts-side, .print-payments-side {
+                width: 50%;
+                border: 1px solid #ddd;
+                font-size: 12px !important;
+            }
+            
+            .print-receipts-side {
+                border-right: none;
+            }
+            
+            .print-side-header {
+                background-color: #f2f2f2;
                 font-weight: bold;
-                font-size: 10px !important;
+                text-align: center;
+                padding: 6px;
+                border-bottom: 1px solid #ddd;
+                font-size: 12px !important;
+            }
+            
+            .print-side-table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 12px !important;
+            }
+            
+            .print-side-table th, .print-side-table td {
+                border: 1px solid #ddd;
+                padding: 4px;
+                text-align: left;
+                font-size: 12px !important;
+            }
+            
+            .print-side-table th {
+                background-color: #f2f2f2;
+                font-weight: bold;
+                font-size: 12px !important;
             }
             
             .print-summary {
-                margin-top: 10px;
-                padding: 6px;
+                margin-top: 15px;
+                padding: 10px;
                 border: 1px solid #ddd;
                 background-color: #f9f9f9;
-                font-size: 10px !important;
+                font-size: 12px !important;
                 width: 50%;
                 margin-left: auto;
             }
             
             .print-summary p {
-                margin: 3px 0;
-                font-size: 10px !important;
+                margin: 4px 0;
+                font-size: 12px !important;
                 display: flex;
                 justify-content: space-between;
             }
@@ -563,84 +591,8 @@
             .print-opening-balance {
                 font-weight: bold;
                 margin-bottom: 5px;
-                font-size: 10px !important;
+                font-size: 12px !important;
             }
-            
-            /* Ensure center alignment of the two sides */
-            .print-table-container {
-                width: 100%;
-                display: flex;
-            }
-            
-            .print-receipts-side, .print-payments-side {
-                width: 50%;
-                border: 1px solid #ddd;
-            }
-            
-            .print-receipts-side {
-                border-right: none;
-            }
-            
-            .print-side-header {
-                background-color: #f2f2f2;
-                font-weight: bold;
-                text-align: center;
-                padding: 4px;
-                border-bottom: 1px solid #ddd;
-            }
-            
-            .print-side-table {
-                width: 100%;
-                border-collapse: collapse;
-            }
-            
-            .print-side-table th, .print-side-table td {
-                border: 1px solid #ddd;
-                padding: 4px;
-                text-align: left;
-                font-size: 10px !important;
-            }
-            
-            .print-side-table th {
-                background-color: #f2f2f2;
-                font-weight: bold;
-            }
-        }
-        
-        .print-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-            font-family: Arial, sans-serif;
-        }
-        
-        .print-table th, .print-table td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        
-        .print-table th {
-            background-color: #f2f2f2;
-            font-weight: bold;
-        }
-        
-        .print-header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        
-        .print-period {
-            text-align: center;
-            margin-bottom: 15px;
-            font-weight: bold;
-        }
-        
-        .print-summary {
-            margin-top: 20px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            background-color: #f9f9f9;
         }
     </style>
 </head>
@@ -767,7 +719,6 @@
                 <button type="submit" class="btn btn-primary">
                     <span class="icon">💾</span>Save Transaction
                 </button>
-            </form>
         </div>
         
         <div class="search-container no-print">

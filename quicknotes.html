@@ -16,26 +16,30 @@
             background: linear-gradient(135deg, #0a192f 0%, #0d1b2a 100%);
             color: #e0e0e0;
             line-height: 1.6;
-            padding: 20px;
+            padding: 5px; /* Reduced from 20px */
             min-height: 100vh;
         }
         
         .container {
-            max-width: 1200px;
+            width: 100%;
+            height: calc(100vh - 10px); /* Full height minus minimal margins */
             margin: 0 auto;
             background-color: rgba(13, 27, 42, 0.7);
             border-radius: 15px;
             box-shadow: 0 0 20px rgba(0, 150, 255, 0.2);
-            padding: 30px;
+            padding: 20px; /* Slightly reduced padding */
             backdrop-filter: blur(10px);
             border: 1px solid rgba(100, 150, 255, 0.1);
+            display: flex;
+            flex-direction: column;
         }
         
         header {
             text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
+            margin-bottom: 20px; /* Reduced from 30px */
+            padding-bottom: 15px; /* Reduced from 20px */
             border-bottom: 1px solid rgba(100, 150, 255, 0.3);
+            flex-shrink: 0;
         }
         
         h1 {
@@ -52,14 +56,15 @@
         }
         
         .input-area {
-            margin-bottom: 30px;
+            margin-bottom: 20px; /* Reduced from 30px */
             position: relative;
+            flex-shrink: 0;
         }
         
         #note-input {
             width: 100%;
-            min-height: 150px;
-            padding: 20px;
+            min-height: 120px; /* Slightly reduced */
+            padding: 15px; /* Reduced from 20px */
             background-color: rgba(20, 30, 48, 0.8);
             border: 2px solid rgba(100, 150, 255, 0.3);
             border-radius: 10px;
@@ -91,17 +96,18 @@
         
         .notes-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            max-height: 500px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Slightly smaller min-width */
+            gap: 15px; /* Reduced from 20px */
             overflow-y: auto;
             padding: 10px;
+            flex-grow: 1; /* Take remaining space */
+            max-height: none; /* Remove fixed max-height */
         }
         
         .note-card {
             background: linear-gradient(145deg, rgba(20, 30, 48, 0.9) 0%, rgba(13, 27, 42, 0.9) 100%);
             border-radius: 10px;
-            padding: 20px;
+            padding: 15px; /* Reduced from 20px */
             border: 1px solid rgba(100, 150, 255, 0.2);
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
@@ -123,7 +129,7 @@
         .note-text {
             word-break: break-word;
             white-space: pre-wrap;
-            margin-bottom: 15px;
+            margin-bottom: 10px; /* Reduced from 15px */
             line-height: 1.5;
         }
         
@@ -131,8 +137,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 15px;
-            padding-top: 10px;
+            margin-top: 10px; /* Reduced from 15px */
+            padding-top: 8px; /* Reduced from 10px */
             border-top: 1px solid rgba(100, 150, 255, 0.2);
         }
         
@@ -175,8 +181,9 @@
             display: flex;
             justify-content: center;
             gap: 15px;
-            margin: 20px 0;
+            margin: 15px 0; /* Reduced from 20px */
             flex-wrap: wrap;
+            flex-shrink: 0;
         }
         
         .backup-btn {
@@ -215,11 +222,12 @@
         
         footer {
             text-align: center;
-            margin-top: 30px;
+            margin-top: 15px; /* Reduced from 30px */
             color: #90a4ae;
             font-size: 0.9rem;
-            padding-top: 20px;
+            padding-top: 15px; /* Reduced from 20px */
             border-top: 1px solid rgba(100, 150, 255, 0.3);
+            flex-shrink: 0;
         }
         
         @keyframes fadeIn {
@@ -260,8 +268,13 @@
         }
         
         @media (max-width: 768px) {
+            body {
+                padding: 3px; /* Further reduced for mobile */
+            }
+            
             .container {
-                padding: 20px;
+                padding: 15px; /* Reduced from 20px */
+                height: calc(100vh - 6px); /* Adjusted for smaller margins */
             }
             
             h1 {
@@ -273,7 +286,7 @@
             }
             
             .note-card {
-                padding: 15px;
+                padding: 12px; /* Reduced from 15px */
             }
             
             .backup-controls {
@@ -289,11 +302,12 @@
         
         @media (max-width: 480px) {
             body {
-                padding: 10px;
+                padding: 2px; /* Minimal margin on very small screens */
             }
             
             .container {
-                padding: 15px;
+                padding: 10px; /* Reduced from 15px */
+                height: calc(100vh - 4px); /* Adjusted for minimal margins */
             }
             
             h1 {
@@ -302,6 +316,11 @@
             
             .subtitle {
                 font-size: 0.9rem;
+            }
+            
+            #note-input {
+                min-height: 100px; /* Further reduced for mobile */
+                padding: 10px; /* Reduced from 15px */
             }
         }
     </style>
@@ -312,7 +331,7 @@
     <div class="container">
         <header>
             <h1>Quick Notes</h1>
-            <p class="subtitle">Saves notes automatically after 5 seconds of inactivity</p>
+            <p class="subtitle">Saves notes automatically after 3 seconds of inactivity</p>
         </header>
         
         <div class="input-area">
@@ -366,7 +385,7 @@
                     saveNote();
                     isTyping = false;
                 }
-            }, 5000); // Save after 5 seconds of inactivity
+            }, 3000); // Save after 3 seconds of inactivity
         });
         
         // Show saving indicator when user starts typing

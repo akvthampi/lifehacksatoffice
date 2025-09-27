@@ -171,6 +171,48 @@
             opacity: 0.7;
         }
         
+        .backup-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .backup-btn {
+            background: rgba(100, 181, 246, 0.2);
+            border: 1px solid rgba(100, 181, 246, 0.5);
+            color: #64b5f6;
+            cursor: pointer;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .backup-btn:hover {
+            background: rgba(100, 181, 246, 0.4);
+            box-shadow: 0 0 8px rgba(100, 181, 246, 0.5);
+        }
+        
+        .backup-btn.upload {
+            background: rgba(129, 199, 132, 0.2);
+            border: 1px solid rgba(129, 199, 132, 0.5);
+            color: #81c784;
+        }
+        
+        .backup-btn.upload:hover {
+            background: rgba(129, 199, 132, 0.4);
+            box-shadow: 0 0 8px rgba(129, 199, 132, 0.5);
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
         footer {
             text-align: center;
             margin-top: 30px;
@@ -191,6 +233,32 @@
             100% { box-shadow: 0 0 0 0 rgba(100, 181, 246, 0); }
         }
         
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background: rgba(20, 30, 48, 0.9);
+            border: 1px solid rgba(100, 181, 246, 0.5);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            color: #64b5f6;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+            max-width: 300px;
+            display: none;
+        }
+        
+        .notification.error {
+            border-color: rgba(229, 57, 53, 0.5);
+            color: #e57373;
+        }
+        
+        .notification.success {
+            border-color: rgba(129, 199, 132, 0.5);
+            color: #81c784;
+        }
+        
         @media (max-width: 768px) {
             .container {
                 padding: 20px;
@@ -206,6 +274,16 @@
             
             .note-card {
                 padding: 15px;
+            }
+            
+            .backup-controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .backup-btn {
+                width: 100%;
+                justify-content: center;
             }
         }
         
@@ -229,6 +307,8 @@
     </style>
 </head>
 <body>
+    <div class="notification" id="notification"></div>
+    
     <div class="container">
         <header>
             <h1>Quick Notes</h1>
@@ -238,6 +318,16 @@
         <div class="input-area">
             <textarea id="note-input" placeholder="Start typing your note here..."></textarea>
             <div class="save-indicator" id="save-indicator">Saving...</div>
+        </div>
+        
+        <div class="backup-controls">
+            <button class="backup-btn" id="download-btn">
+                <span>📥</span> Download Notes
+            </button>
+            <button class="backup-btn upload" id="upload-btn">
+                <span>📤</span> Upload Notes
+            </button>
+            <input type="file" id="file-input" class="file-input" accept=".json">
         </div>
         
         <div class="notes-grid" id="notes-container">
@@ -254,6 +344,10 @@
         const noteInput = document.getElementById('note-input');
         const notesContainer = document.getElementById('notes-container');
         const saveIndicator = document.getElementById('save-indicator');
+        const downloadBtn = document.getElementById('download-btn');
+        const uploadBtn = document.getElementById('upload-btn');
+        const fileInput = document.getElementById('file-input');
+        const notification = document.getElementById('notification');
         
         // Load notes from local storage when page loads
         document.addEventListener('DOMContentLoaded', loadNotes);
@@ -281,6 +375,97 @@
                 saveIndicator.style.opacity = '1';
             }
         });
+        
+        // Download notes as JSON file
+        downloadBtn.addEventListener('click', function() {
+            const notes = JSON.parse(localStorage.getItem('quickNotes')) || [];
+            
+            if (notes.length === 0) {
+                showNotification('No notes to download', 'error');
+                return;
+            }
+            
+            const dataStr = JSON.stringify(notes, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `quick-notes-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            showNotification('Notes downloaded successfully', 'success');
+        });
+        
+        // Upload notes from JSON file
+        uploadBtn.addEventListener('click', function() {
+            fileInput.click();
+        });
+        
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const uploadedNotes = JSON.parse(e.target.result);
+                    
+                    // Validate the uploaded data structure
+                    if (!Array.isArray(uploadedNotes)) {
+                        throw new Error('Invalid file format');
+                    }
+                    
+                    // Check if each note has required properties
+                    for (const note of uploadedNotes) {
+                        if (!note.id || !note.text || !note.timestamp) {
+                            throw new Error('Invalid note structure');
+                        }
+                    }
+                    
+                    // Ask for confirmation before replacing existing notes
+                    const existingNotes = JSON.parse(localStorage.getItem('quickNotes')) || [];
+                    
+                    if (existingNotes.length > 0) {
+                        if (!confirm('This will replace your existing notes. Continue?')) {
+                            fileInput.value = '';
+                            return;
+                        }
+                    }
+                    
+                    // Save uploaded notes to local storage
+                    localStorage.setItem('quickNotes', JSON.stringify(uploadedNotes));
+                    
+                    // Refresh the display
+                    displayNotes();
+                    
+                    showNotification('Notes uploaded successfully', 'success');
+                } catch (error) {
+                    console.error('Error parsing uploaded file:', error);
+                    showNotification('Error: Invalid file format', 'error');
+                }
+                
+                // Reset file input
+                fileInput.value = '';
+            };
+            
+            reader.readAsText(file);
+        });
+        
+        // Show notification
+        function showNotification(message, type = 'info') {
+            notification.textContent = message;
+            notification.className = 'notification';
+            notification.classList.add(type);
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
         
         // Save note to local storage
         function saveNote() {

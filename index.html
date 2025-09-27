@@ -10,7 +10,7 @@
         html, body { 
             height: 100%; 
             width: 100%; 
-            background: #0d1f1c; 
+            background: #0d1525; 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             color: #e0e0e0; 
         }
@@ -32,6 +32,7 @@
             font-size: 2.2rem;
             padding-left: 18px;
             letter-spacing: 1px;
+            border-left: 4px solid #4d7cff;
         }
 
         .grid {
@@ -43,7 +44,7 @@
         }
 
         .tile {
-            background: #1a2d28;
+            background: #1a243d;
             border-radius: 16px;
             padding: 30px 25px 25px 25px;
             display: flex;
@@ -52,19 +53,19 @@
             position: relative;
             font-size: 1.1rem;
             font-weight: 500;
-            color: #d0e8d8;
+            color: #d0d8e8;
             text-decoration: none;
             transition: all 0.3s ease;
-            border: 1px solid #2a4038;
+            border: 1px solid #2a3450;
         }
 
         .tile:hover, .tile:focus {
             transform: translateY(-5px);
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
-            background: #20352f;
+            background: #202d4d;
             /* Neon glow effect */
-            box-shadow: 0 0 5px #4daa75, 0 0 10px #4daa75, 0 0 15px #4daa75, 0 0 20px #4daa75;
-            border-color: #4daa75;
+            box-shadow: 0 0 5px #4d7cff, 0 0 10px #4d7cff, 0 0 15px #4d7cff, 0 0 20px #4d7cff;
+            border-color: #4d7cff;
         }
 
         .tile:focus {
@@ -92,7 +93,7 @@
             width: 28px;
             height: 28px;
             background: rgba(255, 255, 255, 0.1);
-            color: #4daa75;
+            color: #4d7cff;
             font-size: 20px;
             font-weight: bold;
             border-radius: 50%;
@@ -105,13 +106,13 @@
         }
 
         .tile:hover .plus-circle, .tile:focus .plus-circle {
-            background: rgba(77, 170, 117, 0.2);
-            color: #6bc994;
+            background: rgba(77, 124, 255, 0.2);
+            color: #6b94ff;
         }
 
         .footer {
             text-align: right;
-            color: #5a7a6f;
+            color: #5a6a7f;
             padding: 10px 40px;
             margin-top: auto;
             font-size: 0.9rem;
@@ -129,7 +130,7 @@
                 text-align: center;
                 padding-left: 0;
                 border-left: none;
-                border-bottom: 3px solid #21a35d;
+                border-bottom: 3px solid #4d7cff;
                 padding-bottom: 10px;
                 margin-left: 20px;
                 margin-right: 20px;
@@ -204,6 +205,11 @@
                 <div class="tile-icon">🎯</div>
                 <div class="tile-text">Target Achievement Tracker</div>
             </a>
+            <!-- Thank You Message Card -->
+            <div class="tile" style="cursor: default;">
+                <div class="tile-icon">🌟</div>
+                <div class="tile-text">Thank you for using our tools! Wishing you a productive and successful day!</div>
+            </div>
         </div>
         <div class="footer">
             <small>by Anil Kumar VT</small>

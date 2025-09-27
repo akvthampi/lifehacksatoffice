@@ -58,10 +58,17 @@
             border: 1px solid #2a4038;
         }
 
-        .tile:hover {
+        .tile:hover, .tile:focus {
             transform: translateY(-5px);
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
             background: #20352f;
+            /* Neon glow effect */
+            box-shadow: 0 0 5px #4daa75, 0 0 10px #4daa75, 0 0 15px #4daa75, 0 0 20px #4daa75;
+            border-color: #4daa75;
+        }
+
+        .tile:focus {
+            outline: none;
         }
 
         .tile-icon {
@@ -97,7 +104,7 @@
             transition: all 0.2s ease;
         }
 
-        .tile:hover .plus-circle {
+        .tile:hover .plus-circle, .tile:focus .plus-circle {
             background: rgba(77, 170, 117, 0.2);
             color: #6bc994;
         }
@@ -184,6 +191,12 @@
                 <div class="plus-circle">+</div>
                 <div class="tile-icon">💰</div>
                 <div class="tile-text">Digital Cash Book</div>
+            </a>
+            <!-- Quick Notes App Card -->
+            <a href="quicknotes.html" target="_blank" class="tile" title="Quick Notes App">
+                <div class="plus-circle">+</div>
+                <div class="tile-icon">📝</div>
+                <div class="tile-text">Quick Notes App</div>
             </a>
         </div>
         <div class="footer">

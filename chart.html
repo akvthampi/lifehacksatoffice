@@ -3,636 +3,757 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Chart Generator</title>
+    <title>Infographic Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
         body {
-            background: linear-gradient(135deg, #f9faf9 0%, #f9faf9 100%);
-            color: #333;
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1600px;
-            margin: 0 auto;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            height: 100vh;
             overflow: hidden;
         }
-
-        header {
-            background: linear-gradient(to right, #0c3f96 30%, #0c3f96 70%);
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-        }
-
-        .subtitle {
-            font-size: 1.2rem;
-            opacity: 0.9;
-        }
-
-        .main-content {
-            display: flex;
-            flex-wrap: wrap;
-            padding: 20px;
-        }
-
-        .input-section {
-            flex: 1;
-            min-width: 600px;
-            padding: 20px;
-        }
-
-        .chart-section {
-            flex: 1;
-            min-width: 600px;
-            padding: 20px;
+        .infographic-card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            height: 100%;
             display: flex;
             flex-direction: column;
         }
-
-        .section-title {
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            color: #4a4a4a;
-            border-bottom: 2px solid #6a11cb;
-            padding-bottom: 10px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #4a4a4a;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: all 0.3s;
-        }
-
-        input:focus, select:focus {
-            border-color: #6a11cb;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.2);
-        }
-
-        .data-table-container {
-            overflow-x: auto;
-            margin-top: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            border-radius: 8px;
-            padding: 10px;
-            background: #f9f9f9;
-        }
-
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 500px;
-        }
-
-        .data-table th, .data-table td {
-            border: 1px solid #e1e1e1;
-            padding: 12px;
-            text-align: center;
-        }
-
-        .data-table th {
-            background: linear-gradient(to right, #0c3f96 30%, #0c3f96 70%);
-            color: white;
-            font-weight: 600;
-            position: relative;
-        }
-
-        .column-header {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .column-name {
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .data-table tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-
-        .data-table tr:hover {
-            background-color: #f1f1f1;
-        }
-
-        .data-table input {
-            border: none;
-            background: transparent;
-            text-align: center;
-            padding: 8px;
-            width: 100%;
-        }
-
-        .data-table input:focus {
-            outline: 2px solid #6a11cb;
-            border-radius: 4px;
-        }
-
-        .btn {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .btn-primary {
-            background: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: linear-gradient(to right, #2575fc 0%, #6a11cb 100%);
+        .infographic-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
-
-        .btn-secondary {
-            background: linear-gradient(to right, #2bc0e4 0%, #eaecc6 100%);
-            color: #333;
-            margin-left: 10px;
-        }
-
-        .btn-secondary:hover {
-            background: linear-gradient(to right, #eaecc6 0%, #2bc0e4 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .btn-sm {
-            padding: 6px 12px;
-            font-size: 14px;
-        }
-
-        .btn-danger {
-            background: linear-gradient(to right, #fc033d, #fd2802);
-            color: white;
-        }
-
-        .color-schemes {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .color-scheme {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: 3px solid transparent;
-        }
-
-        .color-scheme:hover {
-            transform: scale(1.1);
-        }
-
-        .color-scheme.active {
-            border-color: #333;
-            transform: scale(1.1);
-        }
-
         .chart-container {
-            flex: 1;
             position: relative;
-            margin: 20px 0;
-            min-height: 400px;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            flex-grow: 1;
+            min-height: 0; /* Important for flex children */
         }
-
-        .actions {
-            display: flex;
+        .input-container {
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            background-color: #ffffff;
+        }
+        .btn {
+            padding: 0.4rem 0.8rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: background-color 0.2s ease;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
             justify-content: center;
-            margin-top: 20px;
-            flex-wrap: wrap;
-            gap: 10px;
+            font-size: 0.8rem;
         }
-
-        .table-actions {
+        .btn-primary {
+            background-color: #3b82f6;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #2563eb;
+        }
+        .btn-secondary {
+            background-color: #f3f4f6;
+            color: #4b5563;
+            border: 1px solid #d1d5db;
+        }
+        .btn-secondary:hover {
+            background-color: #e5e7eb;
+        }
+        .btn-sm {
+            padding: 0.3rem 0.6rem;
+            font-size: 0.75rem;
+        }
+        #dataTable input {
+            padding: 0.3rem;
+            border-radius: 0.25rem;
+            border: 1px solid #d1d5db;
+            width: 100%;
+            font-size: 0.8rem;
+        }
+        .chart-header {
             display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
         }
-
-        footer {
-            text-align: center;
-            padding: 20px;
-            color: white;
-            background: linear-gradient(to right, #0c3f96 30%, #0c3f96 70%);
-            margin-top: 20px;
+        .chart-title-input {
+            border: none;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #1f2937;
+            background: transparent;
+            padding: 0.2rem;
+            border-radius: 0.25rem;
+            transition: background-color 0.2s;
+            flex-grow: 1;
         }
-
-        @media (max-width: 1200px) {
-            .main-content {
+        .chart-title-input:focus {
+            outline: none;
+            background-color: #f9fafb;
+        }
+        /* Specific styling for the bar chart title to maximize width */
+        #barChartTitle {
+            width: 100%;
+            max-width: none;
+        }
+        .chart-actions {
+            display: flex;
+            gap: 0.3rem;
+            flex-shrink: 0;
+        }
+        .chart-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .chart-modal-content {
+            background-color: white;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            max-width: 95%;
+            max-height: 95%;
+            position: relative;
+        }
+        .close-modal {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            cursor: pointer;
+            color: #6b7280;
+        }
+        .close-modal:hover {
+            color: #374151;
+        }
+        .modal-chart-container {
+            height: 80vh;
+            width: 80vw;
+        }
+        @media (max-width: 768px) {
+            .chart-header {
                 flex-direction: column;
+                align-items: flex-start;
             }
-            
-            .input-section, .chart-section {
-                min-width: 100%;
+            .chart-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+            .modal-chart-container {
+                width: 95vw;
+                height: 70vh;
             }
         }
-
-        /* ...existing code... */
-        .column-name-input {
-            color: white;
-             background: transparent;
-             font-weight: 600;
+        .data-input-section {
+            padding: 0.75rem !important;
         }
-        .column-name-input::placeholder {
-            color: #e0e0e0;
-            opacity: 1;
+        .data-input-section h2 {
+            font-size: 1.1rem !important;
+            margin-bottom: 0.5rem !important;
         }
-
+        .data-input-section p {
+            font-size: 0.8rem !important;
+            margin-bottom: 0.75rem !important;
+        }
+        .main-container {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 0.5rem;
+        }
+        .header-section {
+            padding: 0.5rem 0;
+            margin-bottom: 0.5rem;
+        }
+        .content-area {
+            flex-grow: 1;
+            display: flex;
+            gap: 0.5rem;
+            min-height: 0; /* Important for flex children */
+        }
+        .data-panel {
+            flex: 0 0 22%;
+            display: flex;
+            flex-direction: column;
+        }
+        .charts-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            min-height: 0; /* Important for flex children */
+        }
+        .charts-top {
+            flex: 1;
+            min-height: 0; /* Important for flex children */
+        }
+        .charts-bottom {
+            flex: 1;
+            display: flex;
+            gap: 0.5rem;
+            min-height: 0; /* Important for flex children */
+        }
+        .chart-bottom-item {
+            flex: 1;
+            min-height: 0; /* Important for flex children */
+        }
+        .scrollable-content {
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+        .data-table-container {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 0.75rem;
+        }
+        /* Special styling for bar chart header to maximize title space */
+        .bar-chart-header {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .bar-chart-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+        .bar-chart-actions {
+            display: flex;
+            gap: 0.3rem;
+            flex-shrink: 0;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Advanced Chart Generator</h1>
-            <p class="subtitle">Create beautiful, colorful charts with ease</p>
+    <div class="main-container">
+        <header class="header-section text-center">
+            <h1 class="text-2xl font-extrabold text-gray-900 mb-1">Interactive Infographic Generator</h1>
+            <p class="text-sm text-gray-600 max-w-2xl mx-auto">Enter your data and watch as beautiful infographics are created in real-time.</p>
         </header>
 
-        <div class="main-content">
-            <div class="input-section">
-                <h2 class="section-title">Data Input</h2>
-                
-                <div class="form-group">
-                    <label for="chart-title">Chart Title</label>
-                    <input type="text" id="chart-title" placeholder="e.g., Annual Revenue, Monthly Sales" value="Sales Performance">
+        <div class="content-area">
+            <!-- Data Input Panel -->
+            <section class="data-panel rounded-xl bg-white shadow flex flex-col">
+                <div class="p-3 border-b">
+                    <h2 class="font-bold text-gray-800">Data Input</h2>
+                    <p class="text-gray-500 text-xs">Enter your data in the rows below.</p>
                 </div>
-                
-                <div class="form-group">
-                    <label>Data Table</label>
-                    
-                    <div class="table-actions">
-                        <button id="add-row" class="btn btn-primary btn-sm">Add Row</button>
-                        <button id="add-column" class="btn btn-secondary btn-sm">Add Column</button>
+                <div class="p-3 flex-grow flex flex-col">
+                    <div class="grid grid-cols-2 gap-2 font-bold text-gray-700 text-xs mb-2">
+                        <div>Label</div>
+                        <div>Value</div>
                     </div>
-                    
                     <div class="data-table-container">
-                        <table class="data-table">
-                            <thead>
-                                <tr id="table-header">
-                                    <th>Label</th>
-                                    <th>
-                                        <div class="column-header">
-                                            <input type="text" class="column-name-input" value="Q1" placeholder="Column Name">
-                                            <button class="btn btn-danger btn-sm remove-column">×</button>
-                                        </div>
-                                    </th>
-                                    <th>
-                                        <div class="column-header">
-                                            <input type="text" class="column-name-input" value="Q2" placeholder="Column Name">
-                                            <button class="btn btn-danger btn-sm remove-column">×</button>
-                                        </div>
-                                    </th>
-                                    <th>
-                                        <div class="column-header">
-                                            <input type="text" class="column-name-input" value="Q3" placeholder="Column Name">
-                                            <button class="btn btn-danger btn-sm remove-column">×</button>
-                                        </div>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody id="data-body">
-                                <tr>
-                                    <td><input type="text" class="label-input" value="Potatoes"></td>
-                                    <td><input type="number" class="value-input" value="1200"></td>
-                                    <td><input type="number" class="value-input" value="1500"></td>
-                                    <td><input type="number" class="value-input" value="1800"></td>
-                                </tr>
-                                <tr>
-                                    <td><input type="text" class="label-input" value="Onions"></td>
-                                    <td><input type="number" class="value-input" value="800"></td>
-                                    <td><input type="number" class="value-input" value="950"></td>
-                                    <td><input type="number" class="value-input" value="1100"></td>
-                                </tr>
-                                <tr>
-                                    <td><input type="text" class="label-input" value="Tomatoes"></td>
-                                    <td><input type="number" class="value-input" value="2000"></td>
-                                    <td><input type="number" class="value-input" value="2100"></td>
-                                    <td><input type="number" class="value-input" value="1900"></td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <div id="dataTable" class="space-y-1">
+                            <!-- Initial data rows will be injected here by JS -->
+                        </div>
+                    </div>
+                    <div class="mt-auto pt-2 flex justify-end space-x-2">
+                        <button id="addRowBtn" class="btn btn-secondary">Add Row</button>
+                        <button id="generateChartsBtn" class="btn btn-primary">Generate</button>
                     </div>
                 </div>
-                
-                <div class="form-group">
-                    <label for="chart-type">Chart Type</label>
-                    <select id="chart-type">
-                        <option value="bar">Bar Chart</option>
-                        <option value="line">Line Chart</option>
-                        <option value="pie">Pie Chart</option>
-                        <option value="doughnut">Doughnut Chart</option>
-                        <option value="polarArea">Polar Area Chart</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label>Color Scheme</label>
-                    <div class="color-schemes">
-                        <div class="color-scheme active" style="background: linear-gradient(45deg, #f50639, #0396f8, #f3af04, #027575);" data-scheme="vibrant"></div>
-                        <div class="color-scheme" style="background: linear-gradient(45deg, #4bc0c0, #9966ff, #ff9f40, #ffcd56);" data-scheme="pastel"></div>
-                        <div class="color-scheme" style="background: linear-gradient(45deg, #ff6384, #c9cbcf, #ff6384, #c9cbcf);" data-scheme="mono"></div>
-                        <div class="color-scheme" style="background: linear-gradient(45deg, #2bc0e4, #eaecc6, #2bc0e4, #eaecc6);" data-scheme="ocean"></div>
-                        <div class="color-scheme" style="background: linear-gradient(45deg, #8e2de2, #4a00e0, #8e2de2, #4a00e0);" data-scheme="purple"></div>
+            </section>
+
+            <!-- Charts Display Panel -->
+            <section class="charts-panel">
+                <!-- Top Chart (Bar Chart) -->
+                <div class="charts-top">
+                    <div class="infographic-card">
+                        <div class="bar-chart-header">
+                            <div class="bar-chart-title-row">
+                                <input type="text" class="chart-title-input" value="Data Comparison - Monthly Sales Performance Analysis" id="barChartTitle" placeholder="Enter chart title">
+                                <div class="bar-chart-actions">
+                                    <button class="btn btn-secondary btn-sm expand-chart" data-chart="barChart">Expand</button>
+                                    <button class="btn btn-primary btn-sm download-chart" data-chart="barChart">Download</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="barChart"></canvas>
+                        </div>
                     </div>
                 </div>
-                
-                <button id="generate-chart" class="btn btn-primary">Generate Chart</button>
-            </div>
-            
-            <div class="chart-section">
-                <h2 class="section-title">Chart Preview</h2>
-                <div class="chart-container">
-                    <canvas id="chart"></canvas>
+
+                <!-- Bottom Charts (Pie and Line) -->
+                <div class="charts-bottom">
+                    <div class="chart-bottom-item">
+                        <div class="infographic-card">
+                            <div class="chart-header">
+                                <input type="text" class="chart-title-input" value="Distribution" id="pieChartTitle">
+                                <div class="chart-actions">
+                                    <button class="btn btn-secondary btn-sm expand-chart" data-chart="pieChart">Expand</button>
+                                    <button class="btn btn-primary btn-sm download-chart" data-chart="pieChart">Download</button>
+                                </div>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="pieChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-bottom-item">
+                        <div class="infographic-card">
+                            <div class="chart-header">
+                                <input type="text" class="chart-title-input" value="Trends" id="lineChartTitle">
+                                <div class="chart-actions">
+                                    <button class="btn btn-secondary btn-sm expand-chart" data-chart="lineChart">Expand</button>
+                                    <button class="btn btn-primary btn-sm download-chart" data-chart="lineChart">Download</button>
+                                </div>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="lineChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                
-                <div class="actions">
-                    <button id="download-chart" class="btn btn-secondary">Download Chart</button>
-                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Modal for expanded chart view -->
+    <div id="chartModal" class="chart-modal">
+        <div class="chart-modal-content">
+            <button class="close-modal">&times;</button>
+            <h3 id="modalTitle" class="text-lg font-bold mb-2"></h3>
+            <div class="modal-chart-container">
+                <canvas id="modalChart"></canvas>
             </div>
         </div>
-        
-        <footer>
-            <p>© 2025 Advanced Chart Generator by Anil Kumar VT | Create beautiful data visualizations</p>
-        </footer>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize variables
-            let chart = null;
-            const colorSchemes = {
-                vibrant: ['#ff6384', '#36a2eb', '#ffce56', '#4bc0c0', '#9966ff', '#ff9f40', '#ffcd56', '#c9cbcf'],
-                pastel: ['#4bc0c0', '#9966ff', '#ff9f40', '#ffcd56', '#ff6384', '#36a2eb', '#ffce56', '#c9cbcf'],
-                mono: ['#ff6384', '#c9cbcf', '#ff6384', '#c9cbcf', '#ff6384', '#c9cbcf', '#ff6384', '#c9cbcf'],
-                ocean: ['#2bc0e4', '#eaecc6', '#2bc0e4', '#eaecc6', '#2bc0e4', '#eaecc6', '#2bc0e4', '#eaecc6'],
-                purple: ['#8e2de2', '#4a00e0', '#8e2de2', '#4a00e0', '#8e2de2', '#4a00e0', '#8e2de2', '#4a00e0']
-            };
-            let currentColorScheme = 'vibrant';
+        // Register the Chart.js Data Labels plugin globally
+        Chart.register(ChartDataLabels);
 
-            // Add row to the table
-            document.getElementById('add-row').addEventListener('click', function() {
-                const tbody = document.getElementById('data-body');
-                const newRow = document.createElement('tr');
-                
-                // Add label cell
-                newRow.innerHTML = '<td><input type="text" class="label-input" placeholder="Label"></td>';
-                
-                // Add value cells based on current column count
-                const columnCount = document.querySelectorAll('#table-header th').length - 1;
-                for (let i = 0; i < columnCount; i++) {
-                    newRow.innerHTML += '<td><input type="number" class="value-input" placeholder="Value"></td>';
-                }
-                
-                tbody.appendChild(newRow);
-            });
+        // Define a function to generate a random color
+        function getRandomColor(alpha = 1) {
+            const r = Math.floor(Math.random() * 255);
+            const g = Math.floor(Math.random() * 255);
+            const b = Math.floor(Math.random() * 255);
+            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        }
 
-            // Add column to the table
-            document.getElementById('add-column').addEventListener('click', function() {
-                const headerRow = document.getElementById('table-header');
-                const newHeaderCell = document.createElement('th');
-                
-                // Create column header with input and remove button
-                newHeaderCell.innerHTML = `
-                    <div class="column-header">
-                        <input type="text" class="column-name-input" value="Q${headerRow.children.length}" placeholder="Column Name">
-                        <button class="btn btn-danger btn-sm remove-column">×</button>
-                    </div>
-                `;
-                headerRow.appendChild(newHeaderCell);
-                
-                // Add value cells to each row
-                const rows = document.querySelectorAll('#data-body tr');
-                rows.forEach(row => {
-                    const newCell = document.createElement('td');
-                    newCell.innerHTML = '<input type="number" class="value-input" placeholder="Value">';
-                    row.appendChild(newCell);
-                });
-                
-                // Add event listener to the new remove button
-                newHeaderCell.querySelector('.remove-column').addEventListener('click', function() {
-                    removeColumn(headerRow.children.length - 1);
-                });
-            });
+        // Get the DOM elements
+        const dataTable = document.getElementById('dataTable');
+        const addRowBtn = document.getElementById('addRowBtn');
+        const generateChartsBtn = document.getElementById('generateChartsBtn');
+        const chartModal = document.getElementById('chartModal');
+        const modalChartCanvas = document.getElementById('modalChart');
+        const modalTitle = document.getElementById('modalTitle');
+        const closeModalBtn = document.querySelector('.close-modal');
 
-            // Remove column function
-            function removeColumn(columnIndex) {
-                // Don't remove the label column
-                if (columnIndex === 0) return;
-                
-                // Remove header cell
-                const headerRow = document.getElementById('table-header');
-                if (headerRow.children.length <= 2) {
-                    alert("You must have at least one value column.");
-                    return;
-                }
-                headerRow.removeChild(headerRow.children[columnIndex]);
-                
-                // Remove data cells from each row
-                const rows = document.querySelectorAll('#data-body tr');
-                rows.forEach(row => {
-                    row.removeChild(row.children[columnIndex]);
-                });
+        // Initial data for the charts
+        const initialData = {
+            'Jan': 500,
+            'Feb': 750,
+            'Mar': 600,
+            'Apr': 950,
+            'May': 800,
+        };
+
+        // Function to create a new input row
+        function createDataRow(label = '', value = '') {
+            const row = document.createElement('div');
+            row.className = 'grid grid-cols-2 gap-2';
+            row.innerHTML = `
+                <input type="text" value="${label}" placeholder="Label" class="label-input p-1 rounded border-gray-300 text-xs">
+                <input type="number" value="${value}" placeholder="Value" class="value-input p-1 rounded border-gray-300 text-xs">
+            `;
+            dataTable.appendChild(row);
+        }
+
+        // Function to initialize the charts
+        let barChart, pieChart, lineChart, modalChart;
+
+        function initializeCharts() {
+            // Initial data to populate the form
+            for (const [label, value] of Object.entries(initialData)) {
+                createDataRow(label, value);
             }
 
-            // Add event listeners to existing remove buttons
-            document.querySelectorAll('.remove-column').forEach(button => {
-                button.addEventListener('click', function() {
-                    const headerCell = this.closest('th');
-                    const columnIndex = Array.from(headerCell.parentNode.children).indexOf(headerCell);
-                    removeColumn(columnIndex);
-                });
-            });
+            // Get all data from the input fields
+            const data = getDataFromInputs();
 
-            // Color scheme selection
-            document.querySelectorAll('.color-scheme').forEach(scheme => {
-                scheme.addEventListener('click', function() {
-                    document.querySelectorAll('.color-scheme').forEach(s => s.classList.remove('active'));
-                    this.classList.add('active');
-                    currentColorScheme = this.getAttribute('data-scheme');
-                });
-            });
+            // Create charts with initial data
+            const barChartCanvas = document.getElementById('barChart');
+            const pieChartCanvas = document.getElementById('pieChart');
+            const lineChartCanvas = document.getElementById('lineChart');
 
-            // Generate chart function
-            document.getElementById('generate-chart').addEventListener('click', function() {
-                // Get chart title
-                const chartTitle = document.getElementById('chart-title').value;
-                
-                // Get chart type
-                const chartType = document.getElementById('chart-type').value;
-                
-                // Get data from table
-                const labels = [];
-                const datasets = [];
-                
-                // Get column names
-                const columnNames = [];
-                document.querySelectorAll('#table-header .column-name-input').forEach(input => {
-                    columnNames.push(input.value || `Value Set ${columnNames.length + 1}`);
-                });
-                
-                const rows = document.querySelectorAll('#data-body tr');
-                const valueCount = document.querySelectorAll('#table-header th').length - 1;
-                
-                // Initialize datasets array
-                for (let i = 0; i < valueCount; i++) {
-                    // Use modulo to cycle through colors if there are more datasets than colors
-                    const colorIndex = i % colorSchemes[currentColorScheme].length;
-                    
-                    datasets.push({
-                        label: columnNames[i] || `Value Set ${i+1}`,
-                        data: [],
-                        backgroundColor: colorSchemes[currentColorScheme][colorIndex],
-                        borderColor: colorSchemes[currentColorScheme][colorIndex],
-                        borderWidth: 2
-                    });
-                }
-                
-                // Extract data from table
-                rows.forEach(row => {
-                    const labelInput = row.querySelector('.label-input');
-                    const valueInputs = row.querySelectorAll('.value-input');
-                    
-                    if (labelInput.value) {
-                        labels.push(labelInput.value);
-                        
-                        valueInputs.forEach((input, index) => {
-                            if (index < datasets.length) {
-                                datasets[index].data.push(parseFloat(input.value) || 0);
-                            }
-                        });
-                    }
-                });
-                
-                // Destroy previous chart if exists
-                if (chart) {
-                    chart.destroy();
-                }
-                
-                // Create new chart
-                const ctx = document.getElementById('chart').getContext('2d');
-                chart = new Chart(ctx, {
-                    type: chartType,
+            if (barChartCanvas && pieChartCanvas && lineChartCanvas) {
+                const labels = data.labels;
+                const values = data.values;
+                const backgroundColors = labels.map(() => getRandomColor(0.8));
+                const borderColors = labels.map(() => getRandomColor(1));
+
+                // Bar Chart
+                barChart = new Chart(barChartCanvas, {
+                    type: 'bar',
                     data: {
                         labels: labels,
-                        datasets: datasets
+                        datasets: [{
+                            label: 'Values',
+                            data: values,
+                            backgroundColor: backgroundColors,
+                            borderColor: borderColors,
+                            borderWidth: 1,
+                            borderRadius: 4,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    font: {
+                                        size: 10
+                                    }
+                                }
+                            },
+                            x: {
+                                ticks: {
+                                    font: {
+                                        size: 10
+                                    }
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: { 
+                                cornerRadius: 4, 
+                                padding: 8,
+                                titleFont: {
+                                    size: 10
+                                },
+                                bodyFont: {
+                                    size: 10
+                                }
+                            },
+                            datalabels: {
+                                anchor: 'end',
+                                align: 'top',
+                                color: '#4a5568',
+                                font: { weight: 'bold', size: 9 },
+                                formatter: (value) => value.toLocaleString(),
+                            }
+                        }
+                    }
+                });
+
+                // Pie Chart
+                pieChart = new Chart(pieChartCanvas, {
+                    type: 'pie',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Distribution',
+                            data: values,
+                            backgroundColor: backgroundColors,
+                            hoverOffset: 12,
+                        }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
                         plugins: {
-                            title: {
-                                display: true,
-                                text: chartTitle,
-                                font: {
-                                    size: 20
+                            legend: { 
+                                position: 'right', 
+                                labels: { 
+                                    padding: 10, 
+                                    font: { 
+                                        size: 9 
+                                    } 
+                                } 
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed !== null) {
+                                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                            const percentage = (context.parsed / total * 100).toFixed(1);
+                                            label += `${percentage}%`;
+                                        }
+                                        return label;
+                                    }
                                 },
-                                padding: {
-                                    top: 10,
-                                    bottom: 30
+                                titleFont: {
+                                    size: 10
+                                },
+                                bodyFont: {
+                                    size: 10
                                 }
                             },
-                            legend: {
-                                position: 'bottom',
-                                labels: {
-                                    padding: 20,
-                                    usePointStyle: true,
-                                    // Generate colors for each legend item
-                                    generateLabels: function(chart) {
-                                        const datasets = chart.data.datasets;
-                                        return datasets.map((dataset, i) => {
-                                            return {
-                                                text: dataset.label,
-                                                fillStyle: dataset.backgroundColor,
-                                                strokeStyle: dataset.borderColor,
-                                                lineWidth: 2,
-                                                hidden: !chart.isDatasetVisible(i),
-                                                index: i
-                                            };
-                                        });
+                            datalabels: {
+                                color: '#fff',
+                                formatter: (value, context) => {
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = (value / total * 100);
+                                    return percentage > 5 ? `${percentage.toFixed(1)}%` : '';
+                                },
+                                font: { weight: 'bold', size: 9 },
+                            }
+                        }
+                    }
+                });
+
+                // Line Chart
+                lineChart = new Chart(lineChartCanvas, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Performance',
+                            data: values,
+                            borderColor: getRandomColor(1),
+                            backgroundColor: 'rgba(0, 0, 0, 0)',
+                            borderWidth: 2,
+                            fill: false,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    font: {
+                                        size: 10
+                                    }
+                                }
+                            },
+                            x: {
+                                ticks: {
+                                    font: {
+                                        size: 10
                                     }
                                 }
                             }
                         },
-                        // Fix for bar chart label alignment
-                        scales: chartType === 'bar' || chartType === 'line' ? {
-                            x: {
-                                ticks: {
-                                    maxRotation: 0,
-                                    minRotation: 0,
-                                    padding: 10,
-                                    autoSkip: false
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: { 
+                                cornerRadius: 4, 
+                                padding: 8,
+                                titleFont: {
+                                    size: 10
                                 },
-                                grid: {
-                                    display: false
+                                bodyFont: {
+                                    size: 10
                                 }
                             },
-                            y: {
-                                beginAtZero: true,
-                                grid: {
-                                    color: 'rgba(0, 0, 0, 0.1)'
-                                }
+                            datalabels: {
+                                display: true,
+                                color: '#4a5568',
+                                align: 'end',
+                                anchor: 'end',
+                                font: { weight: 'bold', size: 9 }
                             }
-                        } : {}
+                        }
                     }
                 });
-            });
-            
-            // Download chart function
-            document.getElementById('download-chart').addEventListener('click', function() {
-                if (chart) {
-                    const link = document.createElement('a');
-                    link.download = `${document.getElementById('chart-title').value || 'chart'}.png`;
-                    link.href = document.getElementById('chart').toDataURL('image/png');
-                    link.click();
+            }
+        }
+
+        // Function to get data from input fields
+        function getDataFromInputs() {
+            const labelInputs = document.querySelectorAll('.label-input');
+            const valueInputs = document.querySelectorAll('.value-input');
+            const labels = [];
+            const values = [];
+
+            for (let i = 0; i < labelInputs.length; i++) {
+                const label = labelInputs[i].value.trim();
+                const value = parseFloat(valueInputs[i].value);
+                if (label && !isNaN(value)) {
+                    labels.push(label);
+                    values.push(value);
                 }
+            }
+            return { labels, values };
+        }
+
+        // Function to update all charts
+        function updateCharts() {
+            const { labels, values } = getDataFromInputs();
+            const backgroundColors = labels.map(() => getRandomColor(0.8));
+            const borderColors = labels.map(() => getRandomColor(1));
+
+            // Update Bar Chart
+            barChart.data.labels = labels;
+            barChart.data.datasets[0].data = values;
+            barChart.data.datasets[0].backgroundColor = backgroundColors;
+            barChart.data.datasets[0].borderColor = borderColors;
+            barChart.update();
+
+            // Update Pie Chart
+            pieChart.data.labels = labels;
+            pieChart.data.datasets[0].data = values;
+            pieChart.data.datasets[0].backgroundColor = backgroundColors;
+            pieChart.update();
+
+            // Update Line Chart
+            lineChart.data.labels = labels;
+            lineChart.data.datasets[0].data = values;
+            lineChart.data.datasets[0].borderColor = getRandomColor(1);
+            lineChart.update();
+        }
+
+        // Function to download chart as image with title
+        function downloadChart(chartId) {
+            const chart = getChartById(chartId);
+            if (chart) {
+                // Get the title for the chart
+                const titleInput = document.getElementById(`${chartId}Title`);
+                const title = titleInput.value;
+                
+                // Create a temporary canvas for the chart with title
+                const tempCanvas = document.createElement('canvas');
+                const tempCtx = tempCanvas.getContext('2d');
+                
+                // Set the dimensions for the temporary canvas
+                const width = chart.canvas.width;
+                const height = chart.canvas.height + 40; // Extra space for title
+                tempCanvas.width = width;
+                tempCanvas.height = height;
+                
+                // Fill with white background
+                tempCtx.fillStyle = 'white';
+                tempCtx.fillRect(0, 0, width, height);
+                
+                // Add the title
+                tempCtx.fillStyle = '#1f2937';
+                tempCtx.font = 'bold 18px Inter';
+                tempCtx.textAlign = 'center';
+                tempCtx.fillText(title, width / 2, 25);
+                
+                // Draw the chart below the title
+                tempCtx.drawImage(chart.canvas, 0, 40);
+                
+                // Create download link
+                const link = document.createElement('a');
+                link.download = `${title.replace(/\s+/g, '_')}.png`;
+                link.href = tempCanvas.toDataURL('image/png');
+                link.click();
+            }
+        }
+
+        // Function to expand chart in modal
+        function expandChart(chartId) {
+            const chart = getChartById(chartId);
+            if (chart) {
+                // Get the title for the modal
+                const titleInput = document.getElementById(`${chartId}Title`);
+                modalTitle.textContent = titleInput.value;
+                
+                // Create a new chart in the modal with the same data
+                if (modalChart) modalChart.destroy();
+                
+                modalChart = new Chart(modalChartCanvas, {
+                    type: chart.config.type,
+                    data: JSON.parse(JSON.stringify(chart.data)), // Deep clone the data
+                    options: {
+                        ...chart.options,
+                        maintainAspectRatio: true,
+                        responsive: true,
+                        plugins: {
+                            ...chart.options.plugins,
+                            title: {
+                                display: true,
+                                text: titleInput.value,
+                                font: { size: 16 }
+                            }
+                        }
+                    }
+                });
+                
+                // Show the modal
+                chartModal.style.display = 'flex';
+            }
+        }
+
+        // Helper function to get chart by ID
+        function getChartById(chartId) {
+            switch(chartId) {
+                case 'barChart': return barChart;
+                case 'pieChart': return pieChart;
+                case 'lineChart': return lineChart;
+                default: return null;
+            }
+        }
+
+        // Event listeners
+        addRowBtn.addEventListener('click', () => createDataRow());
+        generateChartsBtn.addEventListener('click', updateCharts);
+        
+        // Add event listeners for chart actions
+        document.querySelectorAll('.download-chart').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const chartId = e.target.getAttribute('data-chart');
+                downloadChart(chartId);
             });
-            
-            // Generate initial chart on page load
-            document.getElementById('generate-chart').click();
+        });
+        
+        document.querySelectorAll('.expand-chart').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const chartId = e.target.getAttribute('data-chart');
+                expandChart(chartId);
+            });
+        });
+        
+        // Close modal when clicking the close button
+        closeModalBtn.addEventListener('click', () => {
+            chartModal.style.display = 'none';
+            if (modalChart) modalChart.destroy();
+        });
+        
+        // Close modal when clicking outside the content
+        chartModal.addEventListener('click', (e) => {
+            if (e.target === chartModal) {
+                chartModal.style.display = 'none';
+                if (modalChart) modalChart.destroy();
+            }
+        });
+
+        // Initialize the app on page load
+        window.onload = initializeCharts;
+        
+        // Handle window resize to maintain chart proportions
+        window.addEventListener('resize', function() {
+            if (barChart) barChart.resize();
+            if (pieChart) pieChart.resize();
+            if (lineChart) lineChart.resize();
         });
     </script>
 </body>

@@ -212,12 +212,30 @@
             gap: 0.3rem;
             flex-shrink: 0;
         }
-        /* Fix for data table layout */
+        /* FIXED: Data table layout */
+        .data-table-header {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            font-weight: bold;
+            color: #374151;
+            font-size: 0.75rem;
+            margin-bottom: 0.5rem;
+            padding: 0 0.25rem;
+        }
         .data-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 0.5rem;
             margin-bottom: 0.5rem;
+            align-items: center;
+        }
+        .data-input {
+            padding: 0.3rem;
+            border-radius: 0.25rem;
+            border: 1px solid #d1d5db;
+            width: 100%;
+            font-size: 0.8rem;
         }
         .data-actions {
             display: flex;
@@ -245,7 +263,7 @@
                     <p class="text-gray-500 text-xs">Enter your data in the rows below.</p>
                 </div>
                 <div class="p-3 flex-grow flex flex-col">
-                    <div class="grid grid-cols-2 gap-2 font-bold text-gray-700 text-xs mb-2">
+                    <div class="data-table-header">
                         <div>Label</div>
                         <div>Value</div>
                     </div>
@@ -374,8 +392,8 @@
             const row = document.createElement('div');
             row.className = 'data-row';
             row.innerHTML = `
-                <input type="text" value="${label}" placeholder="Label" class="label-input p-1 rounded border-gray-300 text-xs">
-                <input type="number" value="${value}" placeholder="Value" class="value-input p-1 rounded border-gray-300 text-xs">
+                <input type="text" value="${label}" placeholder="Label" class="data-input label-input">
+                <input type="number" value="${value}" placeholder="Value" class="data-input value-input">
             `;
             dataTable.appendChild(row);
         }

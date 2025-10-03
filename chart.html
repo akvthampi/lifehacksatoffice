@@ -212,6 +212,22 @@
             gap: 0.3rem;
             flex-shrink: 0;
         }
+        /* Fix for data table layout */
+        .data-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .data-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: auto;
+            padding-top: 0.5rem;
+        }
+        .file-input {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -238,10 +254,17 @@
                             <!-- Initial data rows will be injected here by JS -->
                         </div>
                     </div>
-                    <div class="mt-auto pt-2 flex justify-end space-x-2">
-                        <button id="addRowBtn" class="btn btn-secondary">Add Row</button>
-                        <button id="generateChartsBtn" class="btn btn-primary">Generate</button>
+                    <div class="data-actions">
+                        <div class="flex gap-2">
+                            <button id="uploadDataBtn" class="btn btn-secondary">Upload Data</button>
+                            <button id="downloadDataBtn" class="btn btn-secondary">Download Data</button>
+                        </div>
+                        <div class="flex gap-2">
+                            <button id="addRowBtn" class="btn btn-secondary">Add Row</button>
+                            <button id="generateChartsBtn" class="btn btn-primary">Generate</button>
+                        </div>
                     </div>
+                    <input type="file" id="fileInput" class="file-input" accept=".json">
                 </div>
             </section>
 
@@ -330,6 +353,9 @@
         const chartModal = document.getElementById('chartModal');
         const modalTitle = document.getElementById('modalTitle');
         const closeModalBtn = document.querySelector('.close-modal');
+        const uploadDataBtn = document.getElementById('uploadDataBtn');
+        const downloadDataBtn = document.getElementById('downloadDataBtn');
+        const fileInput = document.getElementById('fileInput');
 
         // Initial data for the charts
         const initialData = {
@@ -346,7 +372,7 @@
         // Function to create a new input row
         function createDataRow(label = '', value = '') {
             const row = document.createElement('div');
-            row.className = 'grid grid-cols-2 gap-2';
+            row.className = 'data-row';
             row.innerHTML = `
                 <input type="text" value="${label}" placeholder="Label" class="label-input p-1 rounded border-gray-300 text-xs">
                 <input type="number" value="${value}" placeholder="Value" class="value-input p-1 rounded border-gray-300 text-xs">
@@ -668,6 +694,76 @@
             }
         }
 
+        // Function to download chart data as JSON
+        function downloadChartData() {
+            const data = getDataFromInputs();
+            const chartTitles = {
+                barChart: document.getElementById('barChartTitle').value,
+                pieChart: document.getElementById('pieChartTitle').value,
+                lineChart: document.getElementById('lineChartTitle').value
+            };
+            
+            const exportData = {
+                labels: data.labels,
+                values: data.values,
+                chartTitles: chartTitles
+            };
+            
+            const dataStr = JSON.stringify(exportData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const link = document.createElement('a');
+            link.download = 'chart_data.json';
+            link.href = URL.createObjectURL(dataBlob);
+            link.click();
+        }
+
+        // Function to upload chart data from JSON file
+        function uploadChartData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    // Clear existing rows
+                    dataTable.innerHTML = '';
+                    
+                    // Create new rows from uploaded data
+                    if (data.labels && data.values) {
+                        for (let i = 0; i < data.labels.length; i++) {
+                            createDataRow(data.labels[i], data.values[i]);
+                        }
+                    }
+                    
+                    // Update chart titles if available
+                    if (data.chartTitles) {
+                        if (data.chartTitles.barChart) {
+                            document.getElementById('barChartTitle').value = data.chartTitles.barChart;
+                        }
+                        if (data.chartTitles.pieChart) {
+                            document.getElementById('pieChartTitle').value = data.chartTitles.pieChart;
+                        }
+                        if (data.chartTitles.lineChart) {
+                            document.getElementById('lineChartTitle').value = data.chartTitles.lineChart;
+                        }
+                    }
+                    
+                    // Update charts with new data
+                    updateCharts();
+                    
+                    // Reset file input
+                    fileInput.value = '';
+                } catch (error) {
+                    alert('Error parsing JSON file. Please ensure it is a valid chart data file.');
+                    console.error('Error parsing JSON:', error);
+                }
+            };
+            reader.readAsText(file);
+        }
+
         // Helper function to get chart by ID
         function getChartById(chartId) {
             switch(chartId) {
@@ -683,6 +779,11 @@
             // Event listeners for static buttons
             addRowBtn.addEventListener('click', () => createDataRow());
             generateChartsBtn.addEventListener('click', updateCharts);
+            
+            // Event listeners for data export/import
+            downloadDataBtn.addEventListener('click', downloadChartData);
+            uploadDataBtn.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', uploadChartData);
             
             // Event listeners for chart actions
             document.querySelectorAll('.download-chart').forEach(button => {

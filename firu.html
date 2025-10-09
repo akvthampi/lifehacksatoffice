@@ -4,345 +4,49 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>File Index Record Utility</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    :root {
-      --primary-color: #2c3e50;
-      --secondary-color: #3498db;
-      --accent-color: #e74c3c;
-      --light-color: #ecf0f1;
-      --dark-color: #34495e;
-      --success-color: #2ecc71;
-      --warning-color: #f39c12;
-      --dpms-color: #e67e22;
-    }
-    
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    html, body {
+      margin: 0; padding: 0; box-sizing: border-box;
+      background: #10221f;
+      color: #06240d;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      height: 100vh; width: 100vw; overflow: hidden;
+      display: flex; flex-direction: column;
     }
-    
-    body {
-      background-color: #f5f7fa;
-      color: #333;
-      line-height: 1.6;
-      height: 100vh;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
+    h1, h2 { color: #e0e0e0; font-weight: 700; letter-spacing: 1px; margin: 0 0 16px 0; }
+    h1 { padding-left: 16px; border-left: 5px solid #1bb161; font-size: 2.2rem; color: #f0fff0; user-select: none; text-shadow: 0 2px 4px #1bb161aa;}
+    .tabs { display: flex; background: #123022; border-bottom: 2px solid #1bb161; user-select: none; }
+    .tab { padding: 14px 26px; color: #e0e0e0; font-weight: 600; cursor: pointer; border-top-left-radius: 12px; border-top-right-radius: 12px; transition: background 0.3s; }
+    .tab:hover { background: #1bb161; color: #022205; }
+    .tab.active { background: #1bb161; color: #022205; font-weight: 700; border-bottom: 2px solid #10221f; user-select: text; }
+    .tab-content { flex-grow: 1; background: #e8ffe6; color: #044814; border-radius: 0 24px 24px 24px; margin: 12px 16px 16px 16px; padding: 28px 40px; overflow-y: auto; font-size: 1rem; display: none; flex-direction: column; }
+    .tab-content.active { display: flex; }
+    label { font-weight: 600; color: #14622E; display: block; margin-bottom: 6px; }
+    input, textarea { padding: 8px 10px; border-radius: 12px; border: 1px solid #1bb161; font-size: 1rem; color: #375935; background: #d4f4ca; margin-bottom: 18px; box-sizing: border-box;}
+    textarea { resize: vertical; width: 100%; }
+    button { background: #1bb161; color: #06240d; border: none; border-radius: 12px; padding: 10px 18px; font-weight: 700; font-size: 1rem; margin: 8px 8px 16px 0; cursor: pointer; transition: background 0.3s; flex-shrink: 0; }
+    button:hover { background: #128c48; color: white; }
+    table { border-collapse: collapse; width: 100%; font-size: 0.95rem; color: #044814; margin-top: 20px; }
+    th, td { border: 1px solid #1bb161; padding: 8px 10px; text-align: center; }
+    th { background: #1bb161; color: #06240d; font-weight: 700; user-select: none; white-space: nowrap; }
+    .modify-btn, .delete-btn { background: #21a35d; color: #fff; border-radius: 8px; border: none; padding: 6px 12px; font-weight: 600; cursor: pointer; transition: background 0.3s; margin: 2px;}
+    .modify-btn:hover, .delete-btn:hover { background: #128c48; }
+    #msg { color: #21a35d; font-weight: 700; margin-top: 8px; min-height: 26px;}
+    .filter-controls { margin-bottom: 16px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;}
+    #printHeading { display:none; font-weight:700; font-size:18pt; margin-bottom:10px; text-align:center;}
+    .search-input { width: 100%; padding: 10px; border-radius: 12px; border: 1px solid #1bb161; font-size: 1rem; margin-bottom: 20px; }
+    @page { size: landscape; margin: 20mm 12mm 20mm 12mm; }
+    @media print {
+      body, html { height: auto; width: auto; background: white; color: black; overflow: visible; }
+      .tabs, #msg, button, input[type=file], .download-upload, .tab-content:not(.report-tab), h1, h2 { display: none !important; }
+      .tab-content.report-tab { display: block !important; border-radius: 0; margin: 0; padding: 0; overflow: visible; font-size: 12pt; }
+      #printHeading { display: block !important; }
+      table { font-size: 12pt; width: 100%; border: 1px solid black; }
+      th, td { border: 1px solid black; padding: 6px 8px; color: black; }
+      tr { page-break-inside: avoid; }
     }
-    
-    .container {
-      width: 95%;
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 5px;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-    
-    header {
-      background: linear-gradient(135deg, var(--primary-color), var(--dark-color));
-      color: white;
-      padding: 20px 0;
-      text-align: center;
-      border-radius: 8px 8px 0 0;
-      margin-bottom: 20px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-    
-    h1 {
-      font-size: 2.5rem;
-      margin-bottom: 10px;
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-    
-    .highlight {
-      color: var(--dpms-color);
-      font-weight: bold;
-      text-shadow: 0 0 5px rgba(230, 126, 34, 0.5);
-      margin: 0 2px;
-    }
-    
-    .app-description {
-      font-size: 1rem;
-      opacity: 0.9;
-      max-width: 800px;
-      margin: 0 auto;
-    }
-    
-    .tabs {
-      display: flex;
-      background-color: var(--light-color);
-      border-radius: 8px;
-      overflow: hidden;
-      margin-bottom: 20px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
-    
-    .tab-button {
-      flex: 1;
-      padding: 15px;
-      text-align: center;
-      background: none;
-      border: none;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-    
-    .tab-button.active {
-      background-color: var(--secondary-color);
-      color: white;
-    }
-    
-    .tab-button:hover:not(.active) {
-      background-color: #d6dbdf;
-    }
-    
-    .tab-content {
-      display: none;
-      padding: 20px;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      margin-bottom: 20px;
-      flex: 1;
-      overflow-y: auto;
-    }
-    
-    .tab-content.active {
-      display: flex;
-      flex-direction: column;
-    }
-    
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-    
-    .form-group {
-      margin-bottom: 12px;
-    }
-    
-    label {
-      display: block;
-      margin-bottom: 6px;
-      font-weight: 600;
-      color: var(--dark-color);
-      font-size: 0.9rem;
-    }
-    
-    input, select, textarea {
-      width: 100%;
-      padding: 7px;
-      border: 2px solid #ddd;
-      border-radius: 4px;
-      font-size: 0.95rem;
-      transition: border 0.3s ease;
-    }
-    
-    input:focus, select:focus, textarea:focus {
-      border-color: var(--secondary-color);
-      outline: none;
-      box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
-    }
-    
-    button {
-      padding: 12px 20px;
-      background-color: var(--secondary-color);
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 1rem;
-      font-weight: 600;
-      transition: background-color 0.3s ease;
-    }
-    
-    button:hover {
-      background-color: #2980b9;
-    }
-    
-    .btn-danger {
-      background-color: var(--accent-color);
-    }
-    
-    .btn-danger:hover {
-      background-color: #c0392b;
-    }
-    
-    .btn-success {
-      background-color: var(--success-color);
-    }
-    
-    .btn-success:hover {
-      background-color: #27ae60;
-    }
-    
-    .btn-warning {
-      background-color: var(--warning-color);
-    }
-    
-    .btn-warning:hover {
-      background-color: #e67e22;
-    }
-    
-    .action-buttons {
-      display: flex;
-      gap: 10px;
-      justify-content: flex-end;
-      margin-top: 20px;
-    }
-    
-    .table-container {
-      overflow-x: auto;
-      margin-bottom: 20px;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-    
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 1000px;
-    }
-    
-    th, td {
-      padding: 12px 15px;
-      text-align: left;
-      border-bottom: 1px solid #ddd;
-    }
-    
-    th {
-      background-color: var(--primary-color);
-      color: white;
-      position: sticky;
-      top: 0;
-    }
-    
-    tr:nth-child(even) {
-      background-color: #f8f9fa;
-    }
-    
-    tr:hover {
-      background-color: #e8f4fc;
-    }
-    
-    .actions-cell {
-      display: flex;
-      gap: 8px;
-    }
-    
-    .action-icon {
-      cursor: pointer;
-      padding: 8px;
-      border-radius: 4px;
-      transition: background-color 0.3s ease;
-    }
-    
-    .edit-icon {
-      color: var(--secondary-color);
-    }
-    
-    .edit-icon:hover {
-      background-color: rgba(52, 152, 219, 0.1);
-    }
-    
-    .delete-icon {
-      color: var(--accent-color);
-    }
-    
-    .delete-icon:hover {
-      background-color: rgba(231, 76, 60, 0.1);
-    }
-    
-    .file-icon {
-      color: var(--success-color);
-    }
-    
-    .file-icon:hover {
-      background-color: rgba(46, 204, 113, 0.1);
-    }
-    
-    .search-sort-container {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-      gap: 15px;
-    }
-    
-    .search-box {
-      flex: 1;
-      min-width: 300px;
-      position: relative;
-    }
-    
-    .search-box i {
-      position: absolute;
-      left: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #7f8c8d;
-    }
-    
-    .search-box input {
-      padding-left: 40px;
-    }
-    
-    .sort-options {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-    
-    .utility-buttons {
-      display: flex;
-      gap: 15px;
-      margin-bottom: 20px;
-    }
-    
-    .print-options {
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      margin-bottom: 20px;
-    }
-    
-    .notification {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      padding: 15px 20px;
-      border-radius: 6px;
-      color: white;
-      background-color: var(--success-color);
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      transform: translateX(100%);
-      transition: transform 0.3s ease;
-      z-index: 1000;
-    }
-    
-    .notification.show {
-      transform: translateX(0);
-    }
-    
-    .notification.error {
-      background-color: var(--accent-color);
-    }
-    
-    /* Form layout adjustments */
+  
+    /* Improved form layout */
     .form-container {
       display: flex;
       flex-direction: column;
@@ -353,6 +57,11 @@
       display: flex;
       gap: 20px;
       margin-bottom: 0;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
     }
 
     /* First row: 20% File Number, 20% Volume, 57% Subject */
@@ -379,6 +88,38 @@
       align-items: center;
     }
 
+    /* Form labels */
+    label {
+      font-weight: 600;
+      color: #14622E;
+      margin-bottom: 6px;
+      font-size: 0.9rem;
+    }
+
+    /* Form inputs */
+    input, textarea {
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid #1bb161;
+      font-size: 1rem;
+      color: #375935;
+      background: #d4f4ca;
+      box-sizing: border-box;
+      width: 100%;
+      transition: all 0.3s ease;
+    }
+
+    input:focus, textarea:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(27, 177, 97, 0.3);
+      background: #e8ffe6;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 38px;
+    }
+
     /* Validation styles */
     .error {
       color: #d32f2f;
@@ -403,7 +144,7 @@
     
     .pagination button {
       padding: 6px 12px;
-      background: var(--secondary-color);
+      background: #1bb161;
       color: white;
       border: none;
       border-radius: 4px;
@@ -411,120 +152,17 @@
     }
     
     .pagination button.active {
-      background: #2980b9;
+      background: #128c48;
       font-weight: bold;
     }
     
     .pagination button:hover:not(.active) {
-      background: #3498db;
+      background: #21a35d;
     }
     
     .pagination button:disabled {
       background: #cccccc;
       cursor: not-allowed;
-    }
-
-    /* Print styles - Enhanced for better printing */
-    .print-section {
-      display: none;
-    }
-    
-    @media print {
-      body, html {
-        height: auto;
-        width: auto;
-        background: white;
-        color: black;
-        overflow: visible;
-        font-family: Arial, sans-serif;
-        font-size: 12pt;
-        margin: 0;
-        padding: 0;
-      }
-      
-      .container, .print-section {
-        width: 100%;
-        margin: 0;
-        padding: 0;
-        box-shadow: none;
-        border-radius: 0;
-      }
-      
-      header, .tabs, #msg, button, input[type=file], 
-      .download-upload, .tab-content:not(.report-tab), 
-      .print-options, .notification, .pagination,
-      .search-sort-container, .utility-buttons {
-        display: none !important;
-      }
-      
-      .print-section {
-        display: block !important;
-        page-break-inside: avoid;
-      }
-      
-      .print-report-table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 10pt;
-        margin-top: 10px;
-        table-layout: fixed;
-      }
-      
-      .print-report-table th,
-      .print-report-table td {
-        border: 1px solid #000;
-        padding: 6px 8px;
-        text-align: left;
-        word-wrap: break-word;
-        page-break-inside: avoid;
-      }
-      
-      .print-report-table th {
-        background-color: #f0f0f0 !important;
-        color: #000 !important;
-        font-weight: bold;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-      }
-      
-      .print-report-table tr {
-        page-break-inside: avoid;
-        page-break-after: auto;
-      }
-      
-      .print-report-table td {
-        page-break-inside: avoid;
-      }
-      
-      .print-header {
-        text-align: center;
-        margin-bottom: 15px;
-        border-bottom: 2px solid #000;
-        padding-bottom: 10px;
-      }
-      
-      .print-header h2 {
-        font-size: 16pt;
-        margin-bottom: 5px;
-      }
-      
-      .print-header p {
-        font-size: 11pt;
-        margin: 3px 0;
-      }
-      
-      .print-footer {
-        margin-top: 20px;
-        text-align: right;
-        font-size: 10pt;
-        border-top: 1px solid #000;
-        padding-top: 10px;
-      }
-      
-      @page {
-        size: landscape;
-        margin: 15mm;
-      }
     }
 
     /* Responsive adjustments */
@@ -546,170 +184,93 @@
       .pagination {
         flex-wrap: wrap;
       }
-      
-      .utility-buttons {
-        flex-direction: column;
-      }
-      
-      .action-buttons {
-        flex-direction: column;
-      }
-    }
-    
-    @media (max-width: 768px) {
-      h1 {
-        font-size: 2rem;
-        flex-direction: column;
-      }
-      
-      .form-grid {
-        grid-template-columns: 1fr;
-      }
-      
-      .search-sort-container {
-        flex-direction: column;
-      }
-      
-      .search-box {
-        min-width: 100%;
-      }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>
-        <span class="highlight">D</span>igital 
-        <span class="highlight">F</span>ile 
-        <span class="highlight">I</span>ndex 
-        <span class="highlight">U</span>tility
-      </h1>
-      <p class="app-description">Manage file records with this comprehensive tool. Add, search, and generate reports with ease.</p>
-    </header>
-    
-    <div class="tabs">
-      <button class="tab-button active" data-tab="entry">Data Entry</button>
-      <button class="tab-button" data-tab="search">Search Files</button>
-      <button class="tab-button" data-tab="report">View/Print Reports</button>
-    </div>
+  <h1>File Index Record Utility</h1>
+  <div class="tabs">
+    <div class="tab active" data-tab="entry">Data Entry</div>
+    <div class="tab" data-tab="search">Search Files</div>
+    <div class="tab" data-tab="report">View/Print Reports</div>
+  </div>
 
-    <div id="entry" class="tab-content active">
-      <h2>Add New File Record</h2>
-      <form id="fileForm">
-        <div class="form-container">
-          <!-- First row: File Number, Volume Number, Subject -->
-          <div class="form-row row-1">
-            <div class="form-group">
-              <label for="fileNumber">File Number *</label>
-              <input type="text" id="fileNumber" required />
-              <div id="fileNumberError" class="error"></div>
-            </div>
-            <div class="form-group">
-              <label for="volumeNumber">Volume Number *</label>
-              <input type="text" id="volumeNumber" required />
-              <div id="volumeNumberError" class="error"></div>
-            </div>
-            <div class="form-group">
-              <label for="subject">Subject *</label>
-              <textarea id="subject" rows="1" required></textarea>
-              <div id="subjectError" class="error"></div>
-            </div>
+  <div id="entry" class="tab-content active">
+    <form id="fileForm">
+      <div class="form-container">
+        <!-- First row: File Number, Volume Number, Subject -->
+        <div class="form-row row-1">
+          <div class="form-group">
+            <label for="fileNumber">File Number *</label>
+            <input type="text" id="fileNumber" required />
+            <div id="fileNumberError" class="error"></div>
           </div>
-          
-          <!-- Second row: Dates and Location -->
-          <div class="form-row row-2">
-            <div class="form-group">
-              <label for="dateOpened">Date Opened *</label>
-              <input type="date" id="dateOpened" required />
-              <div id="dateOpenedError" class="error"></div>
-            </div>
-            <div class="form-group">
-              <label for="dateClosed">Date Closed</label>
-              <input type="date" id="dateClosed" />
-              <div id="dateClosedError" class="error"></div>
-            </div>
-            <div class="form-group">
-              <label for="dateDestruction">Date of Destruction</label>
-              <input type="date" id="dateDestruction" />
-              <div id="dateDestructionError" class="error"></div>
-            </div>
-            <div class="form-group">
-              <label for="storedLocation">Stored Location *</label>
-              <input type="text" id="storedLocation" required />
-              <div id="storedLocationError" class="error"></div>
-            </div>
+          <div class="form-group">
+            <label for="volumeNumber">Volume Number *</label>
+            <input type="text" id="volumeNumber" required />
+            <div id="volumeNumberError" class="error"></div>
           </div>
-          
-          <!-- Button row -->
-          <div class="button-row">
-            <button type="submit" class="btn-success">
-              <i class="fas fa-save"></i> Save Record
-            </button>
-            <button type="button" id="resetBtn" class="btn-warning">
-              <i class="fas fa-undo"></i> Reset Form
-            </button>
-            <div class="download-upload utility-buttons">
-              <button type="button" id="downloadBtn" class="btn-success">
-                <i class="fas fa-download"></i> Download Records (.json)
-              </button>
-              <input type="file" accept=".json" id="jsonUpload" style="display:none;"/>
-              <button type="button" id="uploadBtn" class="btn-warning">
-                <i class="fas fa-upload"></i> Load Records (.json)
-              </button>
-            </div>
+          <div class="form-group">
+            <label for="subject">Subject *</label>
+            <textarea id="subject" rows="1" required></textarea>
+            <div id="subjectError" class="error"></div>
           </div>
-          
-          <div id="msg" class="notification"></div>
         </div>
-      </form>
-    </div>
+        
+        <!-- Second row: Dates and Location -->
+        <div class="form-row row-2">
+          <div class="form-group">
+            <label for="dateOpened">Date Opened *</label>
+            <input type="date" id="dateOpened" required />
+            <div id="dateOpenedError" class="error"></div>
+          </div>
+          <div class="form-group">
+            <label for="dateClosed">Date Closed</label>
+            <input type="date" id="dateClosed" />
+            <div id="dateClosedError" class="error"></div>
+          </div>
+          <div class="form-group">
+            <label for="dateDestruction">Date of Destruction</label>
+            <input type="date" id="dateDestruction" />
+            <div id="dateDestructionError" class="error"></div>
+          </div>
+          <div class="form-group">
+            <label for="storedLocation">Stored Location *</label>
+            <input type="text" id="storedLocation" required />
+            <div id="storedLocationError" class="error"></div>
+          </div>
+        </div>
+        
+        <!-- Button row -->
+        <div class="button-row">
+          <button type="submit">Save Record</button>
+          <button type="button" id="resetBtn">Reset Form</button>
+          <div class="download-upload">
+            <button type="button" id="downloadBtn">Download Records (.json)</button>
+            <input type="file" accept=".json" id="jsonUpload" style="display:none;"/>
+            <button type="button" id="uploadBtn">Load Records (.json)</button>
+          </div>
+        </div>
+        
+        <div id="msg"></div>
+      </div>
+    </form>
+  </div>
 
-    <div id="search" class="tab-content">
-      <h2>Search Files</h2>
-      
-      <div class="search-sort-container">
-        <div class="search-box">
-          <i class="fas fa-search"></i>
-          <input type="text" id="searchInput" placeholder="Search by file number, subject, or location..." />
-        </div>
-      </div>
-      
-      <div class="table-container">
-        <div id="searchResults" style="overflow-y:auto; flex-grow:1;"></div>
-      </div>
-      
-      <div id="pagination" class="pagination"></div>
-    </div>
+  <div id="search" class="tab-content">
+    <h2>Search</h2>
+    <input type="text" id="searchInput" class="search-input" placeholder="Search by file number, subject, or location..." />
+    <div id="searchResults" style="overflow-y:auto; flex-grow:1;"></div>
+    <div id="pagination" class="pagination"></div>
+  </div>
 
-    <div id="report" class="tab-content report-tab">
-      <h2>Print File Index</h2>
-      
-      <div class="print-options">
-        <button id="printCurrentBtn" class="btn-success">
-          <i class="fas fa-print"></i> Print Current Files
-        </button>
-        <button id="printClosedBtn" class="btn-success">
-          <i class="fas fa-print"></i> Print Closed Files
-        </button>
-        <button id="printDestroyedBtn" class="btn-success">
-          <i class="fas fa-print"></i> Print Destroyed Files
-        </button>
-      </div>
-      
-      <!-- Print section that will be shown only during printing -->
-      <div id="printSection" class="print-section">
-        <div class="print-header">
-          <h2 id="printTitle">File Index Report</h2>
-          <p id="printSubtitle"></p>
-          <p>Generated on: <span id="printDate"></span></p>
-        </div>
-        <div id="printTable"></div>
-        <div class="print-footer">
-          <p>Total Records: <span id="printTotal"></span></p>
-        </div>
-      </div>
-    </div>
+  <div id="report" class="tab-content report-tab">
+    <h2>Print File Index</h2>
+    <button id="printCurrentBtn">Print Current Files</button>
+    <button id="printClosedBtn">Print Closed Files</button>
+    <button id="printDestroyedBtn">Print Destroyed Files</button>
+    <div id="printHeading"></div>
+    <div id="reportTable"></div>
   </div>
 
   <script>
@@ -723,16 +284,13 @@
     
     // DOM Elements
     const msgEl = document.getElementById('msg');
-    const tabs = document.querySelectorAll('.tab-button');
+    const tabs = document.querySelectorAll('.tab');
     const tabContents = document.querySelectorAll('.tab-content');
     const fileForm = document.getElementById('fileForm');
     const searchInput = document.getElementById('searchInput');
     const searchResults = document.getElementById('searchResults');
-    const printTable = document.getElementById('printTable');
-    const printTitle = document.getElementById('printTitle');
-    const printSubtitle = document.getElementById('printSubtitle');
-    const printDate = document.getElementById('printDate');
-    const printTotal = document.getElementById('printTotal');
+    const reportTable = document.getElementById('reportTable');
+    const printHeading = document.getElementById('printHeading');
     const paginationEl = document.getElementById('pagination');
     
     // Button references
@@ -928,12 +486,12 @@
         const index = records.findIndex(r => r.id === editRecordId);
         if (index !== -1) {
           records[index] = record;
-          showNotification('Record updated successfully!');
+          msgEl.textContent = 'Record updated successfully!';
         }
       } else {
         // Add new record
         records.push(record);
-        showNotification('Record saved successfully!');
+        msgEl.textContent = 'Record saved successfully!';
       }
       
       // Save to localStorage
@@ -941,6 +499,11 @@
       
       // Reset form
       resetForm();
+      
+      // Clear message after 3 seconds
+      setTimeout(() => {
+        msgEl.textContent = '';
+      }, 3000);
     });
 
     // Reset form
@@ -948,7 +511,7 @@
       fileForm.reset();
       editRecordId = null;
       clearAllErrors();
-      document.querySelector('button[type="submit"]').innerHTML = '<i class="fas fa-save"></i> Save Record';
+      document.querySelector('button[type="submit"]').textContent = 'Save Record';
     }
 
     // Reset button handler
@@ -1019,9 +582,9 @@
             <td>${record.dateClosed ? formatDateDMY(record.dateClosed) : '-'}</td>
             <td>${record.dateDestruction ? formatDateDMY(record.dateDestruction) : '-'}</td>
             <td>${record.storedLocation}</td>
-            <td class="actions-cell">
-              <i class="fas fa-edit action-icon edit-icon" data-id="${record.id}" title="Edit"></i>
-              <i class="fas fa-trash action-icon delete-icon" data-id="${record.id}" title="Delete"></i>
+            <td>
+              <button class="modify-btn" data-id="${record.id}">Edit</button>
+              <button class="delete-btn" data-id="${record.id}">Delete</button>
             </td>
           </tr>
         `;
@@ -1031,14 +594,14 @@
       searchResults.innerHTML = tableHTML;
       
       // Add event listeners to the buttons
-      document.querySelectorAll('.edit-icon').forEach(icon => {
-        icon.addEventListener('click', function() {
+      document.querySelectorAll('.modify-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
           editRecord(this.getAttribute('data-id'));
         });
       });
       
-      document.querySelectorAll('.delete-icon').forEach(icon => {
-        icon.addEventListener('click', function() {
+      document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
           deleteRecord(this.getAttribute('data-id'));
         });
       });
@@ -1107,11 +670,11 @@
       
       // Set edit mode
       editRecordId = id;
-      document.querySelector('button[type="submit"]').innerHTML = '<i class="fas fa-edit"></i> Update Record';
+      document.querySelector('button[type="submit"]').textContent = 'Update Record';
       
       // Switch to entry tab
       tabs.forEach(t => t.classList.remove('active'));
-      document.querySelector('.tab-button[data-tab="entry"]').classList.add('active');
+      document.querySelector('.tab[data-tab="entry"]').classList.add('active');
       
       tabContents.forEach(content => content.classList.remove('active'));
       document.getElementById('entry').classList.add('active');
@@ -1128,83 +691,69 @@
       performSearch();
       
       // Show confirmation message
-      showNotification('Record deleted successfully!');
+      msgEl.textContent = 'Record deleted successfully!';
+      setTimeout(() => {
+        msgEl.textContent = '';
+      }, 3000);
     }
     
     // Report generation
     function renderReport() {
-      // This function can be used to prepare the report view if needed
+      reportTable.innerHTML = '';
     }
     
-    // Print functionality - Enhanced with serial numbers
+    // Print functionality
     printCurrentBtn.addEventListener('click', () => {
-      const currentFiles = records.filter(r => !r.dateClosed && !r.dateDestruction);
-      generatePrintableTable(currentFiles, 'Current Files Report', 'All files that are currently active');
+      printHeading.textContent = 'Current Files Report';
+      generatePrintableTable(records.filter(r => !r.dateClosed && !r.dateDestruction));
+      window.print();
     });
     
     printClosedBtn.addEventListener('click', () => {
-      const closedFiles = records.filter(r => r.dateClosed && !r.dateDestruction);
-      generatePrintableTable(closedFiles, 'Closed Files Report', 'All files that have been closed');
+      printHeading.textContent = 'Closed Files Report';
+      generatePrintableTable(records.filter(r => r.dateClosed && !r.dateDestruction));
+      window.print();
     });
     
     printDestroyedBtn.addEventListener('click', () => {
-      const destroyedFiles = records.filter(r => r.dateDestruction);
-      generatePrintableTable(destroyedFiles, 'Destroyed Files Report', 'All files that have been destroyed');
+      printHeading.textContent = 'Destroyed Files Report';
+      generatePrintableTable(records.filter(r => r.dateDestruction));
+      window.print();
     });
     
-    function generatePrintableTable(data, title, subtitle) {
-      // Set print content
-      printTitle.textContent = title;
-      printSubtitle.textContent = subtitle;
-      printDate.textContent = new Date().toLocaleDateString();
-      printTotal.textContent = data.length;
-      
-      // Generate table with serial numbers
+    function generatePrintableTable(data) {
       let tableHTML = `
-        <table class="print-report-table">
+        <table>
           <thead>
             <tr>
-              <th width="5%">S.No</th>
-              <th width="12%">File No.</th>
-              <th width="8%">Volume</th>
-              <th width="25%">Subject</th>
-              <th width="10%">Date Opened</th>
-              <th width="10%">Date Closed</th>
-              <th width="12%">Date of Destruction</th>
-              <th width="18%">Location</th>
+              <th>File No.</th>
+              <th>Volume</th>
+              <th>Subject</th>
+              <th>Date Opened</th>
+              <th>Date Closed</th>
+              <th>Date of Destruction</th>
+              <th>Location</th>
             </tr>
           </thead>
           <tbody>
       `;
       
-      if (data.length === 0) {
+      data.forEach(record => {
         tableHTML += `
           <tr>
-            <td colspan="8" style="text-align: center;">No records found</td>
+            <td>${record.fileNumber}</td>
+            <td>${record.volumeNumber}</td>
+            <td>${record.subject}</td>
+            <td>${formatDateDMY(record.dateOpened)}</td>
+            <td>${record.dateClosed ? formatDateDMY(record.dateClosed) : '-'}</td>
+            <td>${record.dateDestruction ? formatDateDMY(record.dateDestruction) : '-'}</td>
+            <td>${record.storedLocation}</td>
           </tr>
         `;
-      } else {
-        data.forEach((record, index) => {
-          tableHTML += `
-            <tr>
-              <td>${index + 1}</td>
-              <td>${record.fileNumber}</td>
-              <td>${record.volumeNumber}</td>
-              <td>${record.subject}</td>
-              <td>${formatDateDMY(record.dateOpened)}</td>
-              <td>${record.dateClosed ? formatDateDMY(record.dateClosed) : '-'}</td>
-              <td>${record.dateDestruction ? formatDateDMY(record.dateDestruction) : '-'}</td>
-              <td>${record.storedLocation}</td>
-            </tr>
-          `;
-        });
-      }
+      });
       
       tableHTML += '</tbody></table>';
-      printTable.innerHTML = tableHTML;
-      
-      // Trigger print
-      window.print();
+      reportTable.innerHTML = tableHTML;
     }
     
     // Download records
@@ -1244,45 +793,33 @@
             if (isValid) {
               records = uploadedRecords;
               localStorage.setItem('fileRecords', JSON.stringify(records));
-              showNotification('Records loaded successfully!');
-              performSearch();
+              msgEl.textContent = 'Records loaded successfully!';
+              resetForm();
+              
+              setTimeout(() => {
+                msgEl.textContent = '';
+              }, 3000);
             } else {
-              showNotification('Invalid file format. Some records are missing required fields.', 'error');
+              alert('Invalid file format: Some records are missing required fields.');
             }
           } else {
-            showNotification('Invalid file format. Expected an array of records.', 'error');
+            alert('Invalid file format: Expected an array of records.');
           }
         } catch (error) {
-          showNotification('Error parsing JSON file. Please check the file format.', 'error');
+          alert('Error parsing JSON file: ' + error.message);
         }
       };
-      
       reader.readAsText(file);
-      // Reset the file input
-      event.target.value = '';
     });
     
-    // Show notification
-    function showNotification(message, type = 'success') {
-      msgEl.textContent = message;
-      msgEl.className = 'notification show';
-      if (type === 'error') {
-        msgEl.classList.add('error');
-      }
-      
-      setTimeout(() => {
-        msgEl.classList.remove('show');
-      }, 3000);
-    }
-    
-    // Initialize the app
-    function init() {
-      // Render initial search results
-      performSearch();
-    }
-    
     // Initialize the application
-    document.addEventListener('DOMContentLoaded', init);
+    function init() {
+      // Initial render of all records in search tab
+      renderAllRecords();
+    }
+    
+    // Run initialization
+    init();
   </script>
 </body>
 </html>

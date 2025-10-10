@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dearness Allowance Rate Tracker</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #1a3b5d, #2c5282);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .info-box {
+            background-color: #e6f7ff;
+            border-left: 4px solid #1a3b5d;
+            padding: 15px;
+            margin-bottom: 30px;
+            border-radius: 0 5px 5px 0;
+        }
+        
+        .charts-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .chart-wrapper {
+            flex: 1;
+            min-width: 45%;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .chart-title {
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            color: #1a3b5d;
+        }
+        
+        .tables-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .table-wrapper {
+            flex: 1;
+            min-width: 45%;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+        
+        .table-title {
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            color: #1a3b5d;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+        
+        tr:hover {
+            background-color: #f1f5f9;
+        }
+        
+        .highlight {
+            background-color: #e6f7ff;
+            font-weight: 600;
+        }
+        
+        .current-rate {
+            background-color: #1a3b5d;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin-left: 10px;
+        }
+        
+        .transition-note {
+            background-color: #fff8e6;
+            border-left: 4px solid #ffc107;
+            padding: 10px 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+            font-size: 0.9rem;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .charts-container, .tables-container {
+                flex-direction: column;
+            }
+            
+            .chart-wrapper, .table-wrapper {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Dearness Allowance Rate Tracker</h1>
+            <p class="subtitle">Historical DA rates for Central Government Employees (2006 - 2025)</p>
+        </header>
+        
+        <div class="info-box">
+            <p><strong>Note:</strong> With effect from 1st January 2016, the 7th Pay Commission was implemented, revising basic pays and resetting DA to 0%. The charts and tables below show the DA rates for both the 6th and 7th CPC periods.</p>
+        </div>
+        
+        <div class="charts-container">
+            <div class="chart-wrapper">
+                <h2 class="chart-title">6th CPC DA Rate Trend (2006-2015)</h2>
+                <canvas id="sixthCpcChart"></canvas>
+            </div>
+            <div class="chart-wrapper">
+                <h2 class="chart-title">7th CPC DA Rate Trend (2016-2025)</h2>
+                <canvas id="seventhCpcChart"></canvas>
+            </div>
+        </div>
+        
+        <div class="transition-note">
+            <p><strong>Important:</strong> The 7th Pay Commission was implemented on 1st January 2016, which revised basic pays and reset DA to 0%. The DA rates shown for 7th CPC are calculated on the revised pay structure.</p>
+        </div>
+        
+        <div class="tables-container">
+            <div class="table-wrapper">
+                <h2 class="table-title">6th CPC DA Rates (2006-2015)</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Effective From</th>
+                            <th>Rate (%)</th>
+                            <th>Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sixthCpcTableBody">
+                        <!-- Table rows will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="table-wrapper">
+                <h2 class="table-title">7th CPC DA Rates (2016-2025)</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Effective From</th>
+                            <th>Rate (%)</th>
+                            <th>Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody id="seventhCpcTableBody">
+                        <!-- Table rows will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Data Source: Ministry of Finance, Government of India. | Developed by : Anil Kumar V.T.</p>
+            <p>Disclaimer : For reference purpose only.  Please recheck with relevant OMs for Practical Purposes</p>
+        </footer>
+    </div>
+
+    <script>
+        // DA data for 6th CPC (2006-2015)
+        const sixthCpcData = [
+            { date: "2006-01-01", rate: 0, remarks: "Base Index" },
+            { date: "2006-07-01", rate: 2, remarks: "" },
+            { date: "2007-01-01", rate: 6, remarks: "" },
+            { date: "2007-07-01", rate: 9, remarks: "" },
+            { date: "2008-01-01", rate: 12, remarks: "" },
+            { date: "2008-07-01", rate: 16, remarks: "" },
+            { date: "2009-01-01", rate: 22, remarks: "" },
+            { date: "2009-07-01", rate: 27, remarks: "" },
+            { date: "2010-01-01", rate: 35, remarks: "" },
+            { date: "2010-07-01", rate: 45, remarks: "" },
+            { date: "2011-01-01", rate: 51, remarks: "" },
+            { date: "2011-07-01", rate: 58, remarks: "" },
+            { date: "2012-01-01", rate: 65, remarks: "" },
+            { date: "2012-07-01", rate: 72, remarks: "" },
+            { date: "2013-01-01", rate: 80, remarks: "" },
+            { date: "2013-07-01", rate: 90, remarks: "" },
+            { date: "2014-01-01", rate: 100, remarks: "" },
+            { date: "2014-07-01", rate: 107, remarks: "" },
+            { date: "2015-01-01", rate: 113, remarks: "" },
+            { date: "2015-07-01", rate: 119, remarks: "" },
+            { date: "2016-01-01", rate: 125, remarks: "" }
+        ];
+
+        // DA data for 7th CPC (2016-2025) - Updated with projected rates
+        const seventhCpcData = [
+            { date: "2016-01-01", rate: 0, remarks: "7th CPC implementation, DA reset" },
+            { date: "2016-07-01", rate: 2, remarks: "" },
+            { date: "2017-01-01", rate: 4, remarks: "" },
+            { date: "2017-07-01", rate: 5, remarks: "" },
+            { date: "2018-01-01", rate: 7, remarks: "" },
+            { date: "2018-07-01", rate: 9, remarks: "" },
+            { date: "2019-01-01", rate: 12, remarks: "" },
+            { date: "2019-07-01", rate: 17, remarks: "" },
+            { date: "2020-01-01", rate: 21, remarks: "Frozen at 17% - Covid Pandemic" },
+            { date: "2020-07-01", rate: 24, remarks: "Frozen at 17% - Covid Pandemic" },
+            { date: "2021-01-01", rate: 28, remarks: "Frozen at 17% - Covid Pandemic" },
+            { date: "2021-07-01", rate: 31, remarks: "" },
+            { date: "2022-01-01", rate: 34, remarks: "" },
+            { date: "2022-07-01", rate: 38, remarks: "" },
+            { date: "2023-01-01", rate: 42, remarks: "" },
+            { date: "2023-07-01", rate: 46, remarks: "" },
+            { date: "2024-01-01", rate: 50, remarks: "" },
+            { date: "2024-07-01", rate: 53, remarks: "" },
+            { date: "2025-01-01", rate: 55, remarks: "" },
+            { date: "2025-07-01", rate: 58, remarks: "Current" }
+        ];
+
+        // Initialize the application
+        function initApp() {
+            renderTables();
+            renderCharts();
+        }
+
+        // Render data tables
+        function renderTables() {
+            const sixthCpcTableBody = document.getElementById('sixthCpcTableBody');
+            const seventhCpcTableBody = document.getElementById('seventhCpcTableBody');
+            
+            // Render 6th CPC table
+            sixthCpcTableBody.innerHTML = '';
+            sixthCpcData.forEach(item => {
+                const row = document.createElement('tr');
+                
+                // Format date
+                const date = new Date(item.date);
+                const formattedDate = date.toLocaleDateString('en-IN', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric'
+                });
+                
+                // Highlight last rate under 6th CPC
+                if (item.remarks.includes("Last under 6th CPC")) {
+                    row.classList.add('highlight');
+                }
+                
+                row.innerHTML = `
+                    <td>${formattedDate}</td>
+                    <td>${item.rate}%</td>
+                    <td>${item.remarks}</td>
+                `;
+                
+                sixthCpcTableBody.appendChild(row);
+            });
+            
+            // Render 7th CPC table
+            seventhCpcTableBody.innerHTML = '';
+            seventhCpcData.forEach(item => {
+                const row = document.createElement('tr');
+                
+                // Format date
+                const date = new Date(item.date);
+                const formattedDate = date.toLocaleDateString('en-IN', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric'
+                });
+                
+                // Highlight current rate
+                if (item.remarks.includes("Current")) {
+                    row.classList.add('highlight');
+                }
+                
+                row.innerHTML = `
+                    <td>${formattedDate}</td>
+                    <td>${item.rate}% ${item.remarks.includes("Current") ? '<span class="current-rate">Current</span>' : ''}</td>
+                    <td>${item.remarks}</td>
+                `;
+                
+                seventhCpcTableBody.appendChild(row);
+            });
+        }
+
+        // Render charts
+        function renderCharts() {
+            renderSixthCpcChart();
+            renderSeventhCpcChart();
+        }
+
+        // Render 6th CPC chart
+        function renderSixthCpcChart() {
+            const ctx = document.getElementById('sixthCpcChart').getContext('2d');
+            
+            // Prepare chart data
+            const labels = sixthCpcData.map(item => {
+                const date = new Date(item.date);
+                return date.toLocaleDateString('en-IN', {
+                    month: 'short',
+                    year: 'numeric'
+                });
+            });
+            
+            const rates = sixthCpcData.map(item => item.rate);
+            
+            // Create gradient for chart
+            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, 'rgba(52, 152, 219, 0.8)');
+            gradient.addColorStop(1, 'rgba(52, 152, 219, 0.1)');
+            
+            // Create chart
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'DA Rate (%)',
+                        data: rates,
+                        backgroundColor: gradient,
+                        borderColor: '#3498db',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#3498db',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: false
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        },
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'DA Rate (%)'
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'nearest'
+                    }
+                }
+            });
+        }
+
+        // Render 7th CPC chart
+        function renderSeventhCpcChart() {
+            const ctx = document.getElementById('seventhCpcChart').getContext('2d');
+            
+            // Prepare chart data
+            const labels = seventhCpcData.map(item => {
+                const date = new Date(item.date);
+                return date.toLocaleDateString('en-IN', {
+                    month: 'short',
+                    year: 'numeric'
+                });
+            });
+            
+            const rates = seventhCpcData.map(item => item.rate);
+            
+            // Create gradient for chart
+            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, 'rgba(231, 76, 60, 0.8)');
+            gradient.addColorStop(1, 'rgba(231, 76, 60, 0.1)');
+            
+            // Create chart
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'DA Rate (%)',
+                        data: rates,
+                        backgroundColor: gradient,
+                        borderColor: '#e74c3c',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#e74c3c',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: false
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        },
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'DA Rate (%)'
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'nearest'
+                    }
+                }
+            });
+        }
+
+        // Initialize the app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>

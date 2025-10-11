@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advane Increment Calculator for Pay Fixation</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+            width: 100vw;
+            margin: 0;
+        }
+
+        .input-section {
+            flex: 0 0 35%;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            backdrop-filter: blur(10px);
+            overflow-y: auto;
+        }
+
+        .chart-section {
+            flex: 1;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .cpc-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .cpc-btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            background: #f8f9fa;
+            color: #666;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .cpc-btn.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-color: #5a6fd8;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: #333;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e5ee;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .calculate-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            background: #8B0000;
+            border-radius: 10px;
+            color: white;
+            text-align: center;
+            display: none;
+            border: 2px solid #600000;
+            box-shadow: 0 5px 15px rgba(139, 0, 0, 0.3);
+        }
+
+        .result h3 {
+            margin-bottom: 15px;
+            font-size: 18px;
+            color: white;
+        }
+
+        .result-values {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .result-item {
+            flex: 1;
+            min-width: 100px;
+        }
+
+        .result-value {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: white;
+        }
+
+        .result-label {
+            font-size: 12px;
+            opacity: 0.9;
+            color: white;
+        }
+
+        .grade-pay-section {
+            display: none;
+        }
+
+        .footer {
+            margin-top: auto;
+            text-align: center;
+            padding-top: 15px;
+            border-top: 1px solid #e1e5ee;
+        }
+
+        .disclaimer {
+            font-size: 11px;
+            color: #666;
+            line-height: 1.4;
+            margin-bottom: 4px;
+        }
+
+        .creator {
+            font-size: 10px;
+            color: #888;
+            font-style: italic;
+        }
+
+        .chart-container {
+            flex: 1;
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .increment-table {
+            margin-top: 20px;
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .increment-table h4 {
+            margin-bottom: 10px;
+            color: #333;
+            text-align: center;
+        }
+
+        .table-container {
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        th, td {
+            padding: 8px 6px;
+            text-align: left;
+            border-bottom: 1px solid #e1e5ee;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+            position: sticky;
+            top: 0;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .input-section {
+                flex: 0 0 auto;
+            }
+            
+            .chart-section {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="input-section">
+            <div class="header">
+                <h1>Calculation of Pay on Grant of Advance Increments for Pay Fixation</h1>
+                <p>Calculate your pay after increments</p>
+            </div>
+
+            <div class="cpc-selector">
+                <button class="cpc-btn active" onclick="selectCPC('sixth')">6th CPC</button>
+                <button class="cpc-btn" onclick="selectCPC('seventh')">7th CPC</button>
+            </div>
+
+            <div class="input-group">
+                <label for="basicPay">Present Basic Pay (₹)</label>
+                <input type="number" id="basicPay" placeholder="Enter basic pay" min="0">
+            </div>
+
+            <div class="input-group grade-pay-section" id="gradePaySection">
+                <label for="gradePay">Grade Pay (₹)</label>
+                <input type="number" id="gradePay" placeholder="Enter grade pay" min="0">
+            </div>
+
+            <div class="input-group">
+                <label for="doj">Date of Joining</label>
+                <input type="date" id="doj">
+            </div>
+
+            <div class="input-group">
+                <label for="nextIncrement">Date of Next Increment</label>
+                <input type="date" id="nextIncrement">
+            </div>
+
+            <div class="input-group">
+                <label for="increments">Number of Increments</label>
+                <input type="number" id="increments" placeholder="Enter number of increments" min="0" max="50" value="1">
+            </div>
+
+            <button class="calculate-btn" onclick="calculatePay()">
+                Calculate Pay
+            </button>
+
+            <div class="result" id="result">
+                <h3>Pay After Advance Increments</h3>
+                <div class="result-values">
+                    <div class="result-item">
+                        <div class="result-value" id="finalBasicPay">₹0</div>
+                        <div class="result-label">Basic Pay</div>
+                    </div>
+                    <div class="result-item" id="finalGradePayItem">
+                        <div class="result-value" id="finalGradePay">₹0</div>
+                        <div class="result-label">Grade Pay</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-value" id="finalTotalPay">₹0</div>
+                        <div class="result-label">Total Pay</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer">
+                <div class="disclaimer">
+                    Disclaimer : For information purposes only.  Not to be quoted as authority
+                </div>
+                <div class="creator">
+                    Created by Anil Kumar V.T.
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-section">
+            <div class="chart-container">
+                <canvas id="payChart"></canvas>
+            </div>
+            <div class="increment-table">
+                <h4>Increment Schedule</h4>
+                <div class="table-container">
+                    <table id="incrementTable">
+                        <thead>
+                            <tr>
+                                <th>Increment No</th>
+                                <th>Basic Pay</th>
+                                <th>Grade Pay</th>
+                                <th>Total Pay</th>
+                                <th>Increment Amt</th>
+                            </tr>
+                        </thead>
+                        <tbody id="incrementTableBody">
+                            <!-- Table rows will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentCPC = 'sixth';
+        let payChart = null;
+
+        function selectCPC(cpc) {
+            currentCPC = cpc;
+            document.querySelectorAll('.cpc-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Clear all input fields when switching CPC
+            document.getElementById('basicPay').value = '';
+            document.getElementById('increments').value = '1';
+            document.getElementById('gradePay').value = '';
+            document.getElementById('doj').value = '';
+            document.getElementById('nextIncrement').value = '';
+            
+            // Hide result when switching CPC
+            document.getElementById('result').style.display = 'none';
+
+            // Clear chart and table
+            clearChart();
+            clearTable();
+
+            // Show/hide grade pay section
+            const gradePaySection = document.getElementById('gradePaySection');
+            const gradePayItem = document.getElementById('finalGradePayItem');
+            
+            if (cpc === 'sixth') {
+                gradePaySection.style.display = 'block';
+                gradePayItem.style.display = 'block';
+            } else {
+                gradePaySection.style.display = 'none';
+                gradePayItem.style.display = 'none';
+            }
+        }
+
+        function roundToNearest(value, nearest) {
+            return Math.round(value / nearest) * nearest;
+        }
+
+        function clearChart() {
+            if (payChart) {
+                payChart.destroy();
+                payChart = null;
+            }
+        }
+
+        function clearTable() {
+            document.getElementById('incrementTableBody').innerHTML = '';
+        }
+
+        function calculatePay() {
+            const basicPay = parseFloat(document.getElementById('basicPay').value);
+            const increments = parseInt(document.getElementById('increments').value);
+            const doj = document.getElementById('doj').value;
+            const nextIncrementDate = document.getElementById('nextIncrement').value;
+            
+            if (!basicPay || !increments || basicPay <= 0 || increments < 0 || !doj || !nextIncrementDate) {
+                alert('Please enter valid values for all fields');
+                return;
+            }
+
+            let finalBasicPay, finalGradePay, finalTotalPay;
+            const incrementData = [];
+            const chartLabels = [];
+            const chartData = [];
+
+            if (currentCPC === 'sixth') {
+                const gradePay = parseFloat(document.getElementById('gradePay').value);
+                if (!gradePay || gradePay < 0) {
+                    alert('Please enter valid Grade Pay for 6th CPC');
+                    return;
+                }
+
+                // 6th CPC calculation
+                let currentPay = basicPay + gradePay;
+                let currentBasic = basicPay;
+
+                // Add initial data point (Increment 0)
+                incrementData.push({
+                    incrementNo: 0,
+                    basicPay: currentBasic,
+                    gradePay: gradePay,
+                    totalPay: currentPay,
+                    incrementAmount: 0
+                });
+
+                chartLabels.push('Initial');
+                chartData.push(currentPay);
+
+                for (let i = 1; i <= increments; i++) {
+                    const incrementAmount = roundToNearest(currentPay * 0.03, 10);
+                    currentBasic += incrementAmount;
+                    currentPay = currentBasic + gradePay;
+
+                    incrementData.push({
+                        incrementNo: i,
+                        basicPay: currentBasic,
+                        gradePay: gradePay,
+                        totalPay: currentPay,
+                        incrementAmount: incrementAmount
+                    });
+
+                    chartLabels.push(`Increment ${i}`);
+                    chartData.push(currentPay);
+                }
+
+                finalBasicPay = Math.round(currentBasic);
+                finalGradePay = Math.round(gradePay);
+                finalTotalPay = finalBasicPay + finalGradePay;
+
+            } else {
+                // 7th CPC calculation
+                let currentPay = basicPay;
+
+                // Add initial data point (Increment 0)
+                incrementData.push({
+                    incrementNo: 0,
+                    basicPay: currentPay,
+                    gradePay: 0,
+                    totalPay: currentPay,
+                    incrementAmount: 0
+                });
+
+                chartLabels.push('Initial');
+                chartData.push(currentPay);
+
+                for (let i = 1; i <= increments; i++) {
+                    const incrementAmount = roundToNearest(currentPay * 0.03, 100);
+                    currentPay += incrementAmount;
+
+                    incrementData.push({
+                        incrementNo: i,
+                        basicPay: currentPay,
+                        gradePay: 0,
+                        totalPay: currentPay,
+                        incrementAmount: incrementAmount
+                    });
+
+                    chartLabels.push(`Increment ${i}`);
+                    chartData.push(currentPay);
+                }
+
+                finalBasicPay = Math.round(currentPay);
+                finalGradePay = 0;
+                finalTotalPay = finalBasicPay;
+            }
+
+            // Display results
+            document.getElementById('finalBasicPay').textContent = '₹' + finalBasicPay.toLocaleString();
+            document.getElementById('finalGradePay').textContent = '₹' + finalGradePay.toLocaleString();
+            document.getElementById('finalTotalPay').textContent = '₹' + finalTotalPay.toLocaleString();
+            
+            document.getElementById('result').style.display = 'block';
+
+            // Update chart
+            updateChart(chartLabels, chartData);
+            
+            // Update table
+            updateTable(incrementData);
+        }
+
+        function updateChart(labels, data) {
+            const ctx = document.getElementById('payChart').getContext('2d');
+            
+            clearChart();
+            
+            payChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Total Pay (₹)',
+                        data: data,
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Pay Progression Over Increments',
+                            font: {
+                                size: 16
+                            }
+                        },
+                        legend: {
+                            display: true
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            title: {
+                                display: true,
+                                text: 'Total Pay (₹)'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return '₹' + value.toLocaleString();
+                                }
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Increment Number'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateTable(data) {
+            const tableBody = document.getElementById('incrementTableBody');
+            tableBody.innerHTML = '';
+
+            data.forEach((item, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.incrementNo === 0 ? 'Initial' : item.incrementNo}</td>
+                    <td>₹${Math.round(item.basicPay).toLocaleString()}</td>
+                    <td>${currentCPC === 'sixth' ? '₹' + Math.round(item.gradePay).toLocaleString() : '-'}</td>
+                    <td>₹${Math.round(item.totalPay).toLocaleString()}</td>
+                    <td>${item.incrementNo === 0 ? '-' : '₹' + Math.round(item.incrementAmount).toLocaleString()}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Initialize with 6th CPC selected
+        selectCPC('sixth');
+
+        // Set default dates (today and 6 months from today)
+        const today = new Date();
+        const nextIncrement = new Date();
+        nextIncrement.setMonth(today.getMonth() + 6);
+        nextIncrement.setDate(1);
+
+        document.getElementById('doj').value = today.toISOString().split('T')[0];
+        document.getElementById('nextIncrement').value = nextIncrement.toISOString().split('T')[0];
+    </script>
+</body>
+</html>

@@ -505,7 +505,13 @@
         }
 
         function roundToNearest(value, nearest) {
-            return Math.round(value / nearest) * nearest;
+            if (currentCPC === 'sixth') {
+                // For 6th CPC: Round to NEXT multiple of 10 (ceil)
+                return Math.ceil(value / nearest) * nearest;
+            } else {
+                // For 7th CPC: Round to NEAREST multiple of 100 (round)
+                return Math.round(value / nearest) * nearest;
+            }
         }
 
         function clearTable() {
@@ -534,31 +540,30 @@
                     return;
                 }
 
-                // 6th CPC calculation (3% of BP + GP, rounded to nearest 10)
-                let currentPay = basicPay + gradePay;
+                // 6th CPC calculation (3% of BP + GP, rounded to next multiple of 10)
                 let currentBasic = basicPay;
+                let currentTotalPay = basicPay + gradePay;
 
                 // Add initial data point (Increment 0)
                 incrementData.push({
                     incrementNo: 0,
                     basicPay: currentBasic,
                     gradePay: gradePay,
-                    totalPay: currentPay,
+                    totalPay: currentTotalPay,
                     incrementAmount: 0
                 });
 
                 for (let i = 1; i <= increments; i++) {
-                    // Re-calculate combined pay for increment calculation
-                    currentPay = currentBasic + gradePay; 
-                    const incrementAmount = roundToNearest(currentPay * 0.03, 10);
+                    // Calculate increment on current stage pay (current basic + grade pay)
+                    const incrementAmount = roundToNearest((currentBasic + gradePay) * 0.03, 10);
                     currentBasic += incrementAmount;
-                    currentPay = currentBasic + gradePay; // Update total pay after increment
+                    currentTotalPay = currentBasic + gradePay;
 
                     incrementData.push({
                         incrementNo: i,
                         basicPay: currentBasic,
                         gradePay: gradePay,
-                        totalPay: currentPay,
+                        totalPay: currentTotalPay,
                         incrementAmount: incrementAmount
                     });
                 }

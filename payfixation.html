@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pay Fixation on Promotion/MACP Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0a192f 0%, #0d1b2a 100%);
+            color: #e0e0e0;
+            line-height: 1.4;
+            padding: 15px 25px;
+            min-height: 100vh;
+        }
+        
+        .main-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: rgba(13, 27, 42, 0.7);
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0, 150, 255, 0.2);
+            border: 1px solid rgba(100, 150, 255, 0.1);
+        }
+        
+        .main-header h1 {
+            color: #64b5f6;
+            margin-bottom: 8px;
+            font-size: 2.2rem;
+            text-shadow: 0 0 10px rgba(100, 181, 246, 0.7);
+            letter-spacing: 1px;
+        }
+        
+        .main-header .subtitle {
+            color: #90caf9;
+            font-size: 1.1rem;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: rgba(13, 27, 42, 0.7);
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0, 150, 255, 0.2);
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(100, 150, 255, 0.1);
+            display: flex;
+            gap: 20px;
+        }
+        
+        .input-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 300px;
+        }
+        
+        .results-section {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .input-group {
+            margin-bottom: 12px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #90caf9;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 10px;
+            background-color: rgba(20, 30, 48, 0.8);
+            border: 2px solid rgba(100, 150, 255, 0.3);
+            border-radius: 8px;
+            font-size: 14px;
+            color: #e0e0e0;
+            transition: all 0.3s ease;
+        }
+        
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #64b5f6;
+            box-shadow: 0 0 15px rgba(100, 181, 246, 0.5);
+        }
+        
+        .calculate-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #64b5f6, #1976d2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 8px;
+            margin-bottom: 15px;
+            border: 2px solid rgba(100, 150, 255, 0.3);
+        }
+        
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(100, 181, 246, 0.4);
+        }
+        
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+            border: 2px solid rgba(100, 150, 255, 0.5);
+        }
+        
+        .option-1 {
+            background: rgba(76, 175, 80, 0.1);
+            border-color: rgba(76, 175, 80, 0.5);
+        }
+        
+        .option-2 {
+            background: rgba(255, 152, 0, 0.1);
+            border-color: rgba(255, 152, 0, 0.5);
+        }
+        
+        .recommendation {
+            background: rgba(156, 39, 176, 0.1);
+            border-color: rgba(156, 39, 176, 0.5);
+            margin-top: 20px;
+        }
+        
+        .result h3 {
+            margin-bottom: 10px;
+            font-size: 16px;
+            color: white;
+            text-align: center;
+        }
+        
+        .result-values {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .result-item {
+            flex: 1;
+            min-width: 80px;
+            text-align: center;
+        }
+        
+        .result-value {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 3px;
+            color: white;
+        }
+        
+        .result-label {
+            font-size: 12px;
+            opacity: 0.9;
+            color: white;
+        }
+        
+        .calculation-steps {
+            background: rgba(20, 30, 48, 0.8);
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-size: 13px;
+            border-left: 4px solid #64b5f6;
+        }
+        
+        .calculation-steps h4 {
+            color: #64b5f6;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .step {
+            margin-bottom: 5px;
+            padding-left: 10px;
+        }
+        
+        .step-highlight {
+            font-weight: bold;
+            color: #ffeb3b;
+            margin-top: 8px;
+            padding: 5px;
+            background: rgba(255, 235, 59, 0.1);
+            border-radius: 4px;
+        }
+        
+        .phase {
+            margin-top: 10px;
+            padding: 8px;
+            background: rgba(100, 181, 246, 0.1);
+            border-radius: 4px;
+            border-left: 3px solid #64b5f6;
+        }
+        
+        .phase-title {
+            font-weight: bold;
+            color: #64b5f6;
+            margin-bottom: 5px;
+        }
+        
+        .info-box {
+            background: rgba(100, 181, 246, 0.1);
+            border-left: 4px solid #64b5f6;
+            padding: 12px;
+            margin: 12px 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 13px;
+        }
+        
+        .fixation-rule {
+            background: rgba(255, 193, 7, 0.1);
+            border-left: 4px solid #ffc107;
+            padding: 12px;
+            margin: 12px 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 13px;
+        }
+        
+        .error-message {
+            color: #f44336;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @media (max-width: 1024px) {
+            .container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-header">
+        <h1>Comparison of Option for Pay Fixation on Promotion/MACP</h1>
+        <p class="subtitle">Calculate and compare pay fixation options</p>
+    </div>
+
+    <div class="container">
+        <div class="input-section">
+            <div class="input-group">
+                <label for="presentBasicPay">Present Basic Pay (₹)</label>
+                <input type="number" id="presentBasicPay" placeholder="Enter basic pay" min="0" value="34300">
+                <div class="error-message" id="basicPayError">Please enter a valid basic pay</div>
+            </div>
+            
+            <div class="input-group">
+                <label for="presentLevel">Present Pay Level</label>
+                <select id="presentLevel">
+                    <option value="">Select Present Level</option>
+                    <option value="1">Level 1</option>
+                    <option value="2">Level 2</option>
+                    <option value="3">Level 3</option>
+                    <option value="4" selected>Level 4</option>
+                    <option value="5">Level 5</option>
+                    <option value="6">Level 6</option>
+                    <option value="7">Level 7</option>
+                    <option value="8">Level 8</option>
+                    <option value="9">Level 9</option>
+                    <option value="10">Level 10</option>
+                    <option value="11">Level 11</option>
+                    <option value="12">Level 12</option>
+                    <option value="13">Level 13</option>
+                    <option value="13.5">Level 13A</option>
+                    <option value="14">Level 14</option>
+                </select>
+                <div class="error-message" id="presentLevelError">Please select present level</div>
+            </div>
+            
+            <div class="input-group">
+                <label for="promotedLevel">Promoted/MACP Level</label>
+                <select id="promotedLevel">
+                    <option value="">Select Promoted Level</option>
+                    <option value="1">Level 1</option>
+                    <option value="2">Level 2</option>
+                    <option value="3">Level 3</option>
+                    <option value="4">Level 4</option>
+                    <option value="5" selected>Level 5</option>
+                    <option value="6">Level 6</option>
+                    <option value="7">Level 7</option>
+                    <option value="8">Level 8</option>
+                    <option value="9">Level 9</option>
+                    <option value="10">Level 10</option>
+                    <option value="11">Level 11</option>
+                    <option value="12">Level 12</option>
+                    <option value="13">Level 13</option>
+                    <option value="13.5">Level 13A</option>
+                    <option value="14">Level 14</option>
+                </select>
+                <div class="error-message" id="promotedLevelError">Please select promoted level</div>
+            </div>
+            
+            <div class="input-group">
+                <label for="promotionDate">Date of Promotion/MACP</label>
+                <input type="date" id="promotionDate">
+                <div class="error-message" id="promotionDateError">Please select promotion date</div>
+            </div>
+            
+            <div class="input-group">
+                <label for="nextIncrementDate">Date of Next Increment in Present Level</label>
+                <input type="date" id="nextIncrementDate">
+                <div class="error-message" id="incrementDateError">Please select valid increment date (1st Jan or 1st Jul)</div>
+            </div>
+            
+            <button class="calculate-btn" onclick="calculateFixation()">
+                Calculate Pay Fixation Options
+            </button>
+            
+            <div class="info-box">
+                <p><strong>Option 1:</strong> Fixation from date of promotion/MACP</p>
+                <p>• One increment in lower grade + fixation in higher grade</p>
+                <p>• Next increment after 6 months from promotion</p>
+            </div>
+            
+            <div class="fixation-rule">
+                <p><strong>Option 2:</strong> Fixation from date of increment</p>
+                <p>• Phase I: Interim fixation till DNI</p>
+                <p>• Phase II: Re-fixation with two increments on DNI</p>
+                <p>• Next increment after 6 months from final fixation</p>
+            </div>
+        </div>
+
+        <div class="results-section">
+            <div class="result option-1" id="option1Result">
+                <h3>Option 1: Fixation from Date of Promotion/MACP</h3>
+                <div class="result-values">
+                    <div class="result-item">
+                        <div class="result-value" id="option1Pay">₹0</div>
+                        <div class="result-label">Fixed Pay</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-value" id="option1Level">-</div>
+                        <div class="result-label">Pay Level</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-value" id="option1Index">-</div>
+                        <div class="result-label">Matrix Index</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-value" id="option1NextIncrement">-</div>
+                        <div class="result-label">Next Increment Date</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-value" id="option1NextIncrementPay">-</div>
+                        <div class="result-label">Pay on Next Increment</div>
+                    </div>
+                </div>
+                <div class="calculation-steps" id="option1Steps">
+                    <!-- Calculation steps will be populated here -->
+                </div>
+            </div>
+            
+            <div class="result option-2" id="option2Result">
+                <h3>Option 2: Fixation from Date of Increment</h3>
+                <div class="result-values">
+                    <div class="result-item">
+                        <div class="result-value" id="option2InterimPay">₹0</div>
+                        <div class="result-label">Interim Pay (till DNI)</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-value" id="option2FinalPay">₹0</div>
+                        <div class="result-label">Final Pay (from DNI)</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-value" id="option2Level">-</div>
+                        <div class="result-label">Pay Level</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-value" id="option2NextIncrement">-</div>
+                        <div class="result-label">Next Increment Date</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-value" id="option2NextIncrementPay">-</div>
+                        <div class="result-label">Pay on Next Increment</div>
+                    </div>
+                </div>
+                <div class="calculation-steps" id="option2Steps">
+                    <!-- Calculation steps will be populated here -->
+                </div>
+            </div>
+            
+            <div class="result recommendation" id="recommendationResult">
+                <h3>Recommendation</h3>
+                <div class="result-values">
+                    <div class="result-item">
+                        <div class="result-value" id="recommendedOption">-</div>
+                        <div class="result-label">Recommended Option</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-value" id="benefitAmount">₹0</div>
+                        <div class="result-label">Benefit Amount</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-value" id="nextIncrementInfo">-</div>
+                        <div class="result-label">Next Increment Date</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 7th CPC Pay Matrix Data - Complete with 40 cells for each level
+        const payMatrix = {
+            // Level 1: Grade Pay 1800
+            1: [18000, 18500, 19100, 19700, 20300, 20900, 21500, 22100, 22800, 23500, 
+                24200, 24900, 25600, 26400, 27200, 28000, 28800, 29700, 30600, 31500,
+                32400, 33400, 34400, 35400, 36500, 37600, 38700, 39900, 41100, 42300,
+                43600, 44900, 46200, 47600, 49000, 50500, 52000, 53600, 55200, 56900],
+            
+            // Level 2: Grade Pay 1900
+            2: [19900, 20500, 21100, 21700, 22400, 23100, 23800, 24500, 25200, 26000,
+                26800, 27600, 28400, 29300, 30200, 31100, 32000, 33000, 34000, 35000,
+                36100, 37200, 38300, 39400, 40600, 41800, 43100, 44400, 45700, 47100,
+                48500, 50000, 51500, 53000, 54600, 56200, 57900, 59600, 61400, 63200],
+            
+            // Level 3: Grade Pay 2000
+            3: [21700, 22400, 23100, 23800, 24500, 25200, 26000, 26800, 27600, 28400,
+                29300, 30200, 31100, 32000, 33000, 34000, 35000, 36100, 37200, 38300,
+                39400, 40600, 41800, 43100, 44400, 45700, 47100, 48500, 50000, 51500,
+                53000, 54600, 56200, 57900, 59600, 61400, 63200, 65100, 67100, 69100],
+            
+            // Level 4: Grade Pay 2400
+            4: [25500, 26300, 27100, 27900, 28700, 29600, 30500, 31400, 32300, 33300,
+                34300, 35300, 36400, 37500, 38600, 39800, 41000, 42200, 43500, 44800,
+                46100, 47500, 48900, 50400, 51900, 53500, 55100, 56800, 58500, 60300,
+                62100, 64000, 65900, 67900, 69900, 72000, 74200, 76400, 78700, 81100],
+            
+            // Level 5: Grade Pay 2800
+            5: [29200, 30100, 31000, 31900, 32900, 33900, 34900, 35900, 37000, 38100,
+                39200, 40400, 41600, 42800, 44100, 45400, 46800, 48200, 49600, 51100,
+                52600, 54200, 55800, 57500, 59200, 61000, 62800, 64700, 66600, 68600,
+                70700, 72800, 75000, 77300, 79600, 82000, 84500, 87000, 89600, 92300],
+            
+            // Level 6: Grade Pay 4200
+            6: [35400, 36500, 37600, 38700, 39900, 41100, 42300, 43600, 44900, 46200,
+                47600, 49000, 50500, 52000, 53600, 55200, 56900, 58600, 60400, 62200,
+                64100, 66000, 68000, 70000, 72100, 74300, 76500, 78800, 81200, 83600,
+                86100, 88700, 91400, 94100, 96900, 99800, 102800, 105900, 109100, 112400],
+            
+            // Level 7: Grade Pay 4600
+            7: [44900, 46200, 47600, 49000, 50500, 52000, 53600, 55200, 56900, 58600,
+                60400, 62200, 64100, 66000, 68000, 70000, 72100, 74300, 76500, 78800,
+                81200, 83600, 86100, 88700, 91400, 94100, 96900, 99800, 102800, 105900,
+                109100, 112400, 115800, 119300, 122900, 126600, 130400, 134300, 138300, 142400],
+            
+            // Level 8: Grade Pay 4800
+            8: [47600, 49000, 50500, 52000, 53600, 55200, 56900, 58600, 60400, 62200,
+                64100, 66000, 68000, 70000, 72100, 74300, 76500, 78800, 81200, 83600,
+                86100, 88700, 91400, 94100, 96900, 99800, 102800, 105900, 109100, 112400,
+                115800, 119300, 122900, 126600, 130400, 134300, 138300, 142400, 146700, 151100],
+            
+            // Level 9: Grade Pay 5400
+            9: [53100, 54700, 56300, 58000, 59700, 61500, 63300, 65200, 67200, 69200,
+                71300, 73400, 75600, 77900, 80200, 82600, 85100, 87700, 90300, 93000,
+                95800, 98700, 101700, 104800, 107900, 111100, 114400, 117800, 121300, 124900,
+                128600, 132500, 136500, 140600, 144800, 149100, 153600, 158200, 162900, 167800],
+            
+            // Level 10: Grade Pay 5400 (Group A Entry)
+            10: [56100, 57800, 59500, 61300, 63100, 65000, 67000, 69000, 71100, 73200,
+                 75400, 77700, 80000, 82400, 84900, 87400, 90000, 92700, 95500, 98400,
+                 101400, 104400, 107500, 110700, 114000, 117400, 120900, 124500, 128200, 132000,
+                 136000, 140100, 144300, 148600, 153100, 157700, 162400, 167300, 172300, 177500],
+            
+            // Level 11: Grade Pay 6600
+            11: [67700, 69700, 71800, 74000, 76200, 78500, 80900, 83300, 85800, 88400,
+                 91100, 93800, 96600, 99500, 102500, 105600, 108800, 112100, 115500, 119000,
+                 122600, 126300, 130100, 134000, 138000, 142100, 146400, 150800, 155300, 160000,
+                 164800, 169700, 174800, 180000, 185400, 191000, 196700, 202600, 208700, 215000],
+            
+            // Level 12: Grade Pay 7600
+            12: [78800, 81200, 83600, 86100, 88700, 91400, 94100, 96900, 99800, 102800,
+                 105900, 109100, 112400, 115800, 119300, 122900, 126600, 130400, 134300, 138300,
+                 142400, 146700, 151100, 155600, 160300, 165100, 170100, 175200, 180500, 185900,
+                 191500, 197200, 203100, 209200, 215500, 222000, 228700, 235600, 242700, 250000],
+            
+            // Level 13: Grade Pay 8700
+            13: [123100, 126800, 130600, 134500, 138500, 142700, 147000, 151400, 155900, 160600,
+                 165400, 170400, 175500, 180800, 186200, 191800, 197600, 203500, 209600, 215900,
+                 222400, 229100, 236000, 243100, 250400, 257900, 265600, 273500, 281600, 290000,
+                 298600, 307500, 316600, 326000, 335600, 345500, 355600, 366000, 376600, 387500],
+            
+            // Level 13A: Grade Pay 8900
+            13.5: [131100, 135000, 139100, 143300, 147600, 152000, 156600, 161300, 166100, 171100,
+                   176200, 181500, 186900, 192500, 198300, 204200, 210300, 216600, 223100, 229800,
+                   236700, 243800, 251100, 258600, 266300, 274200, 282300, 290600, 299100, 307800,
+                   316700, 325800, 335100, 344600, 354300, 364200, 374300, 384600, 395100, 405800],
+            
+            // Level 14: Grade Pay 10000
+            14: [144200, 148500, 153000, 157600, 162300, 167200, 172200, 177400, 182700, 188200,
+                 193800, 199600, 205600, 211800, 218200, 224800, 231600, 238600, 245800, 253200,
+                 260800, 268600, 276600, 284800, 293200, 301800, 310600, 319600, 328800, 338200,
+                 347800, 357600, 367600, 377800, 388200, 398800, 409600, 420600, 431800, 443200]
+        };
+
+        // DOM Elements
+        const presentBasicPayInput = document.getElementById('presentBasicPay');
+        const presentLevelSelect = document.getElementById('presentLevel');
+        const promotedLevelSelect = document.getElementById('promotedLevel');
+        const promotionDateInput = document.getElementById('promotionDate');
+        const nextIncrementDateInput = document.getElementById('nextIncrementDate');
+        
+        const option1ResultDiv = document.getElementById('option1Result');
+        const option1Pay = document.getElementById('option1Pay');
+        const option1Level = document.getElementById('option1Level');
+        const option1Index = document.getElementById('option1Index');
+        const option1NextIncrement = document.getElementById('option1NextIncrement');
+        const option1NextIncrementPay = document.getElementById('option1NextIncrementPay');
+        const option1Steps = document.getElementById('option1Steps');
+        
+        const option2ResultDiv = document.getElementById('option2Result');
+        const option2InterimPay = document.getElementById('option2InterimPay');
+        const option2FinalPay = document.getElementById('option2FinalPay');
+        const option2Level = document.getElementById('option2Level');
+        const option2NextIncrement = document.getElementById('option2NextIncrement');
+        const option2NextIncrementPay = document.getElementById('option2NextIncrementPay');
+        const option2Steps = document.getElementById('option2Steps');
+        
+        const recommendationResult = document.getElementById('recommendationResult');
+        const recommendedOption = document.getElementById('recommendedOption');
+        const benefitAmount = document.getElementById('benefitAmount');
+        const nextIncrementInfo = document.getElementById('nextIncrementInfo');
+
+        // Format date to DD/MM/YYYY
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            const day = date.getDate().toString().padStart(2, '0');
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+
+        // Find current index in pay matrix
+        function findCurrentIndex(level, basicPay) {
+            const pays = payMatrix[level];
+            if (!pays) return -1;
+            
+            for (let i = 0; i < pays.length; i++) {
+                if (pays[i] === basicPay) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        // Find exact pay or next higher pay in the matrix
+        function findExactOrNextHigherPay(level, calculatedPay) {
+            const pays = payMatrix[level];
+            if (!pays) return { finalPay: calculatedPay, index: 0 };
+            
+            // First check if exact pay exists
+            for (let i = 0; i < pays.length; i++) {
+                if (pays[i] === calculatedPay) {
+                    return { finalPay: pays[i], index: i + 1 };
+                }
+            }
+            
+            // If exact pay doesn't exist, find next higher pay
+            for (let i = 0; i < pays.length; i++) {
+                if (pays[i] > calculatedPay) {
+                    return { finalPay: pays[i], index: i + 1 };
+                }
+            }
+            
+            return { finalPay: pays[pays.length - 1], index: pays.length };
+        }
+
+        // Find next higher pay in the matrix (strictly higher)
+        function findNextHigherPay(level, calculatedPay) {
+            const pays = payMatrix[level];
+            if (!pays) return { finalPay: calculatedPay, index: 0 };
+            
+            for (let i = 0; i < pays.length; i++) {
+                if (pays[i] > calculatedPay) {
+                    return { finalPay: pays[i], index: i + 1 };
+                }
+            }
+            return { finalPay: pays[pays.length - 1], index: pays.length };
+        }
+
+        // Get next increment date ensuring at least 6 months have passed
+        function getNextIncrementDateAfterSixMonths(promotionDate) {
+            const promotion = new Date(promotionDate);
+            const sixMonthsLater = new Date(promotion);
+            sixMonthsLater.setMonth(sixMonthsLater.getMonth() + 6);
+            
+            // Determine the first increment date that is at least 6 months later
+            const year = sixMonthsLater.getFullYear();
+            const month = sixMonthsLater.getMonth();
+            
+            // If 6 months later is before July, next increment is July 1 of same year
+            // If 6 months later is July or later, next increment is January 1 of next year
+            if (month < 6) {
+                // It's between Jan 1 and June 30, so next increment is July 1
+                return new Date(year, 6, 1);
+            } else {
+                // It's July or later, so next increment is January 1 of next year
+                return new Date(year + 1, 0, 1);
+            }
+        }
+
+        // Get next increment date (6 months after fixation)
+        function getNextIncrementDate(fixationDate) {
+            const fixation = new Date(fixationDate);
+            
+            // Add exactly 6 months
+            const nextIncrement = new Date(fixation);
+            nextIncrement.setMonth(nextIncrement.getMonth() + 6);
+            
+            // Fix to 1st Jan or 1st July
+            const year = nextIncrement.getFullYear();
+            const month = nextIncrement.getMonth();
+            
+            if (month < 6) {
+                return new Date(year, 0, 1); // 1st January
+            } else {
+                return new Date(year, 6, 1); // 1st July
+            }
+        }
+
+        // Calculate months between two dates
+        function getMonthsBetweenDates(startDate, endDate) {
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            return (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());
+        }
+
+        // Validate increment date
+        function isValidIncrementDate(date) {
+            const inputDate = new Date(date);
+            const day = inputDate.getDate();
+            const month = inputDate.getMonth();
+            return (day === 1 && (month === 0 || month === 6));
+        }
+
+        // Hide all error messages
+        function hideAllErrors() {
+            document.querySelectorAll('.error-message').forEach(el => {
+                el.style.display = 'none';
+            });
+        }
+
+        // Calculate pay fixation
+        function calculateFixation() {
+            hideAllErrors();
+            
+            const presentBasicPay = parseInt(presentBasicPayInput.value);
+            const presentLevel = presentLevelSelect.value;
+            const promotedLevel = promotedLevelSelect.value;
+            const promotionDate = promotionDateInput.value;
+            const nextIncrementDate = nextIncrementDateInput.value;
+            
+            // Validate inputs
+            let hasError = false;
+            if (!presentBasicPay || presentBasicPay <= 0) {
+                document.getElementById('basicPayError').style.display = 'block';
+                hasError = true;
+            }
+            if (!presentLevel) {
+                document.getElementById('presentLevelError').style.display = 'block';
+                hasError = true;
+            }
+            if (!promotedLevel) {
+                document.getElementById('promotedLevelError').style.display = 'block';
+                hasError = true;
+            }
+            if (!promotionDate) {
+                document.getElementById('promotionDateError').style.display = 'block';
+                hasError = true;
+            }
+            if (!nextIncrementDate || !isValidIncrementDate(nextIncrementDate)) {
+                document.getElementById('incrementDateError').style.display = 'block';
+                hasError = true;
+            }
+            if (hasError) return;
+
+            // Find current position
+            const currentIndex = findCurrentIndex(presentLevel, presentBasicPay);
+            if (currentIndex === -1) {
+                alert("Invalid basic pay for the selected level");
+                return;
+            }
+
+            const presentPays = payMatrix[presentLevel];
+            const promotedPays = payMatrix[promotedLevel];
+
+            // OPTION 1: Fixation from date of promotion
+            // (a) On the date of promotion one increment is to be given in present level
+            let incrementedPayInPresentLevel;
+            if (currentIndex < presentPays.length - 1) {
+                incrementedPayInPresentLevel = presentPays[currentIndex + 1];
+            } else {
+                incrementedPayInPresentLevel = presentBasicPay;
+            }
+            
+            // (b) Then the same is to be fixed in the promoted level
+            // If present in the promoted level, use the same amount, otherwise take to next higher
+            const option1Result = findExactOrNextHigherPay(promotedLevel, incrementedPayInPresentLevel);
+            
+            // (c) Then date of next increment will be given after a minimum period of six months
+            const option1NextIncrementDate = getNextIncrementDateAfterSixMonths(promotionDate);
+            const option1NextIncrementResult = findNextHigherPay(promotedLevel, option1Result.finalPay + 1);
+
+            // OPTION 2: Fixation from date of increment
+            // No increment is given in present level. The present pay is taken to promoted level
+            // Then the program looks for a figure which is strictly higher than the present pay
+            const option2InterimResult = findNextHigherPay(promotedLevel, presentBasicPay);
+            
+            // Phase II: Re-fixation on DNI with two increments in lower level
+            let fictionalPayInLowerLevel;
+            if (currentIndex < presentPays.length - 2) {
+                fictionalPayInLowerLevel = presentPays[currentIndex + 2]; // Two increments
+            } else {
+                fictionalPayInLowerLevel = presentPays[presentPays.length - 1]; // Max of level
+            }
+            
+            // If after giving two increments, and if same pay is also available in promoted level, the same is to be given, not higher
+            const option2FinalResult = findExactOrNextHigherPay(promotedLevel, fictionalPayInLowerLevel);
+            const option2NextIncrementDate = getNextIncrementDate(nextIncrementDate);
+            const option2NextIncrementResult = findNextHigherPay(promotedLevel, option2FinalResult.finalPay + 1);
+
+            // Display results
+            displayOption1Results(presentBasicPay, presentLevel, promotedLevel, currentIndex, 
+                                incrementedPayInPresentLevel, option1Result, promotionDate, 
+                                option1NextIncrementDate, option1NextIncrementResult);
+            displayOption2Results(presentBasicPay, presentLevel, promotedLevel, currentIndex, 
+                                option2InterimResult, option2FinalResult, 
+                                promotionDate, nextIncrementDate, option2NextIncrementDate, option2NextIncrementResult);
+            displayRecommendation(option1Result.finalPay, option2FinalResult.finalPay, 
+                                promotionDate, nextIncrementDate);
+            
+            // Show result sections
+            option1ResultDiv.style.display = 'block';
+            option2ResultDiv.style.display = 'block';
+            recommendationResult.style.display = 'block';
+            
+            // Add animation
+            document.querySelectorAll('.result').forEach(result => {
+                result.style.animation = 'fadeIn 0.5s ease-out';
+            });
+        }
+
+        function displayOption1Results(basicPay, presentLevel, promotedLevel, currentIndex, 
+                                     incrementedPay, result, promotionDate, nextIncrementDate, nextIncrementResult) {
+            option1Pay.textContent = `₹${result.finalPay.toLocaleString()}`;
+            option1Level.textContent = promotedLevel;
+            option1Index.textContent = result.index;
+            option1NextIncrement.textContent = formatDate(nextIncrementDate);
+            option1NextIncrementPay.textContent = `₹${nextIncrementResult.finalPay.toLocaleString()}`;
+            
+            const formattedPromotionDate = formatDate(promotionDate);
+            const formattedNextIncrementDate = formatDate(nextIncrementDate);
+            
+            let incrementText = "";
+            if (currentIndex < payMatrix[presentLevel].length - 1) {
+                incrementText = `₹${payMatrix[presentLevel][currentIndex + 1].toLocaleString()} (Next increment in Level ${presentLevel})`;
+            } else {
+                incrementText = `₹${basicPay.toLocaleString()} (Maximum in Level ${presentLevel})`;
+            }
+            
+            let fixationText = "";
+            if (result.finalPay === incrementedPay) {
+                fixationText = `Exact amount ₹${incrementedPay.toLocaleString()} found in Level ${promotedLevel}`;
+            } else {
+                fixationText = `Next higher cell to ₹${incrementedPay.toLocaleString()}`;
+            }
+            
+            option1Steps.innerHTML = `
+                <h4>Calculation Steps (Option 1)</h4>
+                <div class="step">1. Present Basic Pay (as on ${formattedPromotionDate}): ₹${basicPay.toLocaleString()} (Level ${presentLevel}, Index ${currentIndex + 1})</div>
+                <div class="step">2. Grant of one increment in Level ${presentLevel} (on ${formattedPromotionDate}): ${incrementText}</div>
+                <div class="step">3. Fixation in Level ${promotedLevel} on date of promotion/MACP (on ${formattedPromotionDate}): ${fixationText}</div>
+                <div class="step-highlight">Fixed Basic Pay: ₹${result.finalPay.toLocaleString()} (Level ${promotedLevel}, Index ${result.index})</div>
+                <div class="step">4. Next Increment Date: ${formattedNextIncrementDate} (after 6 months from promotion)</div>
+                <div class="step">5. Pay on Next Increment (${formattedNextIncrementDate}): ₹${nextIncrementResult.finalPay.toLocaleString()} (Level ${promotedLevel}, Index ${nextIncrementResult.index})</div>
+            `;
+        }
+
+        function displayOption2Results(basicPay, presentLevel, promotedLevel, currentIndex, 
+                                     interimResult, finalResult, 
+                                     promotionDate, nextIncrementDate, option2NextIncrementDate, nextIncrementResult) {
+            option2InterimPay.textContent = `₹${interimResult.finalPay.toLocaleString()}`;
+            option2FinalPay.textContent = `₹${finalResult.finalPay.toLocaleString()}`;
+            option2Level.textContent = promotedLevel;
+            option2NextIncrement.textContent = formatDate(option2NextIncrementDate);
+            option2NextIncrementPay.textContent = `₹${nextIncrementResult.finalPay.toLocaleString()}`;
+            
+            const formattedPromotionDate = formatDate(promotionDate);
+            const formattedNextIncrementDate = formatDate(nextIncrementDate);
+            const formattedOption2NextIncrementDate = formatDate(option2NextIncrementDate);
+            
+            let fixationText = "";
+            if (finalResult.finalPay === payMatrix[presentLevel][Math.min(currentIndex + 2, payMatrix[presentLevel].length - 1)]) {
+                fixationText = `Exact amount ₹${payMatrix[presentLevel][Math.min(currentIndex + 2, payMatrix[presentLevel].length - 1)].toLocaleString()} found in Level ${promotedLevel}`;
+            } else {
+                fixationText = `Next higher cell to ₹${payMatrix[presentLevel][Math.min(currentIndex + 2, payMatrix[presentLevel].length - 1)].toLocaleString()}`;
+            }
+            
+            option2Steps.innerHTML = `
+                <h4>Calculation Steps (Option 2)</h4>
+                <div class="phase">
+                    <div class="phase-title">Phase I: Interim Fixation (from ${formattedPromotionDate} to ${formattedNextIncrementDate})</div>
+                    <div class="step">1. Present Basic Pay (as on ${formattedPromotionDate}): ₹${basicPay.toLocaleString()} (Level ${presentLevel}, Index ${currentIndex + 1})</div>
+                    <div class="step">2. Interim fixation in Level ${promotedLevel} (on ${formattedPromotionDate}): Next higher cell to ₹${basicPay.toLocaleString()}</div>
+                    <div class="step-highlight">Interim Basic Pay: ₹${interimResult.finalPay.toLocaleString()} (Level ${promotedLevel}, Index ${interimResult.index})</div>
+                </div>
+                <div class="phase">
+                    <div class="phase-title">Phase II: Final Fixation (from ${formattedNextIncrementDate})</div>
+                    <div class="step">3. Grant of two increments in Level ${presentLevel} (on ${formattedNextIncrementDate}): ₹${payMatrix[presentLevel][Math.min(currentIndex + 2, payMatrix[presentLevel].length - 1)].toLocaleString()}</div>
+                    <div class="step">4. Final fixation in Level ${promotedLevel} (on ${formattedNextIncrementDate}): ${fixationText}</div>
+                    <div class="step-highlight">Final Basic Pay: ₹${finalResult.finalPay.toLocaleString()} (Level ${promotedLevel}, Index ${finalResult.index})</div>
+                </div>
+                <div class="step">5. Next Increment Date: ${formattedOption2NextIncrementDate} (after 6 months from final fixation)</div>
+                <div class="step">6. Pay on Next Increment (${formattedOption2NextIncrementDate}): ₹${nextIncrementResult.finalPay.toLocaleString()} (Level ${promotedLevel}, Index ${nextIncrementResult.index})</div>
+            `;
+        }
+
+        function displayRecommendation(option1Pay, option2Pay, promotionDate, nextIncrementDate) {
+            if (option1Pay > option2Pay) {
+                recommendedOption.textContent = 'Option 1';
+                benefitAmount.textContent = `₹${(option1Pay - option2Pay).toLocaleString()}`;
+                nextIncrementInfo.textContent = formatDate(getNextIncrementDateAfterSixMonths(promotionDate));
+            } else if (option2Pay > option1Pay) {
+                recommendedOption.textContent = 'Option 2';
+                benefitAmount.textContent = `₹${(option2Pay - option1Pay).toLocaleString()}`;
+                nextIncrementInfo.textContent = formatDate(getNextIncrementDate(nextIncrementDate));
+            } else {
+                recommendedOption.textContent = 'Either Option';
+                benefitAmount.textContent = '₹0';
+                nextIncrementInfo.textContent = 'Same for both';
+            }
+        }
+
+        // Set default dates
+        function setDefaultDates() {
+            const promotionDate = new Date();
+            promotionDate.setDate(16);
+            promotionDate.setMonth(10); // November
+            promotionDate.setFullYear(2024);
+            
+            const nextIncrementDate = new Date();
+            nextIncrementDate.setDate(1);
+            nextIncrementDate.setMonth(6); // July
+            nextIncrementDate.setFullYear(2025);
+            
+            promotionDateInput.valueAsDate = promotionDate;
+            nextIncrementDateInput.valueAsDate = nextIncrementDate;
+        }
+
+        // Initialize the page
+        window.onload = function() {
+            setDefaultDates();
+        };
+    </script>
+</body>
+</html>

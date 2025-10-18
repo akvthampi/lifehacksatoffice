@@ -33,7 +33,7 @@
         .main-header h1 {
             color: #64b5f6;
             margin-bottom: 8px;
-            font-size: 1.8rem;
+            font-size: 2.2rem;
             text-shadow: 0 0 10px rgba(100, 181, 246, 0.7);
             letter-spacing: 1px;
         }
@@ -119,105 +119,64 @@
             box-shadow: 0 8px 25px rgba(100, 181, 246, 0.4);
         }
         
-        .result {
-            margin-top: 15px;
-            padding: 15px;
-            border-radius: 8px;
-            display: none;
-            border: 2px solid rgba(100, 150, 255, 0.5);
-        }
-        
-        .option-1 {
-            background: rgba(76, 175, 80, 0.1);
-            border-color: rgba(76, 175, 80, 0.5);
-        }
-        
-        .option-2 {
-            background: rgba(255, 152, 0, 0.1);
-            border-color: rgba(255, 152, 0, 0.5);
-        }
-        
-        .recommendation {
-            background: rgba(156, 39, 176, 0.1);
-            border-color: rgba(156, 39, 176, 0.5);
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
             margin-top: 20px;
-        }
-        
-        .result h3 {
-            margin-bottom: 10px;
-            font-size: 16px;
-            color: white;
-            text-align: center;
-        }
-        
-        .result-values {
-            display: flex;
-            justify-content: space-around;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        
-        .result-item {
-            flex: 1;
-            min-width: 80px;
-            text-align: center;
-        }
-        
-        .result-value {
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 3px;
-            color: white;
-        }
-        
-        .result-label {
-            font-size: 12px;
-            opacity: 0.9;
-            color: white;
-        }
-        
-        .calculation-steps {
             background: rgba(20, 30, 48, 0.8);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(0, 150, 255, 0.3);
+        }
+        
+        .comparison-table th {
+            background: linear-gradient(135deg, #1976d2, #64b5f6);
+            color: white;
             padding: 12px;
-            border-radius: 6px;
-            margin-top: 10px;
-            font-size: 13px;
-            border-left: 4px solid #64b5f6;
+            text-align: center;
+            font-weight: 600;
         }
         
-        .calculation-steps h4 {
-            color: #64b5f6;
-            margin-bottom: 8px;
-            font-size: 14px;
+        .comparison-table td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(100, 150, 255, 0.2);
+            text-align: center;
         }
         
-        .step {
-            margin-bottom: 5px;
-            padding-left: 10px;
+        .comparison-table tr:nth-child(even) {
+            background: rgba(30, 40, 60, 0.5);
         }
         
-        .step-highlight {
+        .comparison-table tr:hover {
+            background: rgba(100, 181, 246, 0.1);
+        }
+        
+        .option-1-cell {
+            background: rgba(76, 175, 80, 0.1);
+            border-left: 3px solid #4caf50;
+        }
+        
+        .option-2-cell {
+            background: rgba(255, 152, 0, 0.1);
+            border-left: 3px solid #ff9800;
+        }
+        
+        .highlight-cell {
             font-weight: bold;
             color: #ffeb3b;
-            margin-top: 8px;
-            padding: 5px;
-            background: rgba(255, 235, 59, 0.1);
-            border-radius: 4px;
         }
         
-        .phase {
-            margin-top: 10px;
-            padding: 8px;
-            background: rgba(100, 181, 246, 0.1);
-            border-radius: 4px;
-            border-left: 3px solid #64b5f6;
+        .date-cell {
+            color: #90caf9;
         }
         
-        .phase-title {
+        .amount-cell {
             font-weight: bold;
-            color: #64b5f6;
-            margin-bottom: 5px;
+        }
+        
+        .recommendation-row {
+            background: rgba(156, 39, 176, 0.2) !important;
+            font-weight: bold;
         }
         
         .info-box {
@@ -243,6 +202,13 @@
             font-size: 12px;
             margin-top: 5px;
             display: none;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #90caf9;
+            font-style: italic;
         }
         
         @keyframes fadeIn {
@@ -348,79 +314,9 @@
         </div>
 
         <div class="results-section">
-            <div class="result option-1" id="option1Result">
-                <h3>Option 1: Fixation from Date of Promotion/MACP</h3>
-                <div class="result-values">
-                    <div class="result-item">
-                        <div class="result-value" id="option1Pay">₹0</div>
-                        <div class="result-label">Fixed Pay</div>
-                    </div>
-                    <div class="result-item">
-                        <div class="result-value" id="option1Level">-</div>
-                        <div class="result-label">Pay Level</div>
-                    </div>
-                    <div class="result-item">
-                        <div class="result-value" id="option1Index">-</div>
-                        <div class="result-label">Matrix Index</div>
-                    </div>
-                    <div class="result-item">
-                        <div class="result-value" id="option1NextIncrement">-</div>
-                        <div class="result-label">Next Increment Date</div>
-                    </div>
-                    <div class="result-item">
-                        <div class="result-value" id="option1NextIncrementPay">-</div>
-                        <div class="result-label">Pay on Next Increment</div>
-                    </div>
-                </div>
-                <div class="calculation-steps" id="option1Steps">
-                    <!-- Calculation steps will be populated here -->
-                </div>
-            </div>
-            
-            <div class="result option-2" id="option2Result">
-                <h3>Option 2: Fixation from Date of Increment</h3>
-                <div class="result-values">
-                    <div class="result-item">
-                        <div class="result-value" id="option2InterimPay">₹0</div>
-                        <div class="result-label">Interim Pay (till DNI)</div>
-                    </div>
-                    <div class="result-item">
-                        <div class="result-value" id="option2FinalPay">₹0</div>
-                        <div class="result-label">Final Pay (from DNI)</div>
-                    </div>
-                    <div class="result-item">
-                        <div class="result-value" id="option2Level">-</div>
-                        <div class="result-label">Pay Level</div>
-                    </div>
-                    <div class="result-item">
-                        <div class="result-value" id="option2NextIncrement">-</div>
-                        <div class="result-label">Next Increment Date</div>
-                    </div>
-                    <div class="result-item">
-                        <div class="result-value" id="option2NextIncrementPay">-</div>
-                        <div class="result-label">Pay on Next Increment</div>
-                    </div>
-                </div>
-                <div class="calculation-steps" id="option2Steps">
-                    <!-- Calculation steps will be populated here -->
-                </div>
-            </div>
-            
-            <div class="result recommendation" id="recommendationResult">
-                <h3>Recommendation</h3>
-                <div class="result-values">
-                    <div class="result-item">
-                        <div class="result-value" id="recommendedOption">-</div>
-                        <div class="result-label">is recommended</div>
-                    </div>
-                    <div class="result-item">
-                        <div class="result-value" id="benefitAmount">₹0</div>
-                        <div class="result-label">Benefit Amount</div>
-                    </div>
-                    <div class="result-item">
-                        <div class="result-value" id="nextIncrementInfo">-</div>
-                        <div class="result-label">Next Increment Date</div>
-                    </div>
+            <div id="resultsContainer">
+                <div class="no-results">
+                    Enter details and click "Calculate Pay Fixation Options" to see comparison table
                 </div>
             </div>
         </div>
@@ -526,27 +422,7 @@
         const promotedLevelSelect = document.getElementById('promotedLevel');
         const promotionDateInput = document.getElementById('promotionDate');
         const nextIncrementDateInput = document.getElementById('nextIncrementDate');
-        
-        const option1ResultDiv = document.getElementById('option1Result');
-        const option1Pay = document.getElementById('option1Pay');
-        const option1Level = document.getElementById('option1Level');
-        const option1Index = document.getElementById('option1Index');
-        const option1NextIncrement = document.getElementById('option1NextIncrement');
-        const option1NextIncrementPay = document.getElementById('option1NextIncrementPay');
-        const option1Steps = document.getElementById('option1Steps');
-        
-        const option2ResultDiv = document.getElementById('option2Result');
-        const option2InterimPay = document.getElementById('option2InterimPay');
-        const option2FinalPay = document.getElementById('option2FinalPay');
-        const option2Level = document.getElementById('option2Level');
-        const option2NextIncrement = document.getElementById('option2NextIncrement');
-        const option2NextIncrementPay = document.getElementById('option2NextIncrementPay');
-        const option2Steps = document.getElementById('option2Steps');
-        
-        const recommendationResult = document.getElementById('recommendationResult');
-        const recommendedOption = document.getElementById('recommendedOption');
-        const benefitAmount = document.getElementById('benefitAmount');
-        const nextIncrementInfo = document.getElementById('nextIncrementInfo');
+        const resultsContainer = document.getElementById('resultsContainer');
 
         // Format date to DD/MM/YYYY
         function formatDate(dateString) {
@@ -646,13 +522,6 @@
             }
         }
 
-        // Calculate months between two dates
-        function getMonthsBetweenDates(startDate, endDate) {
-            const start = new Date(startDate);
-            const end = new Date(endDate);
-            return (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());
-        }
-
         // Validate increment date
         function isValidIncrementDate(date) {
             const inputDate = new Date(date);
@@ -666,6 +535,78 @@
             document.querySelectorAll('.error-message').forEach(el => {
                 el.style.display = 'none';
             });
+        }
+
+        // Generate comparison table
+        function generateComparisonTable(data) {
+            const {
+                presentBasicPay, presentLevel, promotedLevel, currentIndex,
+                option1Data, option2Data, recommendationData
+            } = data;
+
+            const tableHTML = `
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Option 1<br>(From Promotion Date)</th>
+                            <th>Option 2<br>(From Increment Date)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="date-cell">${formatDate(data.promotionDate)}</td>
+                            <td>Present Basic Pay (Level ${presentLevel})</td>
+                            <td class="option-1-cell amount-cell">₹${presentBasicPay.toLocaleString()}</td>
+                            <td class="option-2-cell amount-cell">₹${presentBasicPay.toLocaleString()}</td>
+                        </tr>
+                        <tr>
+                            <td class="date-cell">${formatDate(data.promotionDate)}</td>
+                            <td>One increment in present level</td>
+                            <td class="option-1-cell amount-cell">₹${option1Data.incrementedPayInPresentLevel.toLocaleString()}</td>
+                            <td class="option-2-cell">-</td>
+                        </tr>
+                        <tr>
+                            <td class="date-cell">${formatDate(data.promotionDate)}</td>
+                            <td>Fixation in promoted level</td>
+                            <td class="option-1-cell amount-cell">₹${option1Data.finalPay.toLocaleString()}<br>(Index: ${option1Data.index})</td>
+                            <td class="option-2-cell amount-cell">₹${option2Data.interimPay.toLocaleString()}<br>(Index: ${option2Data.interimIndex})</td>
+                        </tr>
+                        <tr>
+                            <td class="date-cell">${formatDate(data.nextIncrementDate)}</td>
+                            <td>Two increments in present level</td>
+                            <td class="option-1-cell">-</td>
+                            <td class="option-2-cell amount-cell">₹${option2Data.fictionalPayInLowerLevel.toLocaleString()}</td>
+                        </tr>
+                        <tr>
+                            <td class="date-cell">${formatDate(data.nextIncrementDate)}</td>
+                            <td>Re-fixation in promoted level</td>
+                            <td class="option-1-cell">-</td>
+                            <td class="option-2-cell amount-cell">₹${option2Data.finalPay.toLocaleString()}<br>(Index: ${option2Data.finalIndex})</td>
+                        </tr>
+                        <tr>
+                            <td class="date-cell">${formatDate(option1Data.nextIncrementDate)}</td>
+                            <td>Next Increment Date</td>
+                            <td class="option-1-cell">${formatDate(option1Data.nextIncrementDate)}</td>
+                            <td class="option-2-cell">${formatDate(option2Data.option2NextIncrementDate)}</td>
+                        </tr>
+                        <tr>
+                            <td class="date-cell">${formatDate(option1Data.nextIncrementDate)}</td>
+                            <td>Pay on Next Increment</td>
+                            <td class="option-1-cell amount-cell">₹${option1Data.nextIncrementPay.toLocaleString()}<br>(Index: ${option1Data.nextIncrementIndex})</td>
+                            <td class="option-2-cell amount-cell">₹${option2Data.nextIncrementPay.toLocaleString()}<br>(Index: ${option2Data.nextIncrementIndex})</td>
+                        </tr>
+                        <tr class="recommendation-row">
+                            <td colspan="2">Recommended Option</td>
+                            <td class="option-1-cell highlight-cell">${recommendationData.recommendedOption === 'Option 1' ? '✓ Recommended' : ''}</td>
+                            <td class="option-2-cell highlight-cell">${recommendationData.recommendedOption === 'Option 2' ? '✓ Recommended' : ''}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            `;
+
+            resultsContainer.innerHTML = tableHTML;
         }
 
         // Calculate pay fixation
@@ -747,116 +688,41 @@
             const option2NextIncrementDate = getNextIncrementDate(nextIncrementDate);
             const option2NextIncrementResult = findNextHigherPay(promotedLevel, option2FinalResult.finalPay + 1);
 
-            // Display results
-            displayOption1Results(presentBasicPay, presentLevel, promotedLevel, currentIndex, 
-                                incrementedPayInPresentLevel, option1Result, promotionDate, 
-                                option1NextIncrementDate, option1NextIncrementResult);
-            displayOption2Results(presentBasicPay, presentLevel, promotedLevel, currentIndex, 
-                                option2InterimResult, option2FinalResult, 
-                                promotionDate, nextIncrementDate, option2NextIncrementDate, option2NextIncrementResult);
-            displayRecommendation(option1Result.finalPay, option2FinalResult.finalPay, 
-                                promotionDate, nextIncrementDate);
-            
-            // Show result sections
-            option1ResultDiv.style.display = 'block';
-            option2ResultDiv.style.display = 'block';
-            recommendationResult.style.display = 'block';
-            
-            // Add animation
-            document.querySelectorAll('.result').forEach(result => {
-                result.style.animation = 'fadeIn 0.5s ease-out';
-            });
-        }
+            // Prepare data for table
+            const tableData = {
+                presentBasicPay,
+                presentLevel,
+                promotedLevel,
+                currentIndex,
+                promotionDate,
+                nextIncrementDate,
+                option1Data: {
+                    incrementedPayInPresentLevel,
+                    finalPay: option1Result.finalPay,
+                    index: option1Result.index,
+                    nextIncrementDate: option1NextIncrementDate,
+                    nextIncrementPay: option1NextIncrementResult.finalPay,
+                    nextIncrementIndex: option1NextIncrementResult.index
+                },
+                option2Data: {
+                    interimPay: option2InterimResult.finalPay,
+                    interimIndex: option2InterimResult.index,
+                    fictionalPayInLowerLevel,
+                    finalPay: option2FinalResult.finalPay,
+                    finalIndex: option2FinalResult.index,
+                    option2NextIncrementDate,
+                    nextIncrementPay: option2NextIncrementResult.finalPay,
+                    nextIncrementIndex: option2NextIncrementResult.index
+                },
+                recommendationData: {
+                    recommendedOption: option1Result.finalPay > option2FinalResult.finalPay ? 'Option 1' : 
+                                    option2FinalResult.finalPay > option1Result.finalPay ? 'Option 2' : 'Either',
+                    benefitAmount: Math.abs(option1Result.finalPay - option2FinalResult.finalPay)
+                }
+            };
 
-        function displayOption1Results(basicPay, presentLevel, promotedLevel, currentIndex, 
-                                     incrementedPay, result, promotionDate, nextIncrementDate, nextIncrementResult) {
-            option1Pay.textContent = `₹${result.finalPay.toLocaleString()}`;
-            option1Level.textContent = promotedLevel;
-            option1Index.textContent = result.index;
-            option1NextIncrement.textContent = formatDate(nextIncrementDate);
-            option1NextIncrementPay.textContent = `₹${nextIncrementResult.finalPay.toLocaleString()}`;
-            
-            const formattedPromotionDate = formatDate(promotionDate);
-            const formattedNextIncrementDate = formatDate(nextIncrementDate);
-            
-            let incrementText = "";
-            if (currentIndex < payMatrix[presentLevel].length - 1) {
-                incrementText = `₹${payMatrix[presentLevel][currentIndex + 1].toLocaleString()} (Next increment in Level ${presentLevel})`;
-            } else {
-                incrementText = `₹${basicPay.toLocaleString()} (Maximum in Level ${presentLevel})`;
-            }
-            
-            let fixationText = "";
-            if (result.finalPay === incrementedPay) {
-                fixationText = `Exact amount ₹${incrementedPay.toLocaleString()} found in Level ${promotedLevel}`;
-            } else {
-                fixationText = `Next higher cell to ₹${incrementedPay.toLocaleString()}`;
-            }
-            
-            option1Steps.innerHTML = `
-                <h4>Calculation Steps (Option 1)</h4>
-                <div class="step">1. Present Basic Pay (as on ${formattedPromotionDate}): ₹${basicPay.toLocaleString()} (Level ${presentLevel}, Index ${currentIndex + 1})</div>
-                <div class="step">2. Grant of one increment in Level ${presentLevel} (on ${formattedPromotionDate}): ${incrementText}</div>
-                <div class="step">3. Fixation in Level ${promotedLevel} on date of promotion/MACP (on ${formattedPromotionDate}): ${fixationText}</div>
-                <div class="step-highlight">Fixed Basic Pay: ₹${result.finalPay.toLocaleString()} (Level ${promotedLevel}, Index ${result.index})</div>
-                <div class="step">4. Next Increment Date: ${formattedNextIncrementDate} (after 6 months from promotion)</div>
-                <div class="step">5. Pay on Next Increment (${formattedNextIncrementDate}): ₹${nextIncrementResult.finalPay.toLocaleString()} (Level ${promotedLevel}, Index ${nextIncrementResult.index})</div>
-            `;
-        }
-
-        function displayOption2Results(basicPay, presentLevel, promotedLevel, currentIndex, 
-                                     interimResult, finalResult, 
-                                     promotionDate, nextIncrementDate, option2NextIncrementDate, nextIncrementResult) {
-            option2InterimPay.textContent = `₹${interimResult.finalPay.toLocaleString()}`;
-            option2FinalPay.textContent = `₹${finalResult.finalPay.toLocaleString()}`;
-            option2Level.textContent = promotedLevel;
-            option2NextIncrement.textContent = formatDate(option2NextIncrementDate);
-            option2NextIncrementPay.textContent = `₹${nextIncrementResult.finalPay.toLocaleString()}`;
-            
-            const formattedPromotionDate = formatDate(promotionDate);
-            const formattedNextIncrementDate = formatDate(nextIncrementDate);
-            const formattedOption2NextIncrementDate = formatDate(option2NextIncrementDate);
-            
-            let fixationText = "";
-            if (finalResult.finalPay === payMatrix[presentLevel][Math.min(currentIndex + 2, payMatrix[presentLevel].length - 1)]) {
-                fixationText = `Exact amount ₹${payMatrix[presentLevel][Math.min(currentIndex + 2, payMatrix[presentLevel].length - 1)].toLocaleString()} found in Level ${promotedLevel}`;
-            } else {
-                fixationText = `Next higher cell to ₹${payMatrix[presentLevel][Math.min(currentIndex + 2, payMatrix[presentLevel].length - 1)].toLocaleString()}`;
-            }
-            
-            option2Steps.innerHTML = `
-                <h4>Calculation Steps (Option 2)</h4>
-                <div class="phase">
-                    <div class="phase-title">Phase I: Interim Fixation (from ${formattedPromotionDate} to ${formattedNextIncrementDate})</div>
-                    <div class="step">1. Present Basic Pay (as on ${formattedPromotionDate}): ₹${basicPay.toLocaleString()} (Level ${presentLevel}, Index ${currentIndex + 1})</div>
-                    <div class="step">2. Interim fixation in Level ${promotedLevel} (on ${formattedPromotionDate}): Next higher cell to ₹${basicPay.toLocaleString()}</div>
-                    <div class="step-highlight">Interim Basic Pay: ₹${interimResult.finalPay.toLocaleString()} (Level ${promotedLevel}, Index ${interimResult.index})</div>
-                </div>
-                <div class="phase">
-                    <div class="phase-title">Phase II: Final Fixation (from ${formattedNextIncrementDate})</div>
-                    <div class="step">3. Grant of two increments in Level ${presentLevel} (on ${formattedNextIncrementDate}): ₹${payMatrix[presentLevel][Math.min(currentIndex + 2, payMatrix[presentLevel].length - 1)].toLocaleString()}</div>
-                    <div class="step">4. Final fixation in Level ${promotedLevel} (on ${formattedNextIncrementDate}): ${fixationText}</div>
-                    <div class="step-highlight">Final Basic Pay: ₹${finalResult.finalPay.toLocaleString()} (Level ${promotedLevel}, Index ${finalResult.index})</div>
-                </div>
-                <div class="step">5. Next Increment Date: ${formattedOption2NextIncrementDate} (after 6 months from final fixation)</div>
-                <div class="step">6. Pay on Next Increment (${formattedOption2NextIncrementDate}): ₹${nextIncrementResult.finalPay.toLocaleString()} (Level ${promotedLevel}, Index ${nextIncrementResult.index})</div>
-            `;
-        }
-
-        function displayRecommendation(option1Pay, option2Pay, promotionDate, nextIncrementDate) {
-            if (option1Pay > option2Pay) {
-                recommendedOption.textContent = 'Option 1';
-                benefitAmount.textContent = `₹${(option1Pay - option2Pay).toLocaleString()}`;
-                nextIncrementInfo.textContent = formatDate(getNextIncrementDateAfterSixMonths(promotionDate));
-            } else if (option2Pay > option1Pay) {
-                recommendedOption.textContent = 'Option 2';
-                benefitAmount.textContent = `₹${(option2Pay - option1Pay).toLocaleString()}`;
-                nextIncrementInfo.textContent = formatDate(getNextIncrementDate(nextIncrementDate));
-            } else {
-                recommendedOption.textContent = 'Either Option';
-                benefitAmount.textContent = '₹0';
-                nextIncrementInfo.textContent = 'Same for both';
-            }
+            // Generate and display table
+            generateComparisonTable(tableData);
         }
 
         // Set default dates

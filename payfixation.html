@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -285,13 +286,13 @@
             
             <div class="input-group">
                 <label for="promotionDate">Date of Promotion/MACP</label>
-                <input type="date" id="promotionDate">
+                <input type="date" id="promotionDate" value="2024-11-16">
                 <div class="error-message" id="promotionDateError">Please select promotion date</div>
             </div>
             
             <div class="input-group">
                 <label for="nextIncrementDate">Date of Next Increment in Present Level</label>
-                <input type="date" id="nextIncrementDate">
+                <input type="date" id="nextIncrementDate" value="2025-07-01">
                 <div class="error-message" id="incrementDateError">Please select valid increment date (1st Jan or 1st Jul)</div>
             </div>
             
@@ -724,27 +725,6 @@
             // Generate and display table
             generateComparisonTable(tableData);
         }
-
-        // Set default dates
-        function setDefaultDates() {
-            const promotionDate = new Date();
-            promotionDate.setDate(16);
-            promotionDate.setMonth(10); // November
-            promotionDate.setFullYear(2024);
-            
-            const nextIncrementDate = new Date();
-            nextIncrementDate.setDate(1);
-            nextIncrementDate.setMonth(6); // July
-            nextIncrementDate.setFullYear(2025);
-            
-            promotionDateInput.valueAsDate = promotionDate;
-            nextIncrementDateInput.valueAsDate = nextIncrementDate;
-        }
-
-        // Initialize the page
-        window.onload = function() {
-            setDefaultDates();
-        };
     </script>
 </body>
 </html>

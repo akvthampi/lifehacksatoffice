@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +7,8 @@
     <title>Dearness Allowance Rate Tracker</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-trendline"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -58,54 +61,16 @@
             opacity: 0.9;
         }
         
-        .info-box {
-            background-color: rgba(20, 30, 48, 0.8);
-            border-left: 4px solid #64b5f6;
-            padding: 12px;
-            margin-bottom: 15px;
-            border-radius: 0 5px 5px 0;
-            color: #e0e0e0;
-            border: 1px solid rgba(100, 150, 255, 0.2);
-            font-size: 0.9rem;
-        }
-        
-        .metrics-container {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        
-        .metric-card {
-            background: rgba(20, 30, 48, 0.8);
-            border-radius: 8px;
-            padding: 12px;
-            text-align: center;
-            border: 1px solid rgba(100, 150, 255, 0.2);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        
-        .metric-value {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: #64b5f6;
-            margin-bottom: 5px;
-        }
-        
-        .metric-label {
-            font-size: 0.8rem;
-            color: #90caf9;
-        }
-        
         .controls-container {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             margin-bottom: 15px;
-            flex-wrap: wrap;
             gap: 10px;
+            flex-wrap: wrap;
         }
         
-        .export-btn, .year-filter {
+        .export-btn {
             background: rgba(26, 59, 93, 0.8);
             color: #90caf9;
             border: 1px solid rgba(100, 150, 255, 0.2);
@@ -117,11 +82,29 @@
             display: flex;
             align-items: center;
             gap: 5px;
+            height: 36px;
         }
         
-        .export-btn:hover, .year-filter:hover {
+        .export-btn:hover {
             background: rgba(100, 181, 246, 0.3);
             color: white;
+        }
+        
+        .avg-increase-tile {
+            background: rgba(26, 59, 93, 0.8);
+            color: #90caf9;
+            border: 1px solid rgba(100, 150, 255, 0.2);
+            border-radius: 5px;
+            padding: 8px 12px;
+            font-weight: 600;
+            height: 36px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .avg-value {
+            color: #00ff55;
+            margin-left: 5px;
         }
         
         .tabs-container {
@@ -305,16 +288,6 @@
             border-top: 1px solid rgba(100, 150, 255, 0.3);
         }
         
-        .footer-note {
-            background-color: rgba(255, 152, 0, 0.1);
-            border-left: 4px solid #ff9800;
-            padding: 8px 12px;
-            margin-top: 10px;
-            border-radius: 0 5px 5px 0;
-            font-size: 0.8rem;
-            border: 1px solid rgba(255, 152, 0, 0.3);
-        }
-        
         /* Desktop styles */
         @media (min-width: 768px) {
             body {
@@ -338,36 +311,18 @@
                 font-size: 1.1rem;
             }
             
-            .info-box {
-                padding: 15px;
-                margin-bottom: 20px;
-                font-size: 1rem;
-            }
-            
-            .metrics-container {
-                grid-template-columns: repeat(4, 1fr);
-                gap: 15px;
-                margin-bottom: 20px;
-            }
-            
-            .metric-card {
-                padding: 15px;
-            }
-            
-            .metric-value {
-                font-size: 1.6rem;
-            }
-            
-            .metric-label {
-                font-size: 0.9rem;
-            }
-            
             .controls-container {
                 margin-bottom: 20px;
             }
             
-            .export-btn, .year-filter {
+            .export-btn {
                 padding: 10px 15px;
+                height: 40px;
+            }
+            
+            .avg-increase-tile {
+                padding: 10px 15px;
+                height: 40px;
             }
             
             .tabs-container {
@@ -438,10 +393,6 @@
                 font-size: 1.3rem;
             }
             
-            .metrics-container {
-                grid-template-columns: 1fr;
-            }
-            
             .chart-container {
                 height: 220px;
             }
@@ -455,6 +406,11 @@
                 padding: 10px;
                 font-size: 0.9rem;
             }
+            
+            .controls-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
         }
     </style>
 </head>
@@ -465,29 +421,19 @@
             <p class="subtitle">Historical DA rates for Central Government Employees (2006 - 2025)</p>
         </header>
         
-        <div class="info-box">
-            <p><strong>Note:</strong> With effect from 1st January 2016, the 7th Pay Commission was implemented, revising basic pays and resetting DA to 0%. The charts and tables below show the DA rates for both the 6th and 7th CPC periods.</p>
-        </div>
-        
-        <!-- Key Metrics -->
-        <div class="metrics-container" id="metricsContainer">
-            <!-- Metrics will be populated by JavaScript -->
-        </div>
-        
         <!-- Controls -->
         <div class="controls-container">
+            <div class="avg-increase-tile" id="avgIncreaseTile">
+                Avg bi-annual increase: <span class="avg-value" id="avgValue">0%</span>
+            </div>
             <button class="export-btn" id="exportBtn">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                     <polyline points="7 10 12 15 17 10"></polyline>
                     <line x1="12" y1="15" x2="12" y2="3"></line>
                 </svg>
-                Export to CSV
+                Export to PDF
             </button>
-            <select class="year-filter" id="yearFilter">
-                <option value="all">All Years</option>
-                <!-- Year options will be populated by JavaScript -->
-            </select>
         </div>
         
         <!-- Tabs for both mobile and desktop -->
@@ -584,9 +530,6 @@
         
         <footer>
             <p>Data Source: Ministry of Finance, Government of India. | Last Official Update: July 1, 2025</p>
-            <div class="footer-note">
-                <p><strong>Note:</strong> All rates shown are official as per government notifications. The current DA rate stands at 58% effective from July 1, 2025.</p>
-            </div>
             <p>Developed by : Anil Kumar V.T. | For reference purposes only. Please verify with official documents.</p>
         </footer>
     </div>
@@ -643,10 +586,9 @@
 
         // Initialize the application
         function initApp() {
-            renderMetrics();
-            renderYearFilter();
             renderTables();
             renderCharts();
+            renderAverageIncrease();
             setupTabs();
             setupEventListeners();
         }
@@ -668,8 +610,8 @@
                     const tabId = tab.getAttribute('data-tab');
                     document.getElementById(`${tabId}-content`).classList.add('active');
                     
-                    // Update metrics for the active tab
-                    renderMetrics();
+                    // Update average increase
+                    renderAverageIncrease();
                 });
                 
                 // Add keyboard accessibility
@@ -685,34 +627,22 @@
         // Setup event listeners
         function setupEventListeners() {
             // Export button
-            document.getElementById('exportBtn').addEventListener('click', exportToCSV);
-            
-            // Year filter
-            document.getElementById('yearFilter').addEventListener('change', filterData);
+            document.getElementById('exportBtn').addEventListener('click', exportToPDF);
         }
 
-        // Render key metrics
-        function renderMetrics() {
-            const metricsContainer = document.getElementById('metricsContainer');
+        // Render average increase at the top
+        function renderAverageIncrease() {
             const activeTab = document.querySelector('.tab.active').getAttribute('data-tab');
-            
-            let data, periodLabel;
+            let data;
             
             if (activeTab === 'sixth') {
                 data = sixthCpcData;
-                periodLabel = '6th CPC';
             } else {
                 data = seventhCpcData;
-                periodLabel = '7th CPC';
             }
             
             // Filter official data only for calculations
             const officialData = data.filter(item => item.status === 'Official');
-            
-            // Calculate metrics
-            const startingRate = officialData[0].rate;
-            const currentOfficialRate = officialData[officialData.length - 1].rate;
-            const totalIncrease = currentOfficialRate - startingRate;
             
             // Calculate average bi-annual increase
             const increases = [];
@@ -722,85 +652,18 @@
             const avgIncrease = increases.length > 0 ? 
                 (increases.reduce((a, b) => a + b, 0) / increases.length).toFixed(1) : 0;
             
-            metricsContainer.innerHTML = `
-                <div class="metric-card">
-                    <div class="metric-value">${startingRate}%</div>
-                    <div class="metric-label">Starting Rate</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-value">${currentOfficialRate}%</div>
-                    <div class="metric-label">Current Official Rate</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-value">${totalIncrease}%</div>
-                    <div class="metric-label">Total Increase (${periodLabel})</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-value">${avgIncrease}%</div>
-                    <div class="metric-label">Avg Bi-annual Increase</div>
-                </div>
-            `;
-        }
-
-        // Render year filter options
-        function renderYearFilter() {
-            const yearFilter = document.getElementById('yearFilter');
-            
-            // Get unique years from both datasets
-            const allYears = new Set();
-            
-            sixthCpcData.forEach(item => {
-                const year = new Date(item.date).getFullYear();
-                allYears.add(year);
-            });
-            
-            seventhCpcData.forEach(item => {
-                const year = new Date(item.date).getFullYear();
-                allYears.add(year);
-            });
-            
-            // Convert to array and sort
-            const sortedYears = Array.from(allYears).sort();
-            
-            // Add options to filter
-            sortedYears.forEach(year => {
-                const option = document.createElement('option');
-                option.value = year;
-                option.textContent = year;
-                yearFilter.appendChild(option);
-            });
-        }
-
-        // Filter data based on year selection
-        function filterData() {
-            const selectedYear = document.getElementById('yearFilter').value;
-            
-            if (selectedYear === 'all') {
-                renderTables();
-                renderCharts();
-            } else {
-                renderTables(selectedYear);
-                renderCharts(selectedYear);
-            }
+            // Update the tile
+            document.getElementById('avgValue').textContent = `${avgIncrease}%`;
         }
 
         // Render data tables
-        function renderTables(selectedYear = 'all') {
+        function renderTables() {
             const sixthCpcTableBody = document.getElementById('sixthCpcTableBody');
             const seventhCpcTableBody = document.getElementById('seventhCpcTableBody');
             
-            // Filter data if year is selected
-            const filteredSixthData = selectedYear === 'all' ? 
-                sixthCpcData : 
-                sixthCpcData.filter(item => new Date(item.date).getFullYear().toString() === selectedYear);
-                
-            const filteredSeventhData = selectedYear === 'all' ? 
-                seventhCpcData : 
-                seventhCpcData.filter(item => new Date(item.date).getFullYear().toString() === selectedYear);
-            
             // Render 6th CPC table
             sixthCpcTableBody.innerHTML = '';
-            filteredSixthData.forEach((item, index) => {
+            sixthCpcData.forEach((item, index) => {
                 const row = document.createElement('tr');
                 
                 // Format date
@@ -813,7 +676,7 @@
                 
                 // Calculate increase
                 const increase = index > 0 ? 
-                    (item.rate - filteredSixthData[index-1].rate) : 0;
+                    (item.rate - sixthCpcData[index-1].rate) : 0;
                 
                 // Highlight last rate under 6th CPC
                 if (item.remarks.includes("Last under 6th CPC")) {
@@ -833,7 +696,7 @@
             
             // Render 7th CPC table
             seventhCpcTableBody.innerHTML = '';
-            filteredSeventhData.forEach((item, index) => {
+            seventhCpcData.forEach((item, index) => {
                 const row = document.createElement('tr');
                 
                 // Format date
@@ -846,13 +709,13 @@
                 
                 // Calculate increase
                 const increase = index > 0 ? 
-                    (item.rate - filteredSeventhData[index-1].rate) : 0;
+                    (item.rate - seventhCpcData[index-1].rate) : 0;
                 
                 // Highlight current official rate
                 const isCurrentOfficial = item.status === 'Official' && 
                     date <= new Date() && 
-                    (index === filteredSeventhData.length - 1 || 
-                     new Date(filteredSeventhData[index+1].date) > new Date());
+                    (index === seventhCpcData.length - 1 || 
+                     new Date(seventhCpcData[index+1].date) > new Date());
                 
                 if (isCurrentOfficial) {
                     row.classList.add('highlight');
@@ -871,23 +734,18 @@
         }
 
         // Render charts
-        function renderCharts(selectedYear = 'all') {
-            renderSixthCpcChart(selectedYear);
-            renderSeventhCpcChart(selectedYear);
-            renderIncreaseCharts(selectedYear);
+        function renderCharts() {
+            renderSixthCpcChart();
+            renderSeventhCpcChart();
+            renderIncreaseCharts();
         }
 
         // Render 6th CPC chart
-        function renderSixthCpcChart(selectedYear = 'all') {
+        function renderSixthCpcChart() {
             const ctx = document.getElementById('sixthCpcChart').getContext('2d');
             
-            // Filter data if year is selected
-            const filteredData = selectedYear === 'all' ? 
-                sixthCpcData : 
-                sixthCpcData.filter(item => new Date(item.date).getFullYear().toString() === selectedYear);
-            
             // Prepare chart data
-            const labels = filteredData.map(item => {
+            const labels = sixthCpcData.map(item => {
                 const date = new Date(item.date);
                 return date.toLocaleDateString('en-IN', {
                     month: 'short',
@@ -895,7 +753,7 @@
                 });
             });
             
-            const rates = filteredData.map(item => item.rate);
+            const rates = sixthCpcData.map(item => item.rate);
             
             // Hide loading indicator
             document.querySelector('#sixthCpcChart').closest('.chart-container').querySelector('.loading').style.display = 'none';
@@ -980,16 +838,11 @@
         }
 
         // Render 7th CPC chart
-        function renderSeventhCpcChart(selectedYear = 'all') {
+        function renderSeventhCpcChart() {
             const ctx = document.getElementById('seventhCpcChart').getContext('2d');
             
-            // Filter data if year is selected
-            const filteredData = selectedYear === 'all' ? 
-                seventhCpcData : 
-                seventhCpcData.filter(item => new Date(item.date).getFullYear().toString() === selectedYear);
-            
             // Prepare chart data
-            const labels = filteredData.map(item => {
+            const labels = seventhCpcData.map(item => {
                 const date = new Date(item.date);
                 return date.toLocaleDateString('en-IN', {
                     month: 'short',
@@ -997,15 +850,15 @@
                 });
             });
             
-            const rates = filteredData.map(item => item.rate);
+            const rates = seventhCpcData.map(item => item.rate);
             
             // Hide loading indicator
             document.querySelector('#seventhCpcChart').closest('.chart-container').querySelector('.loading').style.display = 'none';
             
-            // Create gradient for chart
+            // Create gradient for chart (#00ff55 color)
             const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-            gradient.addColorStop(0, 'rgba(233, 30, 99, 0.8)');
-            gradient.addColorStop(1, 'rgba(233, 30, 99, 0.1)');
+            gradient.addColorStop(0, 'rgba(0, 255, 85, 0.8)'); // #00ff55
+            gradient.addColorStop(1, 'rgba(0, 255, 85, 0.1)'); // #00ff55
             
             // Create chart
             new Chart(ctx, {
@@ -1016,11 +869,11 @@
                         label: 'DA Rate (%)',
                         data: rates,
                         backgroundColor: gradient,
-                        borderColor: '#e91e63',
+                        borderColor: '#00ff55', // #00ff55
                         borderWidth: 2,
                         fill: true,
                         tension: 0.4,
-                        pointBackgroundColor: '#e91e63',
+                        pointBackgroundColor: '#00ff55', // #00ff55
                         pointBorderColor: '#fff',
                         pointBorderWidth: 2,
                         pointRadius: 4,
@@ -1082,32 +935,27 @@
         }
 
         // Render increase charts
-        function renderIncreaseCharts(selectedYear = 'all') {
-            renderSixthCpcIncreaseChart(selectedYear);
-            renderSeventhCpcIncreaseChart(selectedYear);
+        function renderIncreaseCharts() {
+            renderSixthCpcIncreaseChart();
+            renderSeventhCpcIncreaseChart();
         }
 
         // Render 6th CPC increase chart
-        function renderSixthCpcIncreaseChart(selectedYear = 'all') {
+        function renderSixthCpcIncreaseChart() {
             const ctx = document.getElementById('sixthCpcIncreaseChart').getContext('2d');
-            
-            // Filter data if year is selected
-            const filteredData = selectedYear === 'all' ? 
-                sixthCpcData : 
-                sixthCpcData.filter(item => new Date(item.date).getFullYear().toString() === selectedYear);
             
             // Prepare chart data - calculate increases
             const labels = [];
             const increases = [];
             
-            for (let i = 1; i < filteredData.length; i++) {
-                const date = new Date(filteredData[i].date);
+            for (let i = 1; i < sixthCpcData.length; i++) {
+                const date = new Date(sixthCpcData[i].date);
                 labels.push(date.toLocaleDateString('en-IN', {
                     month: 'short',
                     year: 'numeric'
                 }));
                 
-                increases.push(filteredData[i].rate - filteredData[i-1].rate);
+                increases.push(sixthCpcData[i].rate - sixthCpcData[i-1].rate);
             }
             
             // Hide loading indicator
@@ -1176,32 +1024,27 @@
         }
 
         // Render 7th CPC increase chart
-        function renderSeventhCpcIncreaseChart(selectedYear = 'all') {
+        function renderSeventhCpcIncreaseChart() {
             const ctx = document.getElementById('seventhCpcIncreaseChart').getContext('2d');
-            
-            // Filter data if year is selected
-            const filteredData = selectedYear === 'all' ? 
-                seventhCpcData : 
-                seventhCpcData.filter(item => new Date(item.date).getFullYear().toString() === selectedYear);
             
             // Prepare chart data - calculate increases
             const labels = [];
             const increases = [];
             
-            for (let i = 1; i < filteredData.length; i++) {
-                const date = new Date(filteredData[i].date);
+            for (let i = 1; i < seventhCpcData.length; i++) {
+                const date = new Date(seventhCpcData[i].date);
                 labels.push(date.toLocaleDateString('en-IN', {
                     month: 'short',
                     year: 'numeric'
                 }));
                 
-                increases.push(filteredData[i].rate - filteredData[i-1].rate);
+                increases.push(seventhCpcData[i].rate - seventhCpcData[i-1].rate);
             }
             
             // Hide loading indicator
             document.querySelector('#seventhCpcIncreaseChart').closest('.chart-container').querySelector('.loading').style.display = 'none';
             
-            // Create chart
+            // Create chart (#00ff55 color)
             new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -1209,8 +1052,8 @@
                     datasets: [{
                         label: 'Increase (%)',
                         data: increases,
-                        backgroundColor: 'rgba(233, 30, 99, 0.7)',
-                        borderColor: '#e91e63',
+                        backgroundColor: 'rgba(0, 255, 85, 0.7)', // #00ff55
+                        borderColor: '#00ff55', // #00ff55
                         borderWidth: 1
                     }]
                 },
@@ -1263,23 +1106,29 @@
             });
         }
 
-        // Export data to CSV
-        function exportToCSV() {
+        // Export data to PDF
+        function exportToPDF() {
+            const { jsPDF } = window.jspdf;
             const activeTab = document.querySelector('.tab.active').getAttribute('data-tab');
-            let data, filename;
+            let data, title;
             
             if (activeTab === 'sixth') {
                 data = sixthCpcData;
-                filename = '6th_CPC_DA_Rates.csv';
+                title = '6th CPC DA Rates';
             } else {
                 data = seventhCpcData;
-                filename = '7th_CPC_DA_Rates.csv';
+                title = '7th CPC DA Rates';
             }
             
-            // Create CSV content
-            let csvContent = "Effective From,Rate (%),Status,Remarks\n";
+            // Create PDF
+            const doc = new jsPDF();
             
-            data.forEach(item => {
+            // Add title
+            doc.setFontSize(18);
+            doc.text(title, 105, 20, null, null, 'center');
+            
+            // Prepare table data
+            const tableData = data.map(item => {
                 const date = new Date(item.date);
                 const formattedDate = date.toLocaleDateString('en-IN', {
                     day: '2-digit',
@@ -1287,21 +1136,34 @@
                     year: 'numeric'
                 });
                 
-                csvContent += `"${formattedDate}",${item.rate},"${item.status}","${item.remarks}"\n`;
+                return [
+                    formattedDate,
+                    item.rate + '%',
+                    item.status,
+                    item.remarks
+                ];
             });
             
-            // Create and trigger download
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            const url = URL.createObjectURL(blob);
+            // Add table
+            doc.autoTable({
+                head: [['Effective From', 'Rate (%)', 'Status', 'Remarks']],
+                body: tableData,
+                startY: 30,
+                styles: {
+                    fontSize: 10,
+                    cellPadding: 3
+                },
+                headStyles: {
+                    fillColor: [100, 181, 246],
+                    textColor: [255, 255, 255]
+                },
+                alternateRowStyles: {
+                    fillColor: [240, 240, 240]
+                }
+            });
             
-            link.setAttribute('href', url);
-            link.setAttribute('download', filename);
-            link.style.visibility = 'hidden';
-            
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            // Save the PDF
+            doc.save(`${title.replace(' ', '_')}_DA_Rates.pdf`);
         }
 
         // Initialize the app when DOM is loaded

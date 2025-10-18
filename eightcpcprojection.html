@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -292,6 +293,7 @@
             display: flex;
             flex-direction: column;
             border: 1px solid rgba(100, 150, 255, 0.2);
+            margin-bottom: 10px;
         }
         
         .table-container {
@@ -367,6 +369,36 @@
             padding: 12px;
             margin: 12px 0;
             border-radius: 0 8px 8px 0;
+            font-size: 13px;
+        }
+        
+        .allowances-table {
+            background: rgba(20, 30, 48, 0.8);
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid rgba(100, 150, 255, 0.2);
+            margin-top: 10px;
+        }
+        
+        .allowances-header {
+            text-align: center;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(100, 150, 255, 0.3);
+        }
+        
+        .allowances-header h2 {
+            color: #64b5f6;
+            font-size: 20px;
+            margin-bottom: 3px;
+        }
+        
+        .allowances-header p {
+            color: #90caf9;
             font-size: 13px;
         }
         
@@ -563,12 +595,30 @@
                     </table>
                 </div>
             </div>
+            
+            <div class="allowances-header">
+                <h2>Projected Other Allowances</h2>
+                <p>Transport Allowance & House Rent Allowance calculations</p>
+            </div>
+            <div class="allowances-table">
+                <div class="table-container">
+                    <table id="allowancesTable">
+                        <!-- Table will be populated by JavaScript -->
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
         // Constants
         const CURRENT_DA_PERCENTAGE = 58; // 58% as on 01-07-2025
+        const TRANSPORT_ALLOWANCES = [900, 1350, 1800, 3600, 7200]; // Current TA values
+        const HRA_RATES = {
+            'Class X City': [24, 27, 30],
+            'Class Y City': [16, 18, 20],
+            'Class Z City': [8, 9, 10]
+        };
 
         // 7th CPC Pay Matrix Data for reference
         const seventhCPCMatrix = {
@@ -609,6 +659,7 @@
         const stepNetImpact = document.getElementById('stepNetImpact');
         const noInputMessage = document.getElementById('noInputMessage');
         const projectionMatrixTable = document.getElementById('projectionMatrixTable');
+        const allowancesTable = document.getElementById('allowancesTable');
         const financialImpact = document.getElementById('financialImpact');
 
         // Event Listeners
@@ -677,6 +728,26 @@
             
             tableHTML += '</tbody>';
             projectionMatrixTable.innerHTML = tableHTML;
+        }
+
+        // Initialize the allowances table
+        function initializeAllowancesTable() {
+            let tableHTML = '<thead><tr><th>Allowance Type</th><th>Current Value</th><th>Projected Value</th></tr></thead><tbody>';
+            
+            // Transport Allowances
+            TRANSPORT_ALLOWANCES.forEach(ta => {
+                tableHTML += `<tr><td>Transport Allowance (₹${ta})</td><td>₹${ta.toLocaleString()} + DA</td><td>-</td></tr>`;
+            });
+            
+            // HRA Percentages
+            for (const [cityClass, rates] of Object.entries(HRA_RATES)) {
+                rates.forEach(rate => {
+                    tableHTML += `<tr><td>HRA (${rate}% - ${cityClass})</td><td>${rate}% of BP</td><td>-</td></tr>`;
+                });
+            }
+            
+            tableHTML += '</tbody>';
+            allowancesTable.innerHTML = tableHTML;
         }
 
         // Calculate projected 8th CPC pay
@@ -753,6 +824,9 @@
             
             // Update projection matrix with current calculation
             updateProjectionMatrix(basicPay, multiplicationFactor, projectedBasicPay);
+            
+            // Update allowances table with current calculation
+            updateAllowancesTable(basicPay, multiplicationFactor);
         }
 
         // Update projection matrix with current calculation
@@ -798,6 +872,32 @@
             projectionMatrixTable.innerHTML = tableHTML;
         }
 
+        // Update allowances table with current calculation
+        function updateAllowancesTable(currentPay, multiplicationFactor) {
+            const projectedBasicPay = Math.round((currentPay * multiplicationFactor) / 100) * 100;
+            
+            let tableHTML = '<thead><tr><th>Allowance Type</th><th>Current Value</th><th>Projected Value</th></tr></thead><tbody>';
+            
+            // Transport Allowances
+            TRANSPORT_ALLOWANCES.forEach(ta => {
+                const currentTAWithDA = ta + (ta * CURRENT_DA_PERCENTAGE / 100);
+                const projectedTA = Math.round((ta * multiplicationFactor) / 100) * 100;
+                tableHTML += `<tr><td>Transport Allowance (₹${ta.toLocaleString()})</td><td>₹${Math.round(currentTAWithDA).toLocaleString()} (₹${ta.toLocaleString()} + ${CURRENT_DA_PERCENTAGE}% DA)</td><td>₹${projectedTA.toLocaleString()}</td></tr>`;
+            });
+            
+            // HRA Percentages for different city classes
+            for (const [cityClass, rates] of Object.entries(HRA_RATES)) {
+                rates.forEach(rate => {
+                    const currentHRA = currentPay * (rate / 100);
+                    const projectedHRA = projectedBasicPay * (rate / 100);
+                    tableHTML += `<tr><td>HRA (${rate}% - ${cityClass})</td><td>₹${Math.round(currentHRA).toLocaleString()} (${rate}% of ₹${currentPay.toLocaleString()})</td><td>₹${Math.round(projectedHRA).toLocaleString()} (${rate}% of ₹${projectedBasicPay.toLocaleString()})</td></tr>`;
+                });
+            }
+            
+            tableHTML += '</tbody>';
+            allowancesTable.innerHTML = tableHTML;
+        }
+
         // Initialize the application
         window.addEventListener('load', () => {
             // Set default values
@@ -809,6 +909,9 @@
             
             // Initialize the matrix table
             initializeProjectionMatrixTable();
+            
+            // Initialize the allowances table
+            initializeAllowancesTable();
             
             // Calculate initial projection
             calculateProjectedPay();

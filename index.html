@@ -2,214 +2,376 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Life Hacks at Office - Office Productivity Suite</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OfficeSuite Pro - Ultimate Productivity Hub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Remove all margin/padding and ensure full-page background */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body { 
-            height: 100%; 
-            width: 100%; 
-            background: linear-gradient(135deg, #0d1525 0%, #1a243d 100%);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            color: #e0e0e0; 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        body { min-height: 100vh; }
 
-        .container {
-            width: 100vw;
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #7c3aed;
+            --accent: #06b6d4;
+            --dark: #0f172a;
+            --darker: #0c1220;
+            --light: #f1f5f9;
+            --gray: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%);
+            color: var(--light);
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            padding: 20px;
-            background: 
-                radial-gradient(circle at 10% 20%, rgba(77, 124, 255, 0.1) 0%, transparent 20%),
-                radial-gradient(circle at 90% 80%, rgba(77, 124, 255, 0.05) 0%, transparent 20%);
+            overflow-x: hidden;
         }
 
-        h1 {
-            color: #ffffff;
-            font-weight: 600;
-            margin: 30px 0 40px 40px;
-            font-size: 2.2rem;
-            padding-left: 18px;
-            letter-spacing: 1px;
-            border-left: 4px solid #4d7cff;
-            text-shadow: 0 0 10px rgba(77, 124, 255, 0.3);
-            position: relative;
-        }
-
-        h1::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
+        .background-animation {
+            position: fixed;
+            top: 0;
             left: 0;
-            width: 100px;
-            height: 3px;
-            background: linear-gradient(90deg, #4d7cff, transparent);
-            border-radius: 3px;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-            padding: 0 40px 40px 40px;
             width: 100%;
-        }
-
-        .tile {
-            background: linear-gradient(145deg, #1a243d 0%, #161f36 100%);
-            border-radius: 16px;
-            padding: 30px 25px 25px 25px;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 
-                0 8px 20px rgba(0, 0, 0, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.05);
-            position: relative;
-            font-size: 1.1rem;
-            font-weight: 500;
-            color: #d0d8e8;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            border: 1px solid #2a3450;
+            height: 100%;
+            z-index: -1;
             overflow: hidden;
         }
 
-        .tile::before {
+        .floating-shape {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            opacity: 0.1;
+            filter: blur(20px);
+            animation: float 15s infinite ease-in-out;
+        }
+
+        .shape-1 {
+            width: 300px;
+            height: 300px;
+            top: 10%;
+            left: 5%;
+            animation-delay: 0s;
+        }
+
+        .shape-2 {
+            width: 200px;
+            height: 200px;
+            bottom: 15%;
+            right: 10%;
+            animation-delay: 3s;
+        }
+
+        .shape-3 {
+            width: 150px;
+            height: 150px;
+            top: 60%;
+            left: 20%;
+            animation-delay: 6s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(-20px, -30px) rotate(5deg); }
+            50% { transform: translate(15px, 25px) rotate(-5deg); }
+            75% { transform: translate(10px, -15px) rotate(3deg); }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        header {
+            text-align: center;
+            padding: 1.5rem 0;
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            filter: drop-shadow(0 0 15px rgba(37, 99, 235, 0.3));
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, #fff, #cbd5e1);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: #94a3b8;
+            max-width: 600px;
+            margin: 0 auto 1.5rem;
+            line-height: 1.5;
+        }
+
+        .search-bar {
+            max-width: 500px;
+            margin: 0 auto 1.5rem;
+            position: relative;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 0.9rem 1.2rem;
+            padding-left: 2.8rem;
+            border: none;
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+            font-size: 0.95rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.12);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
+        }
+
+        .search-bar i {
+            position: absolute;
+            left: 1.2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 1rem;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.2rem;
+            margin: 1.5rem 0;
+        }
+
+        .tool-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tool-card::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
-            height: 4px;
-            background: linear-gradient(90deg, #4d7cff, #6b94ff);
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
             transform: scaleX(0);
             transform-origin: left;
             transition: transform 0.3s ease;
         }
 
-        .tile:hover, .tile:focus {
-            transform: translateY(-8px);
+        .tool-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
             box-shadow: 
-                0 15px 35px rgba(0, 0, 0, 0.4),
-                0 0 20px rgba(77, 124, 255, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            background: linear-gradient(145deg, #202d4d 0%, #1a243d 100%);
-            border-color: #4d7cff;
+                0 20px 40px rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(37, 99, 235, 0.3),
+                0 0 25px rgba(37, 99, 235, 0.2);
         }
 
-        .tile:hover::before {
+        .tool-card:hover::before {
             transform: scaleX(1);
         }
 
-        .tile:focus {
-            outline: none;
-        }
-
-        .tile-icon {
-            font-size: 2.8rem;
-            margin-bottom: 20px;
-            filter: drop-shadow(0 0 8px rgba(77, 124, 255, 0.2));
-            transition: transform 0.3s ease;
-        }
-
-        .tile:hover .tile-icon {
-            transform: scale(1.1);
-        }
-
-        .tile-text {
-            min-height: 46px;
-            display: flex;
-            align-items: flex-end;
-            font-weight: 500;
-            line-height: 1.4;
-            transition: color 0.3s ease;
-        }
-
-        .tile:hover .tile-text {
-            color: #ffffff;
-        }
-
-        /* Plus sign at top-right of tile */
-        .plus-circle {
-            position: absolute;
-            top: 18px;
-            right: 20px;
-            width: 28px;
-            height: 28px;
-            background: rgba(255, 255, 255, 0.1);
-            color: #4d7cff;
-            font-size: 20px;
-            font-weight: bold;
-            border-radius: 50%;
+        .icon-container {
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            user-select: none;
-            pointer-events: none;
-            transition: all 0.2s ease;
-            backdrop-filter: blur(5px);
+            margin-bottom: 1.2rem;
+            font-size: 1.5rem;
+            transition: transform 0.3s ease;
         }
 
-        .tile:hover .plus-circle, .tile:focus .plus-circle {
-            background: rgba(77, 124, 255, 0.2);
-            color: #6b94ff;
-            transform: rotate(90deg);
+        .tool-card:hover .icon-container {
+            transform: scale(1.1) rotate(5deg);
         }
 
-        .footer {
-            text-align: right;
-            color: #5a6a7f;
-            padding: 10px 40px;
-            margin-top: auto;
+        .tool-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.7rem;
+            color: white;
+        }
+
+        .tool-description {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            margin-bottom: 1.2rem;
+            flex-grow: 1;
+        }
+
+        .tool-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+        }
+
+        .tool-category {
+            background: rgba(37, 99, 235, 0.2);
+            color: #93c5fd;
+            padding: 0.25rem 0.7rem;
+            border-radius: 15px;
+            font-weight: 500;
+        }
+
+        .tool-launch {
+            color: var(--primary);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.3s ease;
+        }
+
+        .tool-card:hover .tool-launch {
+            color: #60a5fa;
+            transform: translateX(3px);
+        }
+
+        .categories {
+            display: flex;
+            justify-content: center;
+            gap: 0.8rem;
+            margin: 1.5rem 0;
+            flex-wrap: wrap;
+        }
+
+        .category-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #94a3b8;
+            padding: 0.6rem 1.2rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
             font-size: 0.9rem;
         }
 
-        .footer small {
-            background: rgba(26, 36, 61, 0.7);
-            padding: 8px 15px;
-            border-radius: 20px;
-            backdrop-filter: blur(5px);
+        .category-btn:hover, .category-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
         }
 
-        @media (max-width: 700px) {
-            .grid { 
-                grid-template-columns: 1fr; 
-                padding: 0 20px 24px 20px;
-                gap: 20px;
-            }
-            h1 { 
-                margin: 20px 0 30px 20px; 
-                font-size: 1.8rem; 
-                text-align: center;
-                padding-left: 0;
-                border-left: none;
-                border-bottom: 3px solid #4d7cff;
-                padding-bottom: 10px;
-                margin-left: 20px;
-                margin-right: 20px;
-            }
-            h1::after {
-                display: none;
-            }
+        footer {
+            text-align: center;
+            padding: 2rem 0 1.5rem;
+            color: #64748b;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .creator {
+            font-weight: 600;
+            color: #93c5fd;
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+        }
+
+        /* Individual card colors */
+        .card-1 .icon-container { background: linear-gradient(45deg, #3b82f6, #60a5fa); }
+        .card-2 .icon-container { background: linear-gradient(45deg, #10b981, #34d399); }
+        .card-3 .icon-container { background: linear-gradient(45deg, #f59e0b, #fbbf24); }
+        .card-4 .icon-container { background: linear-gradient(45deg, #ef4444, #f87171); }
+        .card-5 .icon-container { background: linear-gradient(45deg, #8b5cf6, #a78bfa); }
+        .card-6 .icon-container { background: linear-gradient(45deg, #06b6d4, #22d3ee); }
+        .card-7 .icon-container { background: linear-gradient(45deg, #ec4899, #f472b6); }
+        .card-8 .icon-container { background: linear-gradient(45deg, #14b8a6, #2dd4bf); }
+        .card-9 .icon-container { background: linear-gradient(45deg, #f97316, #fb923c); }
+        .card-10 .icon-container { background: linear-gradient(45deg, #6366f1, #818cf8); }
+        .card-11 .icon-container { background: linear-gradient(45deg, #a855f7, #c084fc); }
+        .card-12 .icon-container { background: linear-gradient(45deg, #0ea5e9, #38bdf8); }
+        .card-13 .icon-container { background: linear-gradient(45deg, #dc2626, #ef4444); }
+        .card-14 .icon-container { background: linear-gradient(45deg, #059669, #10b981); }
+        .card-15 .icon-container { background: linear-gradient(45deg, #7c2d12, #92400e); }
+        .card-16 .icon-container { background: linear-gradient(45deg, #4338ca, #4f46e5); }
+        .card-17 .icon-container { background: linear-gradient(45deg, #be185d, #db2777); }
+        .card-18 .icon-container { background: linear-gradient(45deg, #454ade, #6366f1); }
+
+        @media (max-width: 768px) {
             .container {
-                padding: 10px;
+                padding: 1rem;
             }
-            .footer {
-                padding: 10px 20px;
-                text-align: center;
+
+            h1 {
+                font-size: 1.7rem;
+            }
+
+            .logo {
+                font-size: 2rem;
+            }
+
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .categories {
+                gap: 0.5rem;
+            }
+
+            .category-btn {
+                padding: 0.5rem 0.9rem;
+                font-size: 0.85rem;
             }
         }
 
-        /* Animation for the grid items */
         @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(30px);
+                transform: translateY(20px);
             }
             to {
                 opacity: 1;
@@ -217,136 +379,324 @@
             }
         }
 
-        .tile {
-            animation: fadeInUp 0.6s ease forwards;
+        .tool-card {
+            animation: fadeInUp 0.4s ease forwards;
         }
 
-        .grid .tile:nth-child(1) { animation-delay: 0.1s; }
-        .grid .tile:nth-child(2) { animation-delay: 0.2s; }
-        .grid .tile:nth-child(3) { animation-delay: 0.3s; }
-        .grid .tile:nth-child(4) { animation-delay: 0.4s; }
-        .grid .tile:nth-child(5) { animation-delay: 0.5s; }
-        .grid .tile:nth-child(6) { animation-delay: 0.6s; }
-        .grid .tile:nth-child(7) { animation-delay: 0.7s; }
-        .grid .tile:nth-child(8) { animation-delay: 0.8s; }
-        .grid .tile:nth-child(9) { animation-delay: 0.9s; }
-        .grid .tile:nth-child(10) { animation-delay: 1.0s; }
-        .grid .tile:nth-child(11) { animation-delay: 1.1s; }
-        .grid .tile:nth-child(12) { animation-delay: 1.2s; }
-        .grid .tile:nth-child(13) { animation-delay: 1.3s; }
-        .grid .tile:nth-child(14) { animation-delay: 1.4s; }
-        .grid .tile:nth-child(15) { animation-delay: 1.5s; }
-        .grid .tile:nth-child(16) { animation-delay: 1.6s; }
-        .grid .tile:nth-child(17) { animation-delay: 1.7s; }
-        .grid .tile:nth-child(18) { animation-delay: 1.8s; }
+        .tools-grid .tool-card:nth-child(1) { animation-delay: 0.1s; }
+        .tools-grid .tool-card:nth-child(2) { animation-delay: 0.15s; }
+        .tools-grid .tool-card:nth-child(3) { animation-delay: 0.2s; }
+        .tools-grid .tool-card:nth-child(4) { animation-delay: 0.25s; }
+        .tools-grid .tool-card:nth-child(5) { animation-delay: 0.3s; }
+        .tools-grid .tool-card:nth-child(6) { animation-delay: 0.35s; }
+        .tools-grid .tool-card:nth-child(7) { animation-delay: 0.4s; }
+        .tools-grid .tool-card:nth-child(8) { animation-delay: 0.45s; }
+        .tools-grid .tool-card:nth-child(9) { animation-delay: 0.5s; }
+        .tools-grid .tool-card:nth-child(10) { animation-delay: 0.55s; }
+        .tools-grid .tool-card:nth-child(11) { animation-delay: 0.6s; }
+        .tools-grid .tool-card:nth-child(12) { animation-delay: 0.65s; }
+        .tools-grid .tool-card:nth-child(13) { animation-delay: 0.7s; }
+        .tools-grid .tool-card:nth-child(14) { animation-delay: 0.75s; }
+        .tools-grid .tool-card:nth-child(15) { animation-delay: 0.8s; }
+        .tools-grid .tool-card:nth-child(16) { animation-delay: 0.85s; }
+        .tools-grid .tool-card:nth-child(17) { animation-delay: 0.9s; }
+        .tools-grid .tool-card:nth-child(18) { animation-delay: 0.95s; }
     </style>
 </head>
 <body>
+    <div class="background-animation">
+        <div class="floating-shape shape-1"></div>
+        <div class="floating-shape shape-2"></div>
+        <div class="floating-shape shape-3"></div>
+    </div>
+
     <div class="container">
-        <h1>Life Hacks at Office</h1>
-        <div class="grid">
-            <a href="imms.html" target="_blank" class="tile" title="Incoming Mail Management System">
-                <div class="plus-circle">+</div>
-                <div class="tile-icon">📥</div>
-                <div class="tile-text">Incoming Mail Management System</div>
+        <header>
+            <div class="logo">
+                <i class="fas fa-cube"></i>
+            </div>
+            <h1>OfficeSuite Pro</h1>
+            <p class="subtitle">Your ultimate productivity hub with powerful tools designed to streamline office workflows</p>
+            
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search tools..." id="searchInput">
+            </div>
+        </header>
+
+        <div class="categories">
+            <button class="category-btn active" data-category="all">All Tools</button>
+            <button class="category-btn" data-category="communication">Communication</button>
+            <button class="category-btn" data-category="finance">Finance</button>
+            <button class="category-btn" data-category="productivity">Productivity</button>
+            <button class="category-btn" data-category="management">Management</button>
+        </div>
+
+        <div class="tools-grid">
+            <a href="imms.html" target="_blank" class="tool-card card-1" data-category="communication">
+                <div class="icon-container">
+                    <i class="fas fa-inbox"></i>
+                </div>
+                <h3 class="tool-title">Incoming Mail Management</h3>
+                <p class="tool-description">Efficiently manage and track all incoming correspondence with automated sorting.</p>
+                <div class="tool-meta">
+                    <span class="tool-category">Communication</span>
+                    <span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span>
+                </div>
             </a>
-            <a href="omms.html" target="_blank" class="tile" title="Outgoing Mail Management System">
-                <div class="plus-circle">+</div>
-                <div class="tile-icon">📤</div>
-                <div class="tile-text">Outgoing Mail Management System</div>
+
+            <a href="omms.html" target="_blank" class="tool-card card-2" data-category="communication">
+                <div class="icon-container">
+                    <i class="fas fa-paper-plane"></i>
+                </div>
+                <h3 class="tool-title">Outgoing Mail Management</h3>
+                <p class="tool-description">Track and manage outgoing communications with delivery confirmation.</p>
+                <div class="tool-meta">
+                    <span class="tool-category">Communication</span>
+                    <span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span>
+                </div>
             </a>
-            <a href="dpms.html" target="_blank" class="tile" title="Disciplinary Proceedings Management System">
-                <div class="plus-circle">+</div>
-                <div class="tile-icon">⚖️</div>
-                <div class="tile-text">Disciplinary Proceedings Management System</div>
+
+            <a href="dpms.html" target="_blank" class="tool-card card-3" data-category="management">
+                <div class="icon-container">
+                    <i class="fas fa-gavel"></i>
+                </div>
+                <h3 class="tool-title">Disciplinary Proceedings</h3>
+                <p class="tool-description">Manage disciplinary cases with proper documentation and compliance tracking.</p>
+                <div class="tool-meta">
+                    <span class="tool-category">Management</span>
+                    <span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span>
+                </div>
             </a>
-            <a href="taskmgr.html" target="_blank" class="tile" title="Task Manager">
-                <div class="plus-circle">+</div>
-                <div class="tile-icon">📋</div>
-                <div class="tile-text">Task Manager</div>
+
+            <a href="taskmgr.html" target="_blank" class="tool-card card-4" data-category="productivity">
+                <div class="icon-container">
+                    <i class="fas fa-tasks"></i>
+                </div>
+                <h3 class="tool-title">Task Manager</h3>
+                <p class="tool-description">Organize, prioritize, and track all your tasks with deadline reminders.</p>
+                <div class="tool-meta">
+                    <span class="tool-category">Productivity</span>
+                    <span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span>
+                </div>
             </a>
-            <a href="chart.html" target="_blank" class="tile" title="Chart Preparation Tool">
-                <div class="plus-circle">+</div>
-                <div class="tile-icon">📊</div>
-                <div class="tile-text">Chart Preparation Tool</div>
+
+            <a href="chart.html" target="_blank" class="tool-card card-5" data-category="management">
+                <div class="icon-container">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3 class="tool-title">Chart Preparation</h3>
+                <p class="tool-description">Create professional organizational charts with drag-and-drop interface.</p>
+                <div class="tool-meta">
+                    <span class="tool-category">Management</span>
+                    <span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span>
+                </div>
             </a>
-            <a href="fmru.html" target="_blank" class="tile" title="File Movement Record Utility">
-                <div class="plus-circle">+</div>
-                <div class="tile-icon">🚚</div>
-                <div class="tile-text">File Movement Record Utility</div>
+
+            <a href="fmru.html" target="_blank" class="tool-card card-6" data-category="management">
+                <div class="icon-container">
+                    <i class="fas fa-exchange-alt"></i>
+                </div>
+                <h3 class="tool-title">File Movement Records</h3>
+                <p class="tool-description">Track file movements across departments with timestamps.</p>
+                <div class="tool-meta">
+                    <span class="tool-category">Management</span>
+                    <span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span>
+                </div>
             </a>
-            <a href="firu.html" target="_blank" class="tile" title="Digital File Index Utility">
-                <div class="plus-circle">+</div>
-                <div class="tile-icon">🔍</div>
-                <div class="tile-text">Digital File Index Utility</div>
+
+            <a href="firu.html" target="_blank" class="tool-card card-7" data-category="productivity">
+                <div class="icon-container">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h3 class="tool-title">Digital File Index</h3>
+                <p class="tool-description">Quickly locate files with advanced search capabilities.</p>
+                <div class="tool-meta">
+                    <span class="tool-category">Productivity</span>
+                    <span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span>
+                </div>
             </a>
-            <a href="dabook.html" target="_blank" class="tile" title="Digital Account Book">
-                <div class="plus-circle">+</div>
-                <div class="tile-icon">📚</div>
-                <div class="tile-text">Digital Account Book</div>
+
+            <a href="dabook.html" target="_blank" class="tool-card card-8" data-category="finance">
+                <div class="icon-container">
+                    <i class="fas fa-book"></i>
+                </div>
+                <h3 class="tool-title">Digital Account Book</h3>
+                <p class="tool-description">Maintain comprehensive account records with automated calculations.</p>
+                <div class="tool-meta">
+                    <span class="tool-category">Finance</span>
+                    <span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span>
+                </div>
             </a>
-            <a href="dcbook.html" target="_blank" class="tile" title="Digital Cash Book">
-                <div class="plus-circle">+</div>
-                <div class="tile-icon">💵</div>
-                <div class="tile-text">Digital Cash Book</div>
+
+            <a href="dcbook.html" target="_blank" class="tool-card card-9" data-category="finance">
+                <div class="icon-container">
+                    <i class="fas fa-money-bill-wave"></i>
+                </div>
+                <h3 class="tool-title">Digital Cash Book</h3>
+                <p class="tool-description">Track daily cash transactions with real-time balance updates.</p>
+                <div class="tool-meta">
+                    <span class="tool-category">Finance</span>
+                    <span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span>
+                </div>
             </a>
-            <!-- Pay Fixation Comparison Tool Card -->
-            <a href="payfixation.html" target="_blank" class="tile" title="Pay Fixation Comparison Tool">
-                <div class="plus-circle">+</div>
-                <div class="tile-icon">🧮</div>
-                <div class="tile-text">Pay Fixation Comparison Tool</div>
+
+            <a href="payfixation.html" target="_blank" class="tool-card card-10" data-category="finance">
+                <div class="icon-container">
+                    <i class="fas fa-calculator"></i>
+                </div>
+                <h3 class="tool-title">Pay Fixation Comparator</h3>
+                <p class="tool-description">Compare pay scales across different pay commissions.</p>
+                <div class="tool-meta">
+                    <span class="tool-category">Finance</span>
+                    <span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span>
+                </div>
             </a>
-            <!-- Dearness Allowance Rate Tracker Card -->
-            <a href="daratetracker.html" target="_blank" class="tile" title="Dearness Allowance Rate Tracker">
-                <div class="plus-circle">+</div>
-                <div class="tile-icon">📈</div>
-                <div class="tile-text">Dearness Allowance Rate Tracker</div>
+
+            <a href="daratetracker.html" target="_blank" class="tool-card card-11" data-category="finance">
+                <div class="icon-container">
+                    <i class="fas fa-percentage"></i>
+                </div>
+                <h3 class="tool-title">DA Rate Tracker</h3>
+                <p class="tool-description">Monitor and calculate Dearness Allowance rates.</p>
+                <div class="tool-meta">
+                    <span class="tool-category">Finance</span>
+                    <span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span>
+                </div>
             </a>
-            <!-- Quick Notes App Card -->
-            <a href="quicknotes.html" target="_blank" class="tile" title="Sticky Notes">
-                <div class="plus-circle">+</div>
-                <div class="tile-icon">📝</div>
-                <div class="tile-text">Sticky Notes</div>
+
+            <a href="quicknotes.html" target="_blank" class="tool-card card-12" data-category="productivity">
+                <div class="icon-container">
+                    <i class="fas fa-sticky-note"></i>
+                </div>
+                <h3 class="tool-title">Sticky Notes</h3>
+                <p class="tool-description">Create and organize digital sticky notes with color coding.</p>
+                <div class="tool-meta">
+                    <span class="tool-category">Productivity</span>
+                    <span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span>
+                </div>
             </a>
-            <!-- Target Achievement Tracker Card -->
-            <a href="taic.html" target="_blank" class="tile" title="Target Achievement Tracker">
-                <div class="plus-circle">+</div>
-                <div class="tile-icon">🎯</div>
-                <div class="tile-text">Target Achievement Tracker</div>
+
+            <a href="taic.html" target="_blank" class="tool-card card-13" data-category="productivity">
+                <div class="icon-container">
+                    <i class="fas fa-bullseye"></i>
+                </div>
+                <h3 class="tool-title">Target Achievement</h3>
+                <p class="tool-description">Track progress towards goals with visual dashboards.</p>
+                <div class="tool-meta">
+                    <span class="tool-category">Productivity</span>
+                    <span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span>
+                </div>
             </a>
-            <!-- Advance Increment Calculator Card -->
-            <a href="advanceincalc.html" target="_blank" class="tile" title="Advance Increment Calculator">
-                <div class="plus-circle">+</div>
-                <div class="tile-icon">🚀</div>
-                <div class="tile-text">Advance Increment Calculator</div>
+
+            <a href="advanceincalc.html" target="_blank" class="tool-card card-14" data-category="finance">
+                <div class="icon-container">
+                    <i class="fas fa-rocket"></i>
+                </div>
+                <h3 class="tool-title">Advance Increment</h3>
+                <p class="tool-description">Calculate potential salary increments with scenario modeling.</p>
+                <div class="tool-meta">
+                    <span class="tool-category">Finance</span>
+                    <span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span>
+                </div>
             </a>
-            <!-- Sixth to Seventh Pay Commission Calculator Card -->
-            <a href="sixthtoseventh.html" target="_blank" class="tile" title="Sixth to Seventh Pay Commission Calculator">
-                <div class="plus-circle">+</div>
-                <div class="tile-icon">💼</div>
-                <div class="tile-text">Sixth to Seventh Pay Commission Calculator</div>
+
+            <a href="sixthtoseventh.html" target="_blank" class="tool-card card-15" data-category="finance">
+                <div class="icon-container">
+                    <i class="fas fa-business-time"></i>
+                </div>
+                <h3 class="tool-title">6th to 7th Pay Commission</h3>
+                <p class="tool-description">Seamless calculation between sixth and seventh pay commission scales.</p>
+                <div class="tool-meta">
+                    <span class="tool-category">Finance</span>
+                    <span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span>
+                </div>
             </a>
-            <!-- 8th CPC Projection Calculator Card -->
-            <a href="eightcpcprojection.html" target="_blank" class="tile" title="8th CPC Projection Calculator">
-                <div class="plus-circle">+</div>
-                <div class="tile-icon">🔮</div>
-                <div class="tile-text">8th CPC Projection Calculator</div>
+
+            <a href="eightcpcprojection.html" target="_blank" class="tool-card card-16" data-category="finance">
+                <div class="icon-container">
+                    <i class="fas fa-crystal-ball"></i>
+                </div>
+                <h3 class="tool-title">8th CPC Projection</h3>
+                <p class="tool-description">Forecast potential salary structures under eighth Pay Commission.</p>
+                <div class="tool-meta">
+                    <span class="tool-category">Finance</span>
+                    <span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span>
+                </div>
             </a>
-            <!-- PPF Investment Calculator Card -->
-            <a href="ppfcalc.html" target="_blank" class="tile" title="PPF Investment Calculator">
-                <div class="plus-circle">+</div>
-                <div class="tile-icon">🏦</div>
-                <div class="tile-text">PPF Investment Calculator</div>
+
+            <a href="ppfcalc.html" target="_blank" class="tool-card card-17" data-category="finance">
+                <div class="icon-container">
+                    <i class="fas fa-piggy-bank"></i>
+                </div>
+                <h3 class="tool-title">PPF Investment Calculator</h3>
+                <p class="tool-description">Calculate Public Provident Fund returns with compound interest.</p>
+                <div class="tool-meta">
+                    <span class="tool-category">Finance</span>
+                    <span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span>
+                </div>
             </a>
-            <!-- Thank You Message Card -->
-            <div class="tile" style="cursor: default;">
-                <div class="tile-icon">🌟</div>
-                <div class="tile-text">Thank you for using our tools! Wishing you a productive and successful day!</div>
+
+            <div class="tool-card card-18" style="cursor: default;" data-category="appreciation">
+                <div class="icon-container">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <h3 class="tool-title">Thank You!</h3>
+                <p class="tool-description">We appreciate your trust in our tools. Stay productive and have an amazing day!</p>
+                <div class="tool-meta">
+                    <span class="tool-category">Appreciation</span>
+                    <span class="tool-launch"><i class="fas fa-star"></i></span>
+                </div>
             </div>
         </div>
-        <div class="footer">
-            <small>by Anil Kumar VT</small>
-        </div>
+
+        <footer>
+            <p>Designed with <i class="fas fa-heart" style="color: #ef4444;"></i> by <span class="creator">Anil Kumar VT</span></p>
+            <p style="margin-top: 0.3rem;">© 2024 OfficeSuite Pro. All rights reserved.</p>
+        </footer>
     </div>
+
+    <script>
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('.tool-card');
+            
+            cards.forEach(card => {
+                const title = card.querySelector('.tool-title').textContent.toLowerCase();
+                const description = card.querySelector('.tool-description').textContent.toLowerCase();
+                
+                if (searchTerm === '' || title.includes(searchTerm) || description.includes(searchTerm)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+
+        // Category filtering
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const category = this.getAttribute('data-category');
+                
+                // Update active button
+                document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Filter cards
+                const cards = document.querySelectorAll('.tool-card');
+                cards.forEach(card => {
+                    if (category === 'all' || card.getAttribute('data-category') === category) {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // Add pulse animation to the thank you card
+        document.querySelector('.card-18').classList.add('pulse');
+    </script>
 </body>
 </html>

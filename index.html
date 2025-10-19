@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,7 +11,7 @@
         html, body { 
             height: 100%; 
             width: 100%; 
-            background: #0d1525; 
+            background: linear-gradient(135deg, #0d1525 0%, #1a243d 100%);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             color: #e0e0e0; 
         }
@@ -23,16 +24,32 @@
             flex-direction: column;
             justify-content: flex-start;
             padding: 20px;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(77, 124, 255, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(77, 124, 255, 0.05) 0%, transparent 20%);
         }
 
         h1 {
-            color: #e0e0e0;
+            color: #ffffff;
             font-weight: 600;
             margin: 30px 0 40px 40px;
             font-size: 2.2rem;
             padding-left: 18px;
             letter-spacing: 1px;
             border-left: 4px solid #4d7cff;
+            text-shadow: 0 0 10px rgba(77, 124, 255, 0.3);
+            position: relative;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, #4d7cff, transparent);
+            border-radius: 3px;
         }
 
         .grid {
@@ -44,12 +61,14 @@
         }
 
         .tile {
-            background: #1a243d;
+            background: linear-gradient(145deg, #1a243d 0%, #161f36 100%);
             border-radius: 16px;
             padding: 30px 25px 25px 25px;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            box-shadow: 
+                0 8px 20px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
             position: relative;
             font-size: 1.1rem;
             font-weight: 500;
@@ -57,15 +76,34 @@
             text-decoration: none;
             transition: all 0.3s ease;
             border: 1px solid #2a3450;
+            overflow: hidden;
+        }
+
+        .tile::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #4d7cff, #6b94ff);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
         }
 
         .tile:hover, .tile:focus {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
-            background: #202d4d;
-            /* Neon glow effect */
-            box-shadow: 0 0 5px #4d7cff, 0 0 10px #4d7cff, 0 0 15px #4d7cff, 0 0 20px #4d7cff;
+            transform: translateY(-8px);
+            box-shadow: 
+                0 15px 35px rgba(0, 0, 0, 0.4),
+                0 0 20px rgba(77, 124, 255, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            background: linear-gradient(145deg, #202d4d 0%, #1a243d 100%);
             border-color: #4d7cff;
+        }
+
+        .tile:hover::before {
+            transform: scaleX(1);
         }
 
         .tile:focus {
@@ -73,8 +111,14 @@
         }
 
         .tile-icon {
-            font-size: 2.5rem;
+            font-size: 2.8rem;
             margin-bottom: 20px;
+            filter: drop-shadow(0 0 8px rgba(77, 124, 255, 0.2));
+            transition: transform 0.3s ease;
+        }
+
+        .tile:hover .tile-icon {
+            transform: scale(1.1);
         }
 
         .tile-text {
@@ -83,6 +127,11 @@
             align-items: flex-end;
             font-weight: 500;
             line-height: 1.4;
+            transition: color 0.3s ease;
+        }
+
+        .tile:hover .tile-text {
+            color: #ffffff;
         }
 
         /* Plus sign at top-right of tile */
@@ -103,11 +152,13 @@
             user-select: none;
             pointer-events: none;
             transition: all 0.2s ease;
+            backdrop-filter: blur(5px);
         }
 
         .tile:hover .plus-circle, .tile:focus .plus-circle {
             background: rgba(77, 124, 255, 0.2);
             color: #6b94ff;
+            transform: rotate(90deg);
         }
 
         .footer {
@@ -116,6 +167,13 @@
             padding: 10px 40px;
             margin-top: auto;
             font-size: 0.9rem;
+        }
+
+        .footer small {
+            background: rgba(26, 36, 61, 0.7);
+            padding: 8px 15px;
+            border-radius: 20px;
+            backdrop-filter: blur(5px);
         }
 
         @media (max-width: 700px) {
@@ -135,13 +193,52 @@
                 margin-left: 20px;
                 margin-right: 20px;
             }
+            h1::after {
+                display: none;
+            }
             .container {
                 padding: 10px;
             }
             .footer {
                 padding: 10px 20px;
+                text-align: center;
             }
         }
+
+        /* Animation for the grid items */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tile {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .grid .tile:nth-child(1) { animation-delay: 0.1s; }
+        .grid .tile:nth-child(2) { animation-delay: 0.2s; }
+        .grid .tile:nth-child(3) { animation-delay: 0.3s; }
+        .grid .tile:nth-child(4) { animation-delay: 0.4s; }
+        .grid .tile:nth-child(5) { animation-delay: 0.5s; }
+        .grid .tile:nth-child(6) { animation-delay: 0.6s; }
+        .grid .tile:nth-child(7) { animation-delay: 0.7s; }
+        .grid .tile:nth-child(8) { animation-delay: 0.8s; }
+        .grid .tile:nth-child(9) { animation-delay: 0.9s; }
+        .grid .tile:nth-child(10) { animation-delay: 1.0s; }
+        .grid .tile:nth-child(11) { animation-delay: 1.1s; }
+        .grid .tile:nth-child(12) { animation-delay: 1.2s; }
+        .grid .tile:nth-child(13) { animation-delay: 1.3s; }
+        .grid .tile:nth-child(14) { animation-delay: 1.4s; }
+        .grid .tile:nth-child(15) { animation-delay: 1.5s; }
+        .grid .tile:nth-child(16) { animation-delay: 1.6s; }
+        .grid .tile:nth-child(17) { animation-delay: 1.7s; }
+        .grid .tile:nth-child(18) { animation-delay: 1.8s; }
     </style>
 </head>
 <body>
@@ -150,7 +247,7 @@
         <div class="grid">
             <a href="imms.html" target="_blank" class="tile" title="Incoming Mail Management System">
                 <div class="plus-circle">+</div>
-                <div class="tile-icon">📩</div>
+                <div class="tile-icon">📥</div>
                 <div class="tile-text">Incoming Mail Management System</div>
             </a>
             <a href="omms.html" target="_blank" class="tile" title="Outgoing Mail Management System">
@@ -175,28 +272,28 @@
             </a>
             <a href="fmru.html" target="_blank" class="tile" title="File Movement Record Utility">
                 <div class="plus-circle">+</div>
-                <div class="tile-icon">📂</div>
+                <div class="tile-icon">🚚</div>
                 <div class="tile-text">File Movement Record Utility</div>
             </a>
             <a href="firu.html" target="_blank" class="tile" title="Digital File Index Utility">
                 <div class="plus-circle">+</div>
-                <div class="tile-icon">📁</div>
+                <div class="tile-icon">🔍</div>
                 <div class="tile-text">Digital File Index Utility</div>
             </a>
             <a href="dabook.html" target="_blank" class="tile" title="Digital Account Book">
                 <div class="plus-circle">+</div>
-                <div class="tile-icon">📒</div>
+                <div class="tile-icon">📚</div>
                 <div class="tile-text">Digital Account Book</div>
             </a>
             <a href="dcbook.html" target="_blank" class="tile" title="Digital Cash Book">
                 <div class="plus-circle">+</div>
-                <div class="tile-icon">💰</div>
+                <div class="tile-icon">💵</div>
                 <div class="tile-text">Digital Cash Book</div>
             </a>
             <!-- Pay Fixation Comparison Tool Card -->
             <a href="payfixation.html" target="_blank" class="tile" title="Pay Fixation Comparison Tool">
                 <div class="plus-circle">+</div>
-                <div class="tile-icon">⚖️</div>
+                <div class="tile-icon">🧮</div>
                 <div class="tile-text">Pay Fixation Comparison Tool</div>
             </a>
             <!-- Dearness Allowance Rate Tracker Card -->
@@ -220,20 +317,26 @@
             <!-- Advance Increment Calculator Card -->
             <a href="advanceincalc.html" target="_blank" class="tile" title="Advance Increment Calculator">
                 <div class="plus-circle">+</div>
-                <div class="tile-icon">⬆️</div>
+                <div class="tile-icon">🚀</div>
                 <div class="tile-text">Advance Increment Calculator</div>
             </a>
             <!-- Sixth to Seventh Pay Commission Calculator Card -->
             <a href="sixthtoseventh.html" target="_blank" class="tile" title="Sixth to Seventh Pay Commission Calculator">
                 <div class="plus-circle">+</div>
-                <div class="tile-icon">💰</div>
+                <div class="tile-icon">💼</div>
                 <div class="tile-text">Sixth to Seventh Pay Commission Calculator</div>
             </a>
             <!-- 8th CPC Projection Calculator Card -->
             <a href="eightcpcprojection.html" target="_blank" class="tile" title="8th CPC Projection Calculator">
                 <div class="plus-circle">+</div>
-                <div class="tile-icon">📊</div>
+                <div class="tile-icon">🔮</div>
                 <div class="tile-text">8th CPC Projection Calculator</div>
+            </a>
+            <!-- PPF Investment Calculator Card -->
+            <a href="ppfcalc.html" target="_blank" class="tile" title="PPF Investment Calculator">
+                <div class="plus-circle">+</div>
+                <div class="tile-icon">🏦</div>
+                <div class="tile-text">PPF Investment Calculator</div>
             </a>
             <!-- Thank You Message Card -->
             <div class="tile" style="cursor: default;">

@@ -785,28 +785,43 @@
                     // Death Gratuity - No minimum service requirement
                     gratuityType = 'Death Gratuity (DG)';
                     
-                    if (totalMonths < 12) {
+                    // Apply rounding rule for Death Gratuity: 9+ months rounded up to next year
+                    let roundedYears = years;
+                    let roundedMonths = months;
+                    let roundingApplied = false;
+                    
+                    if (months >= 9) {
+                        roundedYears = years + 1;
+                        roundedMonths = 0;
+                        roundingApplied = true;
+                        calculationSteps.push(`Service rounding applied: ${years} years ${months} months → ${roundedYears} years (9+ months rounded up)`);
+                    }
+                    
+                    // Use rounded years for Death Gratuity calculation
+                    const roundedTotalMonths = roundedYears * 12 + roundedMonths;
+                    
+                    if (roundedTotalMonths < 12) {
                         // Less than 1 year
                         calculationSteps.push("Service Duration: Less than 1 year");
                         calculationSteps.push(`Formula: DG = Emoluments × 2`);
                         calculationSteps.push(`Calculation: Rs.${emoluments.toLocaleString()} × 2`);
                         
                         gratuityAmount = emoluments * 2;
-                    } else if (totalMonths >= 12 && totalMonths < 60) {
+                    } else if (roundedTotalMonths >= 12 && roundedTotalMonths < 60) {
                         // 1 year or more but less than 5 years
                         calculationSteps.push("Service Duration: 1 year or more but less than 5 years");
                         calculationSteps.push(`Formula: DG = Emoluments × 6`);
                         calculationSteps.push(`Calculation: Rs.${emoluments.toLocaleString()} × 6`);
                         
                         gratuityAmount = emoluments * 6;
-                    } else if (totalMonths >= 60 && totalMonths < 132) {
+                    } else if (roundedTotalMonths >= 60 && roundedTotalMonths < 132) {
                         // 5 years or more but less than 11 years
                         calculationSteps.push("Service Duration: 5 years or more but less than 11 years");
                         calculationSteps.push(`Formula: DG = Emoluments × 12`);
                         calculationSteps.push(`Calculation: Rs.${emoluments.toLocaleString()} × 12`);
                         
                         gratuityAmount = emoluments * 12;
-                    } else if (totalMonths >= 132 && totalMonths < 240) {
+                    } else if (roundedTotalMonths >= 132 && roundedTotalMonths < 240) {
                         // 11 years or more but less than 20 years
                         calculationSteps.push("Service Duration: 11 years or more but less than 20 years");
                         calculationSteps.push(`Formula: DG = Emoluments × 20`);
@@ -867,7 +882,8 @@
                     calculationSteps,
                     serviceLimited,
                     maxMultiplier,
-                    maxCeiling
+                    maxCeiling,
+                    roundingApplied: calculationType === 'death' && months >= 9
                 };
                 
                 // Display results
@@ -994,6 +1010,18 @@
                     </div>
                 `;
                 
+                // Add service rounding notice if applicable
+                if (data.roundingApplied) {
+                    resultsHTML += `
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <div>
+                                <strong>Service Rounding Applied:</strong> For Death Gratuity, service of ${data.years} years ${data.months} months has been rounded up to ${data.years + 1} years (9+ months rounded up to next year).
+                            </div>
+                        </div>
+                    `;
+                }
+                
                 // Add service limitation notice if applicable
                 if (data.serviceLimited) {
                     resultsHTML += `
@@ -1021,6 +1049,7 @@
                         <div class="result-label">Qualifying Service</div>
                         <div class="result-value">${data.years} Years ${data.months} Months (${data.totalMonths} months)</div>
                         ${data.serviceLimited ? '<div class="note">Limited to maximum 33 years for gratuity calculation</div>' : ''}
+                        ${data.roundingApplied ? `<div class="note">Rounded up to ${data.years + 1} years for Death Gratuity calculation (9+ months rounded up)</div>` : ''}
                     </div>
                     
                     <div class="result-item">
@@ -1080,6 +1109,7 @@
                             <ul style="margin-top: 8px; margin-left: 20px;">
                                 <li>Retirement Gratuity requires minimum 5 years of qualifying service</li>
                                 <li>Death Gratuity has no minimum service requirement</li>
+                                <li>For Death Gratuity: 9+ months of service rounded up to next year</li>
                                 <li>Maximum gratuity amount: Rs.25,00,000</li>
                                 <li>Fractions of rupee are rounded up to next higher rupee</li>
                             </ul>
@@ -1146,6 +1176,12 @@
                 yPosition += 7;
                 
                 doc.text(`Qualifying Service: ${data.years} Years ${data.months} Months`, 20, yPosition);
+                if (data.roundingApplied) {
+                    doc.setTextColor(255, 0, 0);
+                    doc.text(`Rounded Service: ${data.years + 1} Years (9+ months rounded up)`, 20, yPosition + 7);
+                    doc.setTextColor(0, 0, 0);
+                    yPosition += 7;
+                }
                 doc.text(`Six-Monthly Periods: ${data.totalPeriods}`, 110, yPosition);
                 yPosition += 15;
                 

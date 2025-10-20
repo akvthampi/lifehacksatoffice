@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,92 +9,64 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --primary: #1a4f7a;
-            --secondary: #2c7bb6;
-            --accent: #e63946;
-            --light: #f8f9fa;
-            --dark: #343a40;
-            --success: #28a745;
-            --warning: #ffc107;
-            --danger: #dc3545;
-            --info: #17a2b8;
-            --border-radius: 12px;
-            --box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-            --transition: all 0.3s ease;
-            --gradient-primary: linear-gradient(135deg, #1a4f7a 0%, #2c7bb6 100%);
-            --gradient-secondary: linear-gradient(135deg, #2c7bb6 0%, #3aa7d9 100%);
+        /* Reset and base styles matching ppfcalc.html */
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
         }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
-            color: var(--dark);
+        
+        html, body { 
+            height: 100%; 
+            width: 100%; 
+            background: #0d1525; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            color: #e0e0e0; 
             line-height: 1.6;
-            min-height: 100vh;
-            padding: 15px;
         }
-
+        
+        body { 
+            min-height: 100vh; 
+            padding: 20px 19px; /* 19px ≈ 0.2 inches */
+        }
+        
         .container {
             max-width: 1400px;
             margin: 0 auto;
+            padding: 0;
         }
-
+        
         header {
-            background: var(--gradient-primary);
-            color: white;
-            padding: 20px;
             text-align: center;
-            border-radius: var(--border-radius);
+            padding: 30px 0;
+            color: #e0e0e0;
             margin-bottom: 20px;
-            box-shadow: var(--box-shadow);
-            position: relative;
-            overflow: hidden;
         }
-
-        header::before {
-            content: "";
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
-            transform: rotate(30deg);
+        
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+            padding-left: 18px;
+            letter-spacing: 1px;
+            border-left: 4px solid #4d7cff;
+            text-align: left;
+            margin-left: 0;
         }
-
-        header h1 {
-            font-size: 1.8rem;
-            margin-bottom: 8px;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            color: #a0a8c0;
+            text-align: left;
+            margin-left: 0;
+            margin-top: 10px;
         }
-
-        header h1 i {
-            font-size: 1.8rem;
-        }
-
-        header p {
-            font-size: 1.1rem;
-            opacity: 0.95;
-            max-width: 800px;
-            margin: 0 auto;
-            position: relative;
-        }
-
+        
         .app-container {
             display: grid;
             grid-template-columns: 1fr 1.5fr;
-            gap: 20px;
+            gap: 30px;
             margin-bottom: 20px;
         }
 
@@ -102,50 +75,39 @@
                 grid-template-columns: 1fr;
             }
         }
-
+        
         .card {
-            background-color: white;
-            border-radius: var(--border-radius);
-            padding: 20px;
-            box-shadow: var(--box-shadow);
-            transition: var(--transition);
+            background: #1a243d;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            border: 1px solid #2a3450;
         }
-
-        .card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        
+        .section-title {
+            color: #e0e0e0;
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #4d7cff;
+            font-size: 1.8rem;
+            font-weight: 600;
         }
-
+        
         .input-section {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 30px;
         }
 
         .output-section {
             display: flex;
             flex-direction: column;
         }
-
-        .section-title {
-            color: var(--primary);
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 3px solid #e9ecef;
-            font-size: 1.4rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .section-title i {
-            color: var(--secondary);
-        }
-
+        
         .form-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            gap: 20px;
         }
 
         @media (max-width: 768px) {
@@ -153,36 +115,35 @@
                 grid-template-columns: 1fr;
             }
         }
-
+        
         .form-group {
-            margin-bottom: 12px;
+            margin-bottom: 20px;
         }
-
-        .form-group label {
+        
+        label {
             display: block;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             font-weight: 600;
-            color: var(--dark);
-            font-size: 1rem;
+            color: #d0d8e8;
         }
-
-        .form-control {
+        
+        input, select {
             width: 100%;
-            padding: 12px 14px;
-            border: 2px solid #e1e5eb;
-            border-radius: var(--border-radius);
-            font-size: 1rem;
-            transition: var(--transition);
-            background-color: #fafbff;
+            padding: 12px 15px;
+            background: #0d1525;
+            border: 1px solid #2a3450;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+            color: #e0e0e0;
         }
-
-        .form-control:focus {
-            border-color: var(--secondary);
+        
+        input:focus, select:focus {
+            border-color: #4d7cff;
             outline: none;
-            box-shadow: 0 0 0 3px rgba(44, 123, 182, 0.2);
-            background-color: white;
+            box-shadow: 0 0 0 2px rgba(77, 124, 255, 0.3);
         }
-
+        
         .radio-group {
             display: flex;
             flex-wrap: wrap;
@@ -195,17 +156,17 @@
             align-items: center;
             gap: 8px;
             padding: 10px 15px;
-            border: 2px solid #e1e5eb;
-            border-radius: var(--border-radius);
+            border: 2px solid #2a3450;
+            border-radius: 8px;
             cursor: pointer;
-            transition: var(--transition);
-            background-color: #fafbff;
+            transition: all 0.3s;
+            background-color: #0d1525;
             font-size: 0.95rem;
         }
 
         .radio-option:hover {
-            border-color: var(--secondary);
-            background-color: #f0f7ff;
+            border-color: #4d7cff;
+            background-color: #1a243d;
         }
 
         .radio-option input {
@@ -215,7 +176,7 @@
         }
 
         .radio-option input:checked + label {
-            color: var(--primary);
+            color: #4d7cff;
             font-weight: 600;
         }
 
@@ -224,158 +185,151 @@
             cursor: pointer;
             font-weight: 500;
         }
-
-        .btn {
-            display: inline-block;
-            background: var(--gradient-primary);
+        
+        button {
+            background: #4d7cff;
             color: white;
             border: none;
-            padding: 13px 20px;
-            font-size: 1.05rem;
-            font-weight: 600;
-            border-radius: var(--border-radius);
+            padding: 15px 25px;
+            font-size: 18px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: var(--transition);
-            text-align: center;
             width: 100%;
-            margin-bottom: 8px;
-            box-shadow: 0 4px 8px rgba(26, 79, 122, 0.25);
+            font-weight: bold;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            margin-top: 10px;
         }
-
-        .btn:hover {
-            background: var(--gradient-secondary);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(26, 79, 122, 0.35);
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(77, 124, 255, 0.3);
+            background: #5d8cff;
         }
-
-        .btn:active {
-            transform: translateY(-1px);
+        
+        button:active {
+            transform: translateY(0);
         }
-
+        
         .btn-success {
-            background: linear-gradient(135deg, #28a745 0%, #34d058 100%);
-            box-shadow: 0 4px 8px rgba(40, 167, 69, 0.25);
+            background: #4CAF50;
         }
-
+        
         .btn-success:hover {
-            background: linear-gradient(135deg, #218838 0%, #28a745 100%);
-            box-shadow: 0 6px 12px rgba(40, 167, 69, 0.35);
+            background: #5dbf61;
+            box-shadow: 0 8px 15px rgba(76, 175, 80, 0.3);
         }
-
+        
         .result-item {
-            margin-bottom: 15px;
-            padding: 15px;
-            border-radius: var(--border-radius);
-            background-color: #f8f9fa;
-            border-left: 4px solid var(--secondary);
-            transition: var(--transition);
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid #2a3450;
         }
-
-        .result-item:hover {
-            background-color: #f0f7ff;
-            transform: translateX(3px);
+        
+        .result-item:last-child {
+            border-bottom: none;
         }
-
+        
         .result-label {
             font-weight: 600;
-            color: var(--primary);
-            margin-bottom: 4px;
-            font-size: 1rem;
+            color: #d0d8e8;
         }
-
+        
         .result-value {
-            font-size: 1.2rem;
             font-weight: 700;
-            color: var(--dark);
+            font-size: 1.1em;
         }
-
+        
         .highlight {
-            background-color: #e7f3ff;
-            border-left: 4px solid var(--secondary);
+            background: #0d1525;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #4d7cff;
         }
-
+        
         .note {
             font-size: 0.9rem;
-            color: #6c757d;
+            color: #a0a8c0;
             margin-top: 6px;
             font-style: italic;
         }
-
+        
         .alert {
             padding: 16px;
-            border-radius: var(--border-radius);
+            border-radius: 8px;
             margin-bottom: 16px;
             font-size: 0.95rem;
             display: flex;
             align-items: flex-start;
             gap: 12px;
         }
-
+        
         .alert i {
             font-size: 1.3rem;
             margin-top: 2px;
         }
-
+        
         .alert-info {
-            background-color: #d1ecf1;
-            border-left: 4px solid #17a2b8;
-            color: #0c5460;
+            background-color: #1a243d;
+            border-left: 4px solid #4d7cff;
+            color: #d0d8e8;
         }
-
+        
         .alert-info i {
-            color: #17a2b8;
+            color: #4d7cff;
         }
-
+        
         .alert-success {
-            background-color: #d4edda;
-            border-left: 4px solid var(--success);
-            color: #155724;
+            background-color: #1a243d;
+            border-left: 4px solid #4CAF50;
+            color: #d0d8e8;
         }
-
+        
         .alert-success i {
-            color: var(--success);
+            color: #4CAF50;
         }
-
+        
         .alert-warning {
-            background-color: #fff3cd;
-            border-left: 4px solid var(--warning);
-            color: #856404;
+            background-color: #1a243d;
+            border-left: 4px solid #FF9800;
+            color: #d0d8e8;
         }
-
+        
         .alert-warning i {
-            color: var(--warning);
+            color: #FF9800;
         }
-
+        
         .alert-danger {
-            background-color: #f8d7da;
-            border-left: 4px solid var(--danger);
-            color: #721c24;
+            background-color: #1a243d;
+            border-left: 4px solid #f44336;
+            color: #d0d8e8;
         }
-
+        
         .alert-danger i {
-            color: var(--danger);
+            color: #f44336;
         }
-
+        
         .calculation-steps {
             margin-top: 20px;
             padding-top: 16px;
-            border-top: 2px dashed #e9ecef;
+            border-top: 2px dashed #2a3450;
         }
-
+        
         .step {
             margin-bottom: 12px;
             padding: 12px;
-            background-color: #f8f9fa;
+            background-color: #0d1525;
             border-radius: 8px;
             position: relative;
             padding-left: 40px;
         }
-
+        
         .step-number {
             position: absolute;
             left: 12px;
             top: 12px;
-            background: var(--gradient-primary);
+            background: #4d7cff;
             color: white;
             width: 24px;
             height: 24px;
@@ -386,121 +340,124 @@
             font-weight: bold;
             font-size: 0.8rem;
         }
-
+        
         footer {
             text-align: center;
-            padding: 20px;
-            color: #6c757d;
+            color: #a0a8c0;
+            padding: 30px 0;
+            margin-top: 30px;
             font-size: 0.9rem;
-            background-color: white;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            margin-top: 20px;
+            background: #1a243d;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            border: 1px solid #2a3450;
         }
-
+        
         .date-inputs {
             display: flex;
             gap: 12px;
         }
-
+        
         .date-inputs > div {
             flex: 1;
         }
-
+        
         .hidden {
             display: none;
         }
-
+        
         .summary-cards {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
             margin-bottom: 20px;
         }
-
+        
         .summary-card {
-            background: white;
-            border-radius: var(--border-radius);
+            background: #0d1525;
+            border-radius: 8px;
             padding: 15px;
-            box-shadow: var(--box-shadow);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             text-align: center;
-            transition: var(--transition);
+            transition: all 0.3s;
+            border: 1px solid #2a3450;
         }
-
+        
         .summary-card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
         }
-
+        
         .summary-card i {
             font-size: 2rem;
             margin-bottom: 12px;
         }
-
+        
         .summary-card h3 {
-            color: var(--primary);
+            color: #e0e0e0;
             margin-bottom: 8px;
             font-size: 1.1rem;
         }
-
+        
         .summary-card p {
             font-size: 1.5rem;
             font-weight: 700;
-            color: var(--dark);
+            color: #e0e0e0;
         }
-
+        
         .service-card {
             background: linear-gradient(135deg, #2c7bb6 0%, #1a4f7a 100%);
             color: white;
         }
-
+        
         .service-card i {
             color: #ffd700;
         }
-
+        
         .amount-card {
             background: linear-gradient(135deg, #28a745 0%, #218838 100%);
             color: white;
         }
-
+        
         .amount-card i {
             color: #ffd700;
         }
-
+        
         .type-card {
             background: linear-gradient(135deg, #6f42c1 0%, #5a32a3 100%);
             color: white;
         }
-
+        
         .type-card i {
             color: #ffd700;
         }
-
+        
         .periods-card {
             background: linear-gradient(135deg, #fd7e14 0%, #e06a0d 100%);
             color: white;
         }
-
+        
         .periods-card i {
             color: #ffd700;
         }
-
+        
         .results-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 15px;
         }
-
+        
         .results-header h2 {
             margin: 0;
         }
-
+        
         .export-btn-container {
             margin-top: auto;
             padding-top: 15px;
         }
-
+        
         @media (max-width: 768px) {
             body {
                 padding: 10px;
@@ -511,15 +468,24 @@
             }
             
             .card {
-                padding: 15px;
+                padding: 20px;
             }
             
-            header h1 {
-                font-size: 1.6rem;
+            h1 {
+                font-size: 1.8rem;
+                text-align: center;
+                padding-left: 0;
+                border-left: none;
+                border-bottom: 3px solid #4d7cff;
+                padding-bottom: 10px;
+                margin-left: 0;
+                margin-right: 0;
             }
             
-            header p {
-                font-size: 0.95rem;
+            .subtitle {
+                text-align: center;
+                margin-left: 0;
+                margin-right: 0;
             }
             
             .date-inputs {
@@ -535,8 +501,8 @@
 <body>
     <div class="container">
         <header>
-            <h1><i class="fas fa-calculator"></i>Leave Encashment Calculator</h1>
-            <p>Designed by Anil Kumar VT | Calculated as per CCS (Leave) Rules</p>
+            <h1><i class="fas fa-calculator"></i> Leave Encashment Calculator</h1>
+            <p class="subtitle">Designed by Anil Kumar VT | Calculated as per CCS (Leave) Rules</p>
         </header>
 
         <div class="app-container">
@@ -614,7 +580,7 @@
                         </div>
                     </div>
 
-                    <button id="calculateBtn" class="btn"><i class="fas fa-calculator"></i> Calculate Leave Encashment</button>
+                    <button id="calculateBtn"><i class="fas fa-calculator"></i> Calculate Leave Encashment</button>
                 </div>
             </div>
 
@@ -635,7 +601,7 @@
                     </div>
                     
                     <div class="export-btn-container">
-                        <button id="exportPdfBtn" class="btn btn-success hidden"><i class="fas fa-file-pdf"></i> Export to PDF</button>
+                        <button id="exportPdfBtn" class="btn-success hidden"><i class="fas fa-file-pdf"></i> Export to PDF</button>
                     </div>
                 </div>
             </div>
@@ -1048,7 +1014,6 @@
                                 <li>On Resignation: Only 50% of EL can be encashed, HPL lapses</li>
                                 <li>EL Encashment Formula: (Pay + DA) / 30 * EL Days</li>
                                 <li>HPL Encashment Formula: (Pay + DA) / 60 * HPL Days</li>
-                                <li>Fractions of rupee are rounded up to next higher rupee</li>
                             </ul>
                         </div>
                     </div>
@@ -1073,137 +1038,112 @@
             function exportToPdf() {
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
+                
                 const data = window.calculationData;
                 
-                // Add header
-                doc.setFillColor(26, 79, 122);
-                doc.rect(0, 0, 210, 30, 'F');
-                doc.setTextColor(255, 255, 255);
-                doc.setFontSize(18);
-                doc.text('Leave Encashment Calculation Report', 105, 15, { align: 'center' });
-                doc.setFontSize(10);
-                doc.text('Designed by Anil Kumar VT | CCS (Leave) Rules', 105, 22, { align: 'center' });
+                // Set up PDF content
+                let yPosition = 20;
                 
-                // Add content
-                doc.setTextColor(0, 0, 0);
-                let yPosition = 45;
+                // Title
+                doc.setFontSize(20);
+                doc.setTextColor(77, 124, 255);
+                doc.text("Leave Encashment Calculation", 20, yPosition);
+                yPosition += 15;
+                
+                // Subtitle
+                doc.setFontSize(12);
+                doc.setTextColor(128, 128, 128);
+                doc.text("Calculated as per CCS (Leave) Rules", 20, yPosition);
+                yPosition += 20;
                 
                 // Employee details
                 doc.setFontSize(14);
-                doc.setFont(undefined, 'bold');
-                doc.text('Employee Details', 20, yPosition);
+                doc.setTextColor(0, 0, 0);
+                doc.text("Employee Details:", 20, yPosition);
                 yPosition += 10;
                 
-                doc.setFontSize(11);
-                doc.setFont(undefined, 'normal');
-                doc.text(`Name: ${data.employeeName}`, 20, yPosition);
-                doc.text(`Designation: ${data.designation}`, 110, yPosition);
+                doc.setFontSize(12);
+                doc.text(`Name: ${data.employeeName}`, 30, yPosition);
                 yPosition += 7;
-                
-                doc.text(`Date of Joining: ${data.dateOfJoining}`, 20, yPosition);
-                doc.text(`Date of Exit: ${data.dateOfExit}`, 110, yPosition);
+                doc.text(`Designation: ${data.designation}`, 30, yPosition);
                 yPosition += 7;
-                
-                doc.text(`Exit Type: ${data.exitType.charAt(0).toUpperCase() + data.exitType.slice(1)}`, 20, yPosition);
-                doc.text(`Service: ${data.years} Years ${data.months} Months`, 110, yPosition);
+                doc.text(`Exit Type: ${data.exitType.charAt(0).toUpperCase() + data.exitType.slice(1)}`, 30, yPosition);
+                yPosition += 7;
+                doc.text(`Date of Joining: ${data.dateOfJoining}`, 30, yPosition);
+                yPosition += 7;
+                doc.text(`Date of Exit: ${data.dateOfExit}`, 30, yPosition);
+                yPosition += 7;
+                doc.text(`Qualifying Service: ${data.years} Years ${data.months} Months`, 30, yPosition);
                 yPosition += 15;
                 
-                // Emoluments details
+                // Emoluments
                 doc.setFontSize(14);
-                doc.setFont(undefined, 'bold');
-                doc.text('Emoluments Details', 20, yPosition);
+                doc.text("Emoluments:", 20, yPosition);
                 yPosition += 10;
                 
-                doc.setFontSize(11);
-                doc.setFont(undefined, 'normal');
-                doc.text(`Basic Pay: Rs.${data.basicPay.toLocaleString()}`, 20, yPosition);
-                doc.text(`DA Percentage: ${data.daPercentage}%`, 110, yPosition);
+                doc.setFontSize(12);
+                doc.text(`Basic Pay: Rs.${data.basicPay.toLocaleString()}`, 30, yPosition);
                 yPosition += 7;
-                
-                doc.text(`DA Amount: Rs.${data.daAmount.toLocaleString()}`, 20, yPosition);
-                doc.setFont(undefined, 'bold');
-                doc.text(`Total Emoluments: Rs.${data.totalEmoluments.toLocaleString()}`, 110, yPosition);
+                doc.text(`Dearness Allowance (${data.daPercentage}%): Rs.${data.daAmount.toLocaleString()}`, 30, yPosition);
+                yPosition += 7;
+                doc.text(`Total Emoluments: Rs.${data.totalEmoluments.toLocaleString()}`, 30, yPosition);
                 yPosition += 15;
                 
                 // Leave details
                 doc.setFontSize(14);
-                doc.setFont(undefined, 'bold');
-                doc.text('Leave Details', 20, yPosition);
+                doc.text("Leave Details:", 20, yPosition);
                 yPosition += 10;
                 
-                doc.setFontSize(11);
-                doc.setFont(undefined, 'normal');
-                doc.text(`Earned Leave Available: ${data.earnedLeave} days`, 20, yPosition);
-                doc.text(`Half Pay Leave Available: ${data.halfPayLeave} days`, 110, yPosition);
+                doc.setFontSize(12);
+                doc.text(`Earned Leave Available: ${data.earnedLeave} days`, 30, yPosition);
+                yPosition += 7;
+                doc.text(`Half Pay Leave Available: ${data.halfPayLeave} days`, 30, yPosition);
+                yPosition += 7;
+                doc.text(`Earned Leave Encashed: ${data.elDaysToEncash} days`, 30, yPosition);
+                yPosition += 7;
+                doc.text(`Half Pay Leave Encashed: ${data.hplDaysToEncash} days`, 30, yPosition);
+                yPosition += 15;
+                
+                // Encashment details
+                doc.setFontSize(14);
+                doc.text("Encashment Details:", 20, yPosition);
+                yPosition += 10;
+                
+                doc.setFontSize(12);
+                doc.text(`EL Encashment Amount: Rs.${data.elEncashmentAmount.toLocaleString()}`, 30, yPosition);
+                yPosition += 7;
+                doc.text(`HPL Encashment Amount: Rs.${data.hplEncashmentAmount.toLocaleString()}`, 30, yPosition);
                 yPosition += 7;
                 
-                doc.text(`Earned Leave Encashed: ${data.elDaysToEncash} days`, 20, yPosition);
-                doc.text(`Half Pay Leave Encashed: ${data.hplDaysToEncash} days`, 110, yPosition);
-                yPosition += 15;
-                
-                // Encashment calculation
-                doc.setFontSize(14);
-                doc.setFont(undefined, 'bold');
-                doc.text('Encashment Calculation', 20, yPosition);
-                yPosition += 10;
-                
-                doc.setFontSize(11);
-                doc.setFont(undefined, 'normal');
-                doc.text(`EL Encashment Amount: Rs.${data.elEncashmentAmount.toLocaleString()}`, 20, yPosition);
-                doc.text(`HPL Encashment Amount: Rs.${data.hplEncashmentAmount.toLocaleString()}`, 20, yPosition + 7);
-                yPosition += 15;
-                
-                doc.setFont(undefined, 'bold');
-                doc.text(`Total Encashment Amount: Rs.${data.totalEncashmentAmount.toLocaleString()}`, 20, yPosition);
-                yPosition += 15;
-                
-                // Calculation steps
-                if (data.calculationSteps && data.calculationSteps.length > 0) {
-                    doc.setFontSize(12);
-                    doc.setFont(undefined, 'bold');
-                    doc.text('Calculation Steps:', 20, yPosition);
-                    yPosition += 8;
-                    
-                    doc.setFontSize(10);
-                    doc.setFont(undefined, 'normal');
-                    
-                    data.calculationSteps.forEach(step => {
-                        if (yPosition > 270) {
-                            doc.addPage();
-                            yPosition = 20;
-                        }
-                        doc.text(`• ${step}`, 25, yPosition);
-                        yPosition += 6;
-                    });
-                }
+                // Total amount
+                doc.setFontSize(16);
+                doc.setTextColor(0, 128, 0);
+                doc.text(`Total Leave Encashment Amount: Rs.${data.totalEncashmentAmount.toLocaleString()}`, 20, yPosition);
+                yPosition += 20;
                 
                 // Notes
                 if (data.notes && data.notes.length > 0) {
-                    doc.addPage();
-                    yPosition = 20;
-                    
-                    doc.setFontSize(12);
-                    doc.setFont(undefined, 'bold');
-                    doc.text('Important Notes:', 20, yPosition);
-                    yPosition += 8;
+                    doc.setFontSize(14);
+                    doc.setTextColor(0, 0, 0);
+                    doc.text("Notes:", 20, yPosition);
+                    yPosition += 10;
                     
                     doc.setFontSize(10);
-                    doc.setFont(undefined, 'normal');
-                    
                     data.notes.forEach(note => {
                         if (yPosition > 270) {
                             doc.addPage();
                             yPosition = 20;
                         }
                         doc.text(`• ${note}`, 25, yPosition);
-                        yPosition += 6;
+                        yPosition += 7;
                     });
                 }
                 
                 // Footer
-                doc.setFontSize(8);
-                doc.setTextColor(100, 100, 100);
-                doc.text('This is a computer-generated report. For official purposes, refer to the actual leave processing documents.', 105, 285, { align: 'center' });
+                doc.setFontSize(10);
+                doc.setTextColor(128, 128, 128);
+                doc.text("Generated by Leave Encashment Calculator", 20, 285);
+                doc.text("Calculated as per CCS (Leave) Rules", 20, 290);
                 
                 // Save the PDF
                 doc.save(`Leave_Encashment_${data.employeeName.replace(/\s+/g, '_')}.pdf`);

@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1036,118 +1035,115 @@
             }
             
             function exportToPdf() {
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF();
-                
-                const data = window.calculationData;
-                
-                // Set up PDF content
-                let yPosition = 20;
-                
-                // Title
-                doc.setFontSize(20);
-                doc.setTextColor(77, 124, 255);
-                doc.text("Leave Encashment Calculation", 20, yPosition);
-                yPosition += 15;
-                
-                // Subtitle
-                doc.setFontSize(12);
-                doc.setTextColor(128, 128, 128);
-                doc.text("Calculated as per CCS (Leave) Rules", 20, yPosition);
-                yPosition += 20;
-                
-                // Employee details
-                doc.setFontSize(14);
-                doc.setTextColor(0, 0, 0);
-                doc.text("Employee Details:", 20, yPosition);
-                yPosition += 10;
-                
-                doc.setFontSize(12);
-                doc.text(`Name: ${data.employeeName}`, 30, yPosition);
-                yPosition += 7;
-                doc.text(`Designation: ${data.designation}`, 30, yPosition);
-                yPosition += 7;
-                doc.text(`Exit Type: ${data.exitType.charAt(0).toUpperCase() + data.exitType.slice(1)}`, 30, yPosition);
-                yPosition += 7;
-                doc.text(`Date of Joining: ${data.dateOfJoining}`, 30, yPosition);
-                yPosition += 7;
-                doc.text(`Date of Exit: ${data.dateOfExit}`, 30, yPosition);
-                yPosition += 7;
-                doc.text(`Qualifying Service: ${data.years} Years ${data.months} Months`, 30, yPosition);
-                yPosition += 15;
-                
-                // Emoluments
-                doc.setFontSize(14);
-                doc.text("Emoluments:", 20, yPosition);
-                yPosition += 10;
-                
-                doc.setFontSize(12);
-                doc.text(`Basic Pay: Rs.${data.basicPay.toLocaleString()}`, 30, yPosition);
-                yPosition += 7;
-                doc.text(`Dearness Allowance (${data.daPercentage}%): Rs.${data.daAmount.toLocaleString()}`, 30, yPosition);
-                yPosition += 7;
-                doc.text(`Total Emoluments: Rs.${data.totalEmoluments.toLocaleString()}`, 30, yPosition);
-                yPosition += 15;
-                
-                // Leave details
-                doc.setFontSize(14);
-                doc.text("Leave Details:", 20, yPosition);
-                yPosition += 10;
-                
-                doc.setFontSize(12);
-                doc.text(`Earned Leave Available: ${data.earnedLeave} days`, 30, yPosition);
-                yPosition += 7;
-                doc.text(`Half Pay Leave Available: ${data.halfPayLeave} days`, 30, yPosition);
-                yPosition += 7;
-                doc.text(`Earned Leave Encashed: ${data.elDaysToEncash} days`, 30, yPosition);
-                yPosition += 7;
-                doc.text(`Half Pay Leave Encashed: ${data.hplDaysToEncash} days`, 30, yPosition);
-                yPosition += 15;
-                
-                // Encashment details
-                doc.setFontSize(14);
-                doc.text("Encashment Details:", 20, yPosition);
-                yPosition += 10;
-                
-                doc.setFontSize(12);
-                doc.text(`EL Encashment Amount: Rs.${data.elEncashmentAmount.toLocaleString()}`, 30, yPosition);
-                yPosition += 7;
-                doc.text(`HPL Encashment Amount: Rs.${data.hplEncashmentAmount.toLocaleString()}`, 30, yPosition);
-                yPosition += 7;
-                
-                // Total amount
-                doc.setFontSize(16);
-                doc.setTextColor(0, 128, 0);
-                doc.text(`Total Leave Encashment Amount: Rs.${data.totalEncashmentAmount.toLocaleString()}`, 20, yPosition);
-                yPosition += 20;
-                
-                // Notes
-                if (data.notes && data.notes.length > 0) {
-                    doc.setFontSize(14);
-                    doc.setTextColor(0, 0, 0);
-                    doc.text("Notes:", 20, yPosition);
-                    yPosition += 10;
-                    
-                    doc.setFontSize(10);
-                    data.notes.forEach(note => {
-                        if (yPosition > 270) {
-                            doc.addPage();
-                            yPosition = 20;
-                        }
-                        doc.text(`• ${note}`, 25, yPosition);
-                        yPosition += 7;
-                    });
-                }
-                
-                // Footer
-                doc.setFontSize(10);
-                doc.setTextColor(128, 128, 128);
-                doc.text("Generated by Leave Encashment Calculator", 20, 285);
-                doc.text("Calculated as per CCS (Leave) Rules", 20, 290);
-                
-                // Save the PDF
-                doc.save(`Leave_Encashment_${data.employeeName.replace(/\s+/g, '_')}.pdf`);
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const data = window.calculationData;
+
+    // Margins
+    const leftMargin = 20;
+    let y = 20;
+
+    // === Header ===
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(20);
+    doc.setTextColor(40, 60, 120);
+    doc.text("Leave Encashment Certificate", leftMargin, y);
+    y += 8;
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.setTextColor(100, 100, 100);
+    doc.text("Calculated as per CCS (Leave) Rules, 1972", leftMargin, y);
+    y += 10;
+
+    // Helper: section title
+    const sectionTitle = (text) => {
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(13);
+        doc.setTextColor(50, 50, 50);
+        doc.text(text, leftMargin, y);
+        y += 8;
+    };
+
+    // Helper: key-value row
+    const row = (label, value) => {
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(11);
+        doc.setTextColor(70, 70, 70);
+        doc.text(label, leftMargin, y);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(0, 0, 0);
+        doc.text(value, leftMargin + 65, y);
+        y += 7;
+    };
+
+    // === Employee Details ===
+    sectionTitle("1. Employee Details");
+    row("Name:", data.employeeName);
+    row("Designation:", data.designation);
+    row("Exit Type:", data.exitType.charAt(0).toUpperCase() + data.exitType.slice(1));
+    row("Date of Joining:", data.dateOfJoining);
+    row("Date of Exit:", data.dateOfExit);
+    row("Qualifying Service:", `${data.years} Years ${data.months} Months`);
+    y += 5;
+
+    // === Emoluments ===
+    sectionTitle("2. Emoluments");
+    row("Basic Pay:", `Rs.${data.basicPay.toLocaleString()}`);
+    row("DA (%):", `${data.daPercentage}%`);
+    row("DA Amount:", `Rs.${data.daAmount.toLocaleString()}`);
+    row("Total Emoluments:", `Rs.${data.totalEmoluments.toLocaleString()}`);
+    y += 5;
+
+    // === Leave Details ===
+    sectionTitle("3. Leave Balance & Encashment");
+    row("Earned Leave (Available):", `${data.earnedLeave} days`);
+    row("Half Pay Leave (Available):", `${data.halfPayLeave} days`);
+    row("Earned Leave (Encashed):", `${data.elDaysToEncash} days`);
+    row("Half Pay Leave (Encashed):", `${data.hplDaysToEncash} days`);
+    y += 5;
+
+    // === Encashment Calculation ===
+    sectionTitle("4. Encashment Calculation");
+    row("EL Encashment:", `Rs.${data.elEncashmentAmount.toLocaleString()}`);
+    row("HPL Encashment:", `Rs.${data.hplEncashmentAmount.toLocaleString()}`);
+    y += 4;
+
+    // Total Amount (highlighted)
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(14);
+    doc.setTextColor(0, 100, 0);
+    doc.text(`Total Leave Encashment Amount: Rs.${data.totalEncashmentAmount.toLocaleString()}`, leftMargin, y);
+    y += 12;
+
+    // === Notes (if any) ===
+    if (data.notes && data.notes.length > 0) {
+        sectionTitle("5. Important Notes");
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        doc.setTextColor(0, 0, 0);
+        data.notes.forEach(note => {
+            // If it barely fits, keep it on page 1 by reducing spacing
+            if (y > 260) {
+                // Only add page if absolutely necessary (unlikely now)
+                doc.addPage();
+                y = 20;
             }
+            doc.text(`• ${note}`, leftMargin + 5, y);
+            y += 6;
+        });
+        y += 6;
+    }
+
+    // === Single footer on page 1 only ===
+    const footerText = "Generated by Advanced Leave Encashment Calculator | © 2025";
+    doc.setFontSize(9);
+    doc.setTextColor(150, 150, 150);
+    doc.text(footerText, leftMargin, 285);
+
+    // Save
+    doc.save(`Leave_Encashment_${data.employeeName.replace(/\s+/g, '_')}.pdf`);
+}
         });
     </script>
 </body>

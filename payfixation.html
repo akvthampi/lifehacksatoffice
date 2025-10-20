@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -227,7 +226,7 @@
 <body>
     <div class="main-header">
         <h1>Comparison of Options for Pay Fixation on Promotion/MACP</h1>
-        <p class="subtitle">Developed by Anil Kumar V.T. | For informtion only, recheck with relevant rules before submitting option.</p>
+        <p class="subtitle">Developed by Anil Kumar V.T. | For information only, recheck with relevant rules before submitting option.</p>
     </div>
 
     <div class="container">
@@ -286,7 +285,7 @@
             
             <div class="input-group">
                 <label for="promotionDate">Date of Promotion/MACP</label>
-                <input type="date" id="promotionDate" value="2024-11-16">
+                <input type="date" id="promotionDate" value="2024-12-31">
                 <div class="error-message" id="promotionDateError">Please select promotion date</div>
             </div>
             
@@ -326,91 +325,76 @@
     <script>
         // 7th CPC Pay Matrix Data - Complete with 40 cells for each level
         const payMatrix = {
-            // Level 1: Grade Pay 1800
             1: [18000, 18500, 19100, 19700, 20300, 20900, 21500, 22100, 22800, 23500, 
                 24200, 24900, 25600, 26400, 27200, 28000, 28800, 29700, 30600, 31500,
                 32400, 33400, 34400, 35400, 36500, 37600, 38700, 39900, 41100, 42300,
                 43600, 44900, 46200, 47600, 49000, 50500, 52000, 53600, 55200, 56900],
             
-            // Level 2: Grade Pay 1900
             2: [19900, 20500, 21100, 21700, 22400, 23100, 23800, 24500, 25200, 26000,
                 26800, 27600, 28400, 29300, 30200, 31100, 32000, 33000, 34000, 35000,
                 36100, 37200, 38300, 39400, 40600, 41800, 43100, 44400, 45700, 47100,
                 48500, 50000, 51500, 53000, 54600, 56200, 57900, 59600, 61400, 63200],
             
-            // Level 3: Grade Pay 2000
             3: [21700, 22400, 23100, 23800, 24500, 25200, 26000, 26800, 27600, 28400,
                 29300, 30200, 31100, 32000, 33000, 34000, 35000, 36100, 37200, 38300,
                 39400, 40600, 41800, 43100, 44400, 45700, 47100, 48500, 50000, 51500,
                 53000, 54600, 56200, 57900, 59600, 61400, 63200, 65100, 67100, 69100],
             
-            // Level 4: Grade Pay 2400
             4: [25500, 26300, 27100, 27900, 28700, 29600, 30500, 31400, 32300, 33300,
                 34300, 35300, 36400, 37500, 38600, 39800, 41000, 42200, 43500, 44800,
                 46100, 47500, 48900, 50400, 51900, 53500, 55100, 56800, 58500, 60300,
                 62100, 64000, 65900, 67900, 69900, 72000, 74200, 76400, 78700, 81100],
             
-            // Level 5: Grade Pay 2800
             5: [29200, 30100, 31000, 31900, 32900, 33900, 34900, 35900, 37000, 38100,
                 39200, 40400, 41600, 42800, 44100, 45400, 46800, 48200, 49600, 51100,
                 52600, 54200, 55800, 57500, 59200, 61000, 62800, 64700, 66600, 68600,
                 70700, 72800, 75000, 77300, 79600, 82000, 84500, 87000, 89600, 92300],
             
-            // Level 6: Grade Pay 4200
             6: [35400, 36500, 37600, 38700, 39900, 41100, 42300, 43600, 44900, 46200,
                 47600, 49000, 50500, 52000, 53600, 55200, 56900, 58600, 60400, 62200,
                 64100, 66000, 68000, 70000, 72100, 74300, 76500, 78800, 81200, 83600,
                 86100, 88700, 91400, 94100, 96900, 99800, 102800, 105900, 109100, 112400],
             
-            // Level 7: Grade Pay 4600
             7: [44900, 46200, 47600, 49000, 50500, 52000, 53600, 55200, 56900, 58600,
                 60400, 62200, 64100, 66000, 68000, 70000, 72100, 74300, 76500, 78800,
                 81200, 83600, 86100, 88700, 91400, 94100, 96900, 99800, 102800, 105900,
                 109100, 112400, 115800, 119300, 122900, 126600, 130400, 134300, 138300, 142400],
             
-            // Level 8: Grade Pay 4800
             8: [47600, 49000, 50500, 52000, 53600, 55200, 56900, 58600, 60400, 62200,
                 64100, 66000, 68000, 70000, 72100, 74300, 76500, 78800, 81200, 83600,
                 86100, 88700, 91400, 94100, 96900, 99800, 102800, 105900, 109100, 112400,
                 115800, 119300, 122900, 126600, 130400, 134300, 138300, 142400, 146700, 151100],
             
-            // Level 9: Grade Pay 5400
             9: [53100, 54700, 56300, 58000, 59700, 61500, 63300, 65200, 67200, 69200,
                 71300, 73400, 75600, 77900, 80200, 82600, 85100, 87700, 90300, 93000,
                 95800, 98700, 101700, 104800, 107900, 111100, 114400, 117800, 121300, 124900,
                 128600, 132500, 136500, 140600, 144800, 149100, 153600, 158200, 162900, 167800],
             
-            // Level 10: Grade Pay 5400 (Group A Entry)
             10: [56100, 57800, 59500, 61300, 63100, 65000, 67000, 69000, 71100, 73200,
                  75400, 77700, 80000, 82400, 84900, 87400, 90000, 92700, 95500, 98400,
                  101400, 104400, 107500, 110700, 114000, 117400, 120900, 124500, 128200, 132000,
                  136000, 140100, 144300, 148600, 153100, 157700, 162400, 167300, 172300, 177500],
             
-            // Level 11: Grade Pay 6600
             11: [67700, 69700, 71800, 74000, 76200, 78500, 80900, 83300, 85800, 88400,
                  91100, 93800, 96600, 99500, 102500, 105600, 108800, 112100, 115500, 119000,
                  122600, 126300, 130100, 134000, 138000, 142100, 146400, 150800, 155300, 160000,
                  164800, 169700, 174800, 180000, 185400, 191000, 196700, 202600, 208700, 215000],
             
-            // Level 12: Grade Pay 7600
             12: [78800, 81200, 83600, 86100, 88700, 91400, 94100, 96900, 99800, 102800,
                  105900, 109100, 112400, 115800, 119300, 122900, 126600, 130400, 134300, 138300,
                  142400, 146700, 151100, 155600, 160300, 165100, 170100, 175200, 180500, 185900,
                  191500, 197200, 203100, 209200, 215500, 222000, 228700, 235600, 242700, 250000],
             
-            // Level 13: Grade Pay 8700
             13: [123100, 126800, 130600, 134500, 138500, 142700, 147000, 151400, 155900, 160600,
                  165400, 170400, 175500, 180800, 186200, 191800, 197600, 203500, 209600, 215900,
                  222400, 229100, 236000, 243100, 250400, 257900, 265600, 273500, 281600, 290000,
                  298600, 307500, 316600, 326000, 335600, 345500, 355600, 366000, 376600, 387500],
             
-            // Level 13A: Grade Pay 8900
             13.5: [131100, 135000, 139100, 143300, 147600, 152000, 156600, 161300, 166100, 171100,
                    176200, 181500, 186900, 192500, 198300, 204200, 210300, 216600, 223100, 229800,
                    236700, 243800, 251100, 258600, 266300, 274200, 282300, 290600, 299100, 307800,
                    316700, 325800, 335100, 344600, 354300, 364200, 374300, 384600, 395100, 405800],
             
-            // Level 14: Grade Pay 10000
             14: [144200, 148500, 153000, 157600, 162300, 167200, 172200, 177400, 182700, 188200,
                  193800, 199600, 205600, 211800, 218200, 224800, 231600, 238600, 245800, 253200,
                  260800, 268600, 276600, 284800, 293200, 301800, 310600, 319600, 328800, 338200,
@@ -424,6 +408,17 @@
         const promotionDateInput = document.getElementById('promotionDate');
         const nextIncrementDateInput = document.getElementById('nextIncrementDate');
         const resultsContainer = document.getElementById('resultsContainer');
+
+        // Safely add months to a date (avoids clamping issues)
+        function addMonths(date, months) {
+            const d = new Date(date);
+            const newMonth = d.getMonth() + months;
+            const newYear = d.getFullYear() + Math.floor(newMonth / 12);
+            const newMonthOnly = newMonth % 12;
+            const maxDay = new Date(newYear, newMonthOnly + 1, 0).getDate();
+            const day = Math.min(d.getDate(), maxDay);
+            return new Date(newYear, newMonthOnly, day);
+        }
 
         // Format date to DD/MM/YYYY
         function formatDate(dateString) {
@@ -453,14 +448,12 @@
             const pays = payMatrix[level];
             if (!pays) return { finalPay: calculatedPay, index: 0 };
             
-            // First check if exact pay exists
             for (let i = 0; i < pays.length; i++) {
                 if (pays[i] === calculatedPay) {
                     return { finalPay: pays[i], index: i + 1 };
                 }
             }
             
-            // If exact pay doesn't exist, find next higher pay
             for (let i = 0; i < pays.length; i++) {
                 if (pays[i] > calculatedPay) {
                     return { finalPay: pays[i], index: i + 1 };
@@ -483,44 +476,25 @@
             return { finalPay: pays[pays.length - 1], index: pays.length };
         }
 
-        // Get next increment date ensuring at least 6 months have passed
-        function getNextIncrementDateAfterSixMonths(promotionDate) {
-            const promotion = new Date(promotionDate);
-            const sixMonthsLater = new Date(promotion);
-            sixMonthsLater.setMonth(sixMonthsLater.getMonth() + 6);
-            
-            // Determine the first increment date that is at least 6 months later
-            const year = sixMonthsLater.getFullYear();
-            const month = sixMonthsLater.getMonth();
-            
-            // If 6 months later is before July, next increment is July 1 of same year
-            // If 6 months later is July or later, next increment is January 1 of next year
-            if (month < 6) {
-                // It's between Jan 1 and June 30, so next increment is July 1
-                return new Date(year, 6, 1);
-            } else {
-                // It's July or later, so next increment is January 1 of next year
-                return new Date(year + 1, 0, 1);
+        // ✅ FIXED: Now correctly considers Jan 1 as a candidate
+        function getNextIncrementDateAfterSixMonths(fixationDate) {
+            const minDate = addMonths(new Date(fixationDate), 6);
+            const year = minDate.getFullYear();
+            const candidates = [
+                new Date(year, 0, 1),     // Jan 1
+                new Date(year, 6, 1),     // July 1
+                new Date(year + 1, 0, 1)  // Next Jan 1 (safety)
+            ];
+            for (const cand of candidates) {
+                if (cand >= minDate) {
+                    return cand;
+                }
             }
+            return new Date(year + 1, 0, 1);
         }
 
-        // Get next increment date (6 months after fixation)
         function getNextIncrementDate(fixationDate) {
-            const fixation = new Date(fixationDate);
-            
-            // Add exactly 6 months
-            const nextIncrement = new Date(fixation);
-            nextIncrement.setMonth(nextIncrement.getMonth() + 6);
-            
-            // Fix to 1st Jan or 1st July
-            const year = nextIncrement.getFullYear();
-            const month = nextIncrement.getMonth();
-            
-            if (month < 6) {
-                return new Date(year, 0, 1); // 1st January
-            } else {
-                return new Date(year, 6, 1); // 1st July
-            }
+            return getNextIncrementDateAfterSixMonths(fixationDate);
         }
 
         // Validate increment date
@@ -655,7 +629,6 @@
             const promotedPays = payMatrix[promotedLevel];
 
             // OPTION 1: Fixation from date of promotion
-            // (a) On the date of promotion one increment is to be given in present level
             let incrementedPayInPresentLevel;
             if (currentIndex < presentPays.length - 1) {
                 incrementedPayInPresentLevel = presentPays[currentIndex + 1];
@@ -663,28 +636,20 @@
                 incrementedPayInPresentLevel = presentBasicPay;
             }
             
-            // (b) Then the same is to be fixed in the promoted level
-            // If present in the promoted level, use the same amount, otherwise take to next higher
             const option1Result = findExactOrNextHigherPay(promotedLevel, incrementedPayInPresentLevel);
-            
-            // (c) Then date of next increment will be given after a minimum period of six months
             const option1NextIncrementDate = getNextIncrementDateAfterSixMonths(promotionDate);
             const option1NextIncrementResult = findNextHigherPay(promotedLevel, option1Result.finalPay + 1);
 
             // OPTION 2: Fixation from date of increment
-            // No increment is given in present level. The present pay is taken to promoted level
-            // Then the program looks for a figure which is strictly higher than the present pay
             const option2InterimResult = findNextHigherPay(promotedLevel, presentBasicPay);
             
-            // Phase II: Re-fixation on DNI with two increments in lower level
             let fictionalPayInLowerLevel;
             if (currentIndex < presentPays.length - 2) {
-                fictionalPayInLowerLevel = presentPays[currentIndex + 2]; // Two increments
+                fictionalPayInLowerLevel = presentPays[currentIndex + 2];
             } else {
-                fictionalPayInLowerLevel = presentPays[presentPays.length - 1]; // Max of level
+                fictionalPayInLowerLevel = presentPays[presentPays.length - 1];
             }
             
-            // If after giving two increments, and if same pay is also available in promoted level, the same is to be given, not higher
             const option2FinalResult = findExactOrNextHigherPay(promotedLevel, fictionalPayInLowerLevel);
             const option2NextIncrementDate = getNextIncrementDate(nextIncrementDate);
             const option2NextIncrementResult = findNextHigherPay(promotedLevel, option2FinalResult.finalPay + 1);
@@ -722,7 +687,6 @@
                 }
             };
 
-            // Generate and display table
             generateComparisonTable(tableData);
         }
     </script>

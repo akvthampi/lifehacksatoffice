@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -235,6 +236,28 @@
         
         .neutral {
             color: #ff9800;
+        }
+
+        .cpc-equivalent-impact {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(149, 117, 205, 0.2);
+            border: 2px solid rgba(149, 117, 205, 0.5);
+            text-align: center;
+        }
+
+        .cpc-equivalent-impact h4 {
+            color: #9575cd;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .equivalent-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #b39ddb;
+            margin-top: 8px;
         }
         
         .footer {
@@ -553,6 +576,13 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- NEW: 7th CPC Equivalent Projection Callout -->
+                <div class="cpc-equivalent-impact" id="cpcEquivalentImpact">
+                    <h4>7th CPC-Equivalent Projected Pay</h4>
+                    <p>If the 8th CPC provides the <strong>same effective increase (14.22%)</strong> as the 7th CPC did (relative to pre-implementation total pay), your projected pay would be:</p>
+                    <div class="equivalent-value" id="equivalentPay">₹0</div>
+                </div>
                 
                 <div class="calculation-steps">
                     <h4>Calculation Steps:</h4>
@@ -610,6 +640,11 @@
     <script>
         // Constants
         const CURRENT_DA_PERCENTAGE = 58; // 58% as on 01-07-2025
+        // Effective increase from 6th to 7th CPC: 
+        // Pre-7th total = 100% BP + 125% DA = 225% = 2.25×
+        // 7th CPC factor = 2.57
+        // Effective increase = (2.57 / 2.25) - 1 ≈ 14.22%
+        const SEVENTH_CPC_EFFECTIVE_INCREASE = (2.57 / 2.25) - 1;
         const TRANSPORT_ALLOWANCES = [900, 1350, 1800, 3600, 7200]; // Current TA values
         const HRA_RATES = {
             'Class X City': [24, 27, 30],
@@ -656,6 +691,8 @@
         const projectionMatrixTable = document.getElementById('projectionMatrixTable');
         const allowancesTable = document.getElementById('allowancesTable');
         const financialImpact = document.getElementById('financialImpact');
+        const cpcEquivalentImpact = document.getElementById('cpcEquivalentImpact');
+        const equivalentPay = document.getElementById('equivalentPay');
 
         multiplicationFactorSelect.addEventListener('change', function() {
             if (this.value === 'manual') {
@@ -743,6 +780,7 @@
             if (!basicPay || basicPay <= 0) {
                 noInputMessage.style.display = 'block';
                 result.style.display = 'none';
+                cpcEquivalentImpact.style.display = 'none';
                 return;
             }
             
@@ -760,15 +798,22 @@
                 return;
             }
             
+            // Calculate current pay with DA
             const currentDA = basicPay * (CURRENT_DA_PERCENTAGE / 100);
             const currentTotal = basicPay + currentDA;
             
+            // Calculate projected pay
             const projectedBasicPay = Math.round((basicPay * multiplicationFactor) / 100) * 100;
-            const projectedTotal = projectedBasicPay;
+            const projectedTotal = projectedBasicPay; // DA will be 0% initially
             
+            // Calculate net difference
             const netDifferenceAmount = projectedTotal - currentTotal;
             const increasePercent = ((projectedBasicPay - basicPay) / basicPay * 100).toFixed(1);
             
+            // Compute 7th CPC-equivalent projected pay
+            const equivalentProjectedPay = Math.round(currentTotal * (1 + SEVENTH_CPC_EFFECTIVE_INCREASE));
+            
+            // Display calculation steps
             stepBasicPay.textContent = basicPay.toLocaleString();
             stepCurrentDA.textContent = Math.round(currentDA).toLocaleString();
             stepCurrentTotal.textContent = Math.round(currentTotal).toLocaleString();
@@ -776,13 +821,16 @@
             stepProjectedBasic.textContent = projectedBasicPay.toLocaleString();
             stepNetImpact.textContent = netDifferenceAmount.toLocaleString();
             
+            // Display result
             resultValue.textContent = `₹${projectedBasicPay.toLocaleString()}`;
             multiplicationFactorValue.textContent = multiplicationFactor.toFixed(3);
             increasePercentage.textContent = `${increasePercent}%`;
             
+            // Display financial impact
             currentTotalPay.textContent = `₹${Math.round(currentTotal).toLocaleString()}`;
             projectedTotalPay.textContent = `₹${projectedBasicPay.toLocaleString()}`;
             
+            // Color code the net difference
             const netDifferenceElement = document.getElementById('netDifference');
             netDifferenceElement.textContent = `₹${Math.round(netDifferenceAmount).toLocaleString()}`;
             
@@ -794,11 +842,19 @@
                 netDifferenceElement.className = 'impact-value neutral';
             }
             
+            // Display 7th CPC-equivalent projection
+            equivalentPay.textContent = `₹${equivalentProjectedPay.toLocaleString()}`;
+            cpcEquivalentImpact.style.display = 'block';
+            
+            // Show result section
             result.style.display = 'block';
             financialImpact.style.display = 'block';
             result.style.animation = 'fadeIn 0.5s ease-in-out';
             
+            // Update projection matrix with current calculation
             updateProjectionMatrix(basicPay, multiplicationFactor, projectedBasicPay);
+            
+            // Update allowances table with current calculation
             updateAllowancesTable(basicPay, multiplicationFactor);
         }
 

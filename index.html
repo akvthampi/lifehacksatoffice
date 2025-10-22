@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,82 +7,81 @@
     <title>OfficeSuite Pro - Ultimate Productivity Hub</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* BASE & VARIABLES */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        /* Default (Dark Mode) Theme Variables */
         :root {
-            --primary: #2563eb;
+            --primary: #2563eb; 
             --primary-dark: #1d4ed8;
-            --secondary: #7c3aed;
-            --accent: #06b6d4;
-            --dark: #0f172a;
-            --darker: #0c1220;
-            --light: #f1f5f9;
-            --gray: #64748b;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
+            --secondary: #7c3aed; 
+            --accent: #06b6d4; 
+            --dark: #0f172a; 
+            --darker: #0c1220; 
+            --light: #f1f5f9; 
+            --gray: #94a3b8; 
+            
+            /* Theme Dependent Variables */
+            --text-color: var(--light);
+            --bg-color-1: var(--darker);
+            --bg-color-2: var(--dark);
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --card-hover-bg: rgba(255, 255, 255, 0.08);
+            --input-bg: rgba(255, 255, 255, 0.08);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --logo-drop-shadow: drop-shadow(0 0 15px rgba(37, 99, 235, 0.5)); 
+            --header-accent-bg: #1c2a44; 
+        }
+
+        /* LIGHT MODE THEME OVERRIDE */
+        body.theme-light {
+            background: linear-gradient(135deg, #f0f4f8 0%, #e8edf2 100%); 
+            --primary: #059669; 
+            --secondary: #60a5fa; 
+            --accent: #34d399; 
+            --text-color: #1f2937; 
+            --gray: #6b7280; 
+            --bg-color-1: #f0f4f8;
+            --bg-color-2: #e8edf2;
+            --card-bg: #ffffff; 
+            --card-border: #d1d8e1; 
+            --card-hover-bg: #f5f8fa; 
+            --input-bg: #ffffff;
+            --border-color: #cbd5e1;
+            --logo-drop-shadow: drop-shadow(0 0 10px rgba(5, 150, 105, 0.6));
+            --header-accent-bg: #e2e8f0; 
         }
 
         body {
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%);
-            color: var(--light);
+            background: linear-gradient(135deg, var(--bg-color-1) 0%, var(--bg-color-2) 100%);
+            color: var(--text-color);
             min-height: 100vh;
             overflow-x: hidden;
+            position: relative;
+            transition: background 0.5s ease, color 0.5s ease;
         }
 
-        .background-animation {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            overflow: hidden;
+        /* BACKGROUND & ANIMATION (Standard) */
+        body::before { 
+            content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2;
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAMAAAADCAYAAABWKkQ1AAAAD0lEQVQIW2NkYGBoYGAAAhAAAGfQCX51X/gAAAAASUVORK5CYII=');
+            opacity: 0.1; pointer-events: none;
         }
-
-        .floating-shape {
-            position: absolute;
-            border-radius: 50%;
-            background: linear-gradient(45deg, var(--primary), var(--accent));
-            opacity: 0.1;
-            filter: blur(20px);
-            animation: float 15s infinite ease-in-out;
-        }
-
-        .shape-1 {
-            width: 300px;
-            height: 300px;
-            top: 10%;
-            left: 5%;
-            animation-delay: 0s;
-        }
-
-        .shape-2 {
-            width: 200px;
-            height: 200px;
-            bottom: 15%;
-            right: 10%;
-            animation-delay: 3s;
-        }
-
-        .shape-3 {
-            width: 150px;
-            height: 150px;
-            top: 60%;
-            left: 20%;
-            animation-delay: 6s;
-        }
-
+        .background-animation { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden; }
+        .floating-shape { position: absolute; border-radius: 50%; background: radial-gradient(circle at center, rgba(37, 99, 235, 0.4), transparent 70%); opacity: 0.15; filter: blur(50px); animation: float 15s infinite ease-in-out; }
+        body.theme-light .floating-shape { opacity: 0.1; background: radial-gradient(circle at center, rgba(5, 150, 105, 0.4), transparent 70%); }
+        .shape-1 { width: 300px; height: 300px; top: 10%; left: 5%; animation-delay: 0s; }
+        .shape-2 { width: 200px; height: 200px; bottom: 15%; right: 10%; animation-delay: 3s; }
+        .shape-3 { width: 150px; height: 150px; top: 60%; left: 20%; animation-delay: 6s; }
         @keyframes float {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            25% { transform: translate(-20px, -30px) rotate(5deg); }
-            50% { transform: translate(15px, 25px) rotate(-5deg); }
-            75% { transform: translate(10px, -15px) rotate(3deg); }
+            0%, 100% { transform: translate(0, 0) rotate(0deg); } 25% { transform: translate(-20px, -30px) rotate(5deg); }
+            50% { transform: translate(15px, 25px) rotate(-5deg); } 75% { transform: translate(10px, -15px) rotate(3deg); }
         }
 
         .container {
@@ -90,65 +90,91 @@
             padding: 1.5rem;
         }
 
+        /* --- HEADER STYLING --- */
         header {
             text-align: center;
-            padding: 1.5rem 0;
+            padding: 0 0 1rem; 
+            position: relative; 
+        }
+        
+        /* New Hero/Accent Bar */
+        .header-accent {
+            background: var(--header-accent-bg);
+            border-bottom: 1px solid var(--border-color);
+            margin: 0 -1.5rem 1rem; 
+            padding: 0 1.5rem;
+        }
+
+        /* Top Bar Layout (Logo + Theme Selector) */
+        .header-top {
+            display: flex;
+            justify-content: space-between; 
+            align-items: center;
+            padding: 1rem 0; 
+        }
+        
+        .logo-group {
+            display: flex;
+            align-items: center;
+            text-align: left;
         }
 
         .logo {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
+            font-size: 2rem;
+            margin-right: 0.5rem; 
+            margin-bottom: 0; 
             background: linear-gradient(45deg, var(--primary), var(--accent));
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            filter: drop-shadow(0 0 15px rgba(37, 99, 235, 0.3));
+            filter: var(--logo-drop-shadow); 
         }
-
+        
         h1 {
-            font-size: 2rem;
-            font-weight: 800;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(45deg, #fff, #cbd5e1);
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0; 
+            background: linear-gradient(45deg, var(--text-color), var(--gray));
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
             letter-spacing: -0.5px;
+            line-height: 1; 
         }
-
+        
         .subtitle {
             font-size: 1rem;
-            color: #94a3b8;
-            max-width: 600px;
-            margin: 0 auto 1.5rem;
+            color: var(--gray);
+            margin: 0 auto 1.2rem; 
             line-height: 1.5;
         }
 
+        /* --- SEARCH BAR --- */
         .search-bar {
             max-width: 500px;
-            margin: 0 auto 1.5rem;
+            margin: 0 auto 1rem; 
             position: relative;
         }
 
         .search-bar input {
             width: 100%;
-            padding: 0.9rem 1.2rem;
+            padding: 0.8rem 1.2rem; 
             padding-left: 2.8rem;
             border: none;
             border-radius: 30px;
-            background: rgba(255, 255, 255, 0.08);
-            color: white;
+            background: var(--input-bg);
+            color: var(--text-color);
             font-size: 0.95rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(10px); 
             transition: all 0.3s ease;
         }
 
         .search-bar input:focus {
             outline: none;
-            background: rgba(255, 255, 255, 0.12);
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
+            background: var(--card-hover-bg);
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.5); 
         }
 
         .search-bar i {
@@ -156,31 +182,71 @@
             left: 1.2rem;
             top: 50%;
             transform: translateY(-50%);
-            color: #94a3b8;
+            color: var(--gray);
             font-size: 1rem;
         }
 
+        /* --- CATEGORIES --- */
+        .categories {
+            display: flex;
+            justify-content: center;
+            gap: 0.8rem;
+            margin: 1rem 0 1.5rem; 
+            flex-wrap: wrap;
+        }
+
+        .category-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--gray);
+            padding: 0.6rem 1.2rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .category-btn:hover, .category-btn.active {
+            background: var(--primary);
+            color: var(--light);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+        body.theme-light .category-btn { color: #1f2937; }
+        body.theme-light .category-btn:hover, body.theme-light .category-btn.active { color: white; }
+
+        /* --- TOOL CARDS --- */
         .tools-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 1.2rem;
+            gap: 1.25rem; 
             margin: 1.5rem 0;
         }
 
         .tool-card {
-            background: rgba(255, 255, 255, 0.05);
+            background: var(--card-bg);
             border-radius: 16px;
             padding: 1.5rem;
             text-decoration: none;
             color: inherit;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--card-border);
             backdrop-filter: blur(10px);
             position: relative;
             overflow: hidden;
             height: 100%;
             display: flex;
             flex-direction: column;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); 
+        }
+        
+        body.theme-light .tool-card {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            backdrop-filter: none;
         }
 
         .tool-card::before {
@@ -197,219 +263,75 @@
         }
 
         .tool-card:hover {
-            transform: translateY(-8px) scale(1.02);
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-8px) scale(1.02) rotateZ(0.5deg); 
+            background: var(--card-hover-bg);
+            border-color: var(--border-color);
             box-shadow: 
-                0 20px 40px rgba(0, 0, 0, 0.3),
-                0 0 0 1px rgba(37, 99, 235, 0.3),
-                0 0 25px rgba(37, 99, 235, 0.2);
+                0 20px 40px rgba(0, 0, 0, 0.6),
+                0 0 15px rgba(37, 99, 235, 0.5);
+        }
+        body.theme-light .tool-card:hover {
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15), 0 0 5px rgba(5, 150, 105, 0.2);
         }
 
-        .tool-card:hover::before {
-            transform: scaleX(1);
-        }
+        .tool-card:hover::before { transform: scaleX(1); }
 
         .icon-container {
-            width: 50px;
-            height: 50px;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 1.2rem;
-            font-size: 1.5rem;
-            transition: transform 0.3s ease;
+            width: 50px; height: 50px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.2rem; font-size: 1.5rem; transition: all 0.3s ease;
         }
+        .tool-card:hover .icon-container { transform: scale(1.1) rotate(5deg); box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); }
+        body.theme-light .tool-card:hover .icon-container { box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
 
-        .tool-card:hover .icon-container {
-            transform: scale(1.1) rotate(5deg);
-        }
+        .tool-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.7rem; color: var(--text-color); }
+        .tool-description { color: var(--gray); font-size: 0.85rem; line-height: 1.4; margin-bottom: 1.2rem; flex-grow: 1; }
+        .tool-meta { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; }
+        .tool-category { background: rgba(37, 99, 235, 0.2); color: #93c5fd; padding: 0.25rem 0.7rem; border-radius: 15px; font-weight: 500; }
+        body.theme-light .tool-category { background: rgba(5, 150, 105, 0.1); color: #059669; }
+        .tool-launch { color: var(--primary); font-weight: 600; display: flex; align-items: center; gap: 0.4rem; transition: all 0.3s ease; }
+        .tool-card:hover .tool-launch { color: var(--secondary); transform: translateX(3px); }
 
-        .tool-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 0.7rem;
-            color: white;
-        }
+        /* CARD COLOR ABSTRACTION (Standard) */
+        .tool-card[data-color="blue"] { --gc-start: #3b82f6; --gc-end: #60a5fa; } .tool-card[data-color="green"] { --gc-start: #10b981; --gc-end: #34d399; } .tool-card[data-color="amber"] { --gc-start: #f59e0b; --gc-end: #fbbf24; } .tool-card[data-color="red"] { --gc-start: #ef4444; --gc-end: #f87171; } .tool-card[data-color="violet"] { --gc-start: #8b5cf6; --gc-end: #a78bfa; } .tool-card[data-color="cyan"] { --gc-start: #06b6d4; --gc-end: #22d3ee; } .tool-card[data-color="pink"] { --gc-start: #ec4899; --gc-end: #f472b6; } .tool-card[data-color="teal"] { --gc-start: #14b8a6; --gc-end: #2dd4bf; } .tool-card[data-color="orange"] { --gc-start: #f97316; --gc-end: #fb923c; } .tool-card[data-color="indigo"] { --gc-start: #6366f1; --gc-end: #818cf8; } .tool-card[data-color="purple"] { --gc-start: #a855f7; --gc-end: #c084fc; } .tool-card[data-color="sky"] { --gc-start: #0ea5e9; --gc-end: #38bdf8; } .tool-card[data-color="crimson"] { --gc-start: #dc2626; --gc-end: #ef4444; } .tool-card[data-color="emerald"] { --gc-start: #059669; --gc-end: #10b981; } .tool-card[data-color="brown"] { --gc-start: #7c2d12; --gc-end: #92400e; } .tool-card[data-color="dark-indigo"] { --gc-start: #4338ca; --gc-end: #4f46e5; } .tool-card[data-color="rose"] { --gc-start: #be185d; --gc-end: #db2777; } .tool-card[data-color="dark-blue"] { --gc-start: #454ade; --gc-end: #6366f1; } .tool-card[data-color="fuchsia"] { --gc-start: #8b5cf6; --gc-end: #d946ef; } .tool-card[data-color="light-red"] { --gc-start: #f43f5e; --gc-end: #fb7185; } .tool-card[data-color="dark-cyan"] { --gc-start: #06b6d4; --gc-end: #0891b2; } .tool-card[data-color="dark-teal"] { --gc-start: #0891b2; --gc-end: #0e7490; } .tool-card[data-color="dark-violet"] { --gc-start: #4f46e5; --gc-end: #4338ca; } .tool-card[data-color="heart"] { --gc-start: #f43f5e; --gc-end: #ec4899; }
+        .tool-card .icon-container { background: linear-gradient(45deg, var(--gc-start), var(--gc-end)); }
 
-        .tool-description {
-            color: #94a3b8;
-            font-size: 0.85rem;
-            line-height: 1.4;
-            margin-bottom: 1.2rem;
-            flex-grow: 1;
-        }
+        /* --- FOOTER (Standard) --- */
+        footer { text-align: center; padding: 2rem 0 1.5rem; color: #64748b; border-top: 1px solid var(--border-color); margin-top: 2rem; font-size: 0.9rem; }
+        .creator { font-weight: 600; color: #93c5fd; }
+        body.theme-light .creator { color: #059669; }
 
-        .tool-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.8rem;
-        }
+        /* --- ANIMATIONS (Standard) --- */
+        .pulse { animation: pulse 2s infinite; } @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(124, 58, 237, 0); } 100% { box-shadow: 0 0 0 0 rgba(124, 58, 237, 0); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .tool-card { opacity: 0; animation: fadeInUp 0.4s ease forwards; animation-delay: calc(0.1s + (var(--card-index) * 0.05s)); }
 
-        .tool-category {
-            background: rgba(37, 99, 235, 0.2);
-            color: #93c5fd;
-            padding: 0.25rem 0.7rem;
-            border-radius: 15px;
-            font-weight: 500;
-        }
+        /* --- THEME SELECTOR --- */
+        .theme-selector { display: flex; align-items: center; margin: 0; padding: 0; }
 
-        .tool-launch {
-            color: var(--primary);
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-            transition: all 0.3s ease;
-        }
-
-        .tool-card:hover .tool-launch {
-            color: #60a5fa;
-            transform: translateX(3px);
-        }
-
-        .categories {
-            display: flex;
-            justify-content: center;
-            gap: 0.8rem;
-            margin: 1.5rem 0;
-            flex-wrap: wrap;
-        }
-
-        .category-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #94a3b8;
-            padding: 0.6rem 1.2rem;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 500;
-            font-size: 0.9rem;
-        }
-
-        .category-btn:hover, .category-btn.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-
-        footer {
-            text-align: center;
-            padding: 2rem 0 1.5rem;
-            color: #64748b;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            margin-top: 1rem;
-            font-size: 0.9rem;
-        }
-
-        .creator {
-            font-weight: 600;
-            color: #93c5fd;
-        }
-
-        .pulse {
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
-        }
-
-        /* Individual card colors */
-        .card-1 .icon-container { background: linear-gradient(45deg, #3b82f6, #60a5fa); }
-        .card-2 .icon-container { background: linear-gradient(45deg, #10b981, #34d399); }
-        .card-3 .icon-container { background: linear-gradient(45deg, #f59e0b, #fbbf24); }
-        .card-4 .icon-container { background: linear-gradient(45deg, #ef4444, #f87171); }
-        .card-5 .icon-container { background: linear-gradient(45deg, #8b5cf6, #a78bfa); }
-        .card-6 .icon-container { background: linear-gradient(45deg, #06b6d4, #22d3ee); }
-        .card-7 .icon-container { background: linear-gradient(45deg, #ec4899, #f472b6); }
-        .card-8 .icon-container { background: linear-gradient(45deg, #14b8a6, #2dd4bf); }
-        .card-9 .icon-container { background: linear-gradient(45deg, #f97316, #fb923c); }
-        .card-10 .icon-container { background: linear-gradient(45deg, #6366f1, #818cf8); }
-        .card-11 .icon-container { background: linear-gradient(45deg, #a855f7, #c084fc); }
-        .card-12 .icon-container { background: linear-gradient(45deg, #0ea5e9, #38bdf8); }
-        .card-13 .icon-container { background: linear-gradient(45deg, #dc2626, #ef4444); }
-        .card-14 .icon-container { background: linear-gradient(45deg, #059669, #10b981); }
-        .card-15 .icon-container { background: linear-gradient(45deg, #7c2d12, #92400e); }
-        .card-16 .icon-container { background: linear-gradient(45deg, #4338ca, #4f46e5); }
-        .card-17 .icon-container { background: linear-gradient(45deg, #be185d, #db2777); }
-        .card-18 .icon-container { background: linear-gradient(45deg, #454ade, #6366f1); }
-        .card-19 .icon-container { background: linear-gradient(45deg, #8b5cf6, #d946ef); }
-        .card-20 .icon-container { background: linear-gradient(45deg, #f43f5e, #fb7185); }
-        .card-21 .icon-container { background: linear-gradient(45deg, #06b6d4, #0891b2); }
-        .card-22 .icon-container { background: linear-gradient(45deg, #0891b2, #0e7490); }
-        .card-23 .icon-container { background: linear-gradient(45deg, #4f46e5, #4338ca); }
-
+        /* --- MEDIA QUERIES --- */
         @media (max-width: 768px) {
-            .container {
-                padding: 1rem;
+            .container { padding: 1rem; }
+            .header-top { 
+                flex-direction: column; 
+                text-align: center;
+                padding-top: 1rem;
+                margin-bottom: 0.5rem;
             }
-
-            h1 {
-                font-size: 1.7rem;
+            .logo-group {
+                flex-direction: column;
+                margin-bottom: 0.5rem;
             }
-
-            .logo {
-                font-size: 2rem;
-            }
-
-            .tools-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .categories {
-                gap: 0.5rem;
-            }
-
-            .category-btn {
-                padding: 0.5rem 0.9rem;
-                font-size: 0.85rem;
+            .logo { margin-right: 0; margin-bottom: 0.3rem; }
+            .theme-selector { justify-content: center; margin-bottom: 0; }
+            h1 { font-size: 1.7rem; }
+            .logo { font-size: 2rem; }
+            .tools-grid { grid-template-columns: 1fr; }
+            .categories { gap: 0.5rem; }
+            .category-btn { padding: 0.5rem 0.9rem; font-size: 0.85rem; }
+            .header-accent {
+                 margin: 0 -1rem 1rem; 
+                 padding: 0 1rem;
             }
         }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .tool-card {
-            animation: fadeInUp 0.4s ease forwards;
-        }
-
-        .tools-grid .tool-card:nth-child(1) { animation-delay: 0.1s; }
-        .tools-grid .tool-card:nth-child(2) { animation-delay: 0.15s; }
-        .tools-grid .tool-card:nth-child(3) { animation-delay: 0.2s; }
-        .tools-grid .tool-card:nth-child(4) { animation-delay: 0.25s; }
-        .tools-grid .tool-card:nth-child(5) { animation-delay: 0.3s; }
-        .tools-grid .tool-card:nth-child(6) { animation-delay: 0.35s; }
-        .tools-grid .tool-card:nth-child(7) { animation-delay: 0.4s; }
-        .tools-grid .tool-card:nth-child(8) { animation-delay: 0.45s; }
-        .tools-grid .tool-card:nth-child(9) { animation-delay: 0.5s; }
-        .tools-grid .tool-card:nth-child(10) { animation-delay: 0.55s; }
-        .tools-grid .tool-card:nth-child(11) { animation-delay: 0.6s; }
-        .tools-grid .tool-card:nth-child(12) { animation-delay: 0.65s; }
-        .tools-grid .tool-card:nth-child(13) { animation-delay: 0.7s; }
-        .tools-grid .tool-card:nth-child(14) { animation-delay: 0.75s; }
-        .tools-grid .tool-card:nth-child(15) { animation-delay: 0.8s; }
-        .tools-grid .tool-card:nth-child(16) { animation-delay: 0.85s; }
-        .tools-grid .tool-card:nth-child(17) { animation-delay: 0.9s; }
-        .tools-grid .tool-card:nth-child(18) { animation-delay: 0.95s; }
-        .tools-grid .tool-card:nth-child(19) { animation-delay: 1.0s; }
-        .tools-grid .tool-card:nth-child(20) { animation-delay: 1.05s; }
-        .tools-grid .tool-card:nth-child(21) { animation-delay: 1.1s; }
-        .tools-grid .tool-card:nth-child(22) { animation-delay: 1.15s; }
-        .tools-grid .tool-card:nth-child(23) { animation-delay: 1.2s; }
     </style>
 </head>
 <body>
@@ -421,302 +343,200 @@
 
     <div class="container">
         <header>
-            <div class="logo">
-                <i class="fas fa-cube"></i>
+            <div class="header-accent">
+                <div class="header-top">
+                    <div class="logo-group">
+                        <div class="logo">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <h1>OfficeSuite Pro</h1>
+                    </div>
+                    
+                    <div class="theme-selector">
+                        <button id="themeDarkBtn" class="theme-btn active" data-theme="default-dark"><i class="fas fa-moon"></i> Dark</button>
+                        <button id="themeLightBtn" class="theme-btn" data-theme="light"><i class="fas fa-sun"></i> Light</button>
+                    </div>
+                </div>
             </div>
-            <h1>OfficeSuite Pro</h1>
-            <p class="subtitle">Your ultimate productivity hub with powerful tools designed to streamline office workflows</p>
+            
+            <p class="subtitle">Your ultimate productivity hub with powerful tools for streamlined office workflows</p>
             
             <div class="search-bar">
                 <i class="fas fa-search"></i>
-                <input type="text" placeholder="Search tools..." id="searchInput">
+                <input type="text" placeholder="Search tools by name or description..." id="searchInput">
             </div>
         </header>
-
+        
         <div class="categories">
-            <button class="category-btn active" data-category="all">All Tools</button>
-            <button class="category-btn" data-category="communication">Communication</button>
-            <button class="category-btn" data-category="finance">Finance</button>
-            <button class="category-btn" data-category="productivity">Productivity</button>
-            <button class="category-btn" data-category="management">Management</button>
+            <button class="category-btn active" data-category="all"><i class="fas fa-list-ul"></i> All Tools</button>
+            <button class="category-btn" data-category="communication"><i class="fas fa-comments"></i> Communication</button>
+            <button class="category-btn" data-category="finance"><i class="fas fa-wallet"></i> Finance</button>
+            <button class="category-btn" data-category="productivity"><i class="fas fa-bolt"></i> Productivity</button>
+            <button class="category-btn" data-category="management"><i class="fas fa-users"></i> Management</button>
         </div>
 
-        <div class="tools-grid">
-            <a href="imms.html" target="_blank" class="tool-card card-1" data-category="communication">
-                <div class="icon-container">
-                    <i class="fas fa-inbox"></i>
-                </div>
+        <div class="tools-grid" id="toolsGrid">
+            
+            <a href="imms.html" target="_blank" class="tool-card" data-category="communication" data-color="blue" style="--card-index: 1;">
+                <div class="icon-container"><i class="fas fa-inbox"></i></div>
                 <h3 class="tool-title">Incoming Mail Management</h3>
                 <p class="tool-description">Efficiently manage and track all incoming correspondence with automated sorting.</p>
-                <div class="tool-meta">
-                    <span class="tool-category">Communication</span>
-                    <span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span>
-                </div>
+                <div class="tool-meta"><span class="tool-category">Communication</span><span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span></div>
             </a>
 
-            <a href="omms.html" target="_blank" class="tool-card card-2" data-category="communication">
-                <div class="icon-container">
-                    <i class="fas fa-paper-plane"></i>
-                </div>
+            <a href="omms.html" target="_blank" class="tool-card" data-category="communication" data-color="green" style="--card-index: 2;">
+                <div class="icon-container"><i class="fas fa-paper-plane"></i></div>
                 <h3 class="tool-title">Outgoing Mail Management</h3>
                 <p class="tool-description">Track and manage outgoing communications with delivery confirmation.</p>
-                <div class="tool-meta">
-                    <span class="tool-category">Communication</span>
-                    <span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span>
-                </div>
+                <div class="tool-meta"><span class="tool-category">Communication</span><span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span></div>
             </a>
 
-            <a href="dpms.html" target="_blank" class="tool-card card-3" data-category="management">
-                <div class="icon-container">
-                    <i class="fas fa-gavel"></i>
-                </div>
+            <a href="dpms.html" target="_blank" class="tool-card" data-category="management" data-color="amber" style="--card-index: 3;">
+                <div class="icon-container"><i class="fas fa-gavel"></i></div>
                 <h3 class="tool-title">Disciplinary Proceedings</h3>
                 <p class="tool-description">Manage disciplinary cases with proper documentation and compliance tracking.</p>
-                <div class="tool-meta">
-                    <span class="tool-category">Management</span>
-                    <span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span>
-                </div>
+                <div class="tool-meta"><span class="tool-category">Management</span><span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span></div>
             </a>
 
-            <a href="taskmgr.html" target="_blank" class="tool-card card-4" data-category="productivity">
-                <div class="icon-container">
-                    <i class="fas fa-tasks"></i>
-                </div>
+            <a href="taskmgr.html" target="_blank" class="tool-card" data-category="productivity" data-color="red" style="--card-index: 4;">
+                <div class="icon-container"><i class="fas fa-tasks"></i></div>
                 <h3 class="tool-title">Task Manager</h3>
                 <p class="tool-description">Organize, prioritize, and track all your tasks with deadline reminders.</p>
-                <div class="tool-meta">
-                    <span class="tool-category">Productivity</span>
-                    <span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span>
-                </div>
+                <div class="tool-meta"><span class="tool-category">Productivity</span><span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span></div>
             </a>
 
-            <a href="chart.html" target="_blank" class="tool-card card-5" data-category="management">
-                <div class="icon-container">
-                    <i class="fas fa-chart-line"></i>
-                </div>
+            <a href="chart.html" target="_blank" class="tool-card" data-category="management" data-color="violet" style="--card-index: 5;">
+                <div class="icon-container"><i class="fas fa-chart-line"></i></div>
                 <h3 class="tool-title">Chart Preparation</h3>
                 <p class="tool-description">Create professional organizational charts with drag-and-drop interface.</p>
-                <div class="tool-meta">
-                    <span class="tool-category">Management</span>
-                    <span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span>
-                </div>
+                <div class="tool-meta"><span class="tool-category">Management</span><span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span></div>
             </a>
 
-            <a href="fmru.html" target="_blank" class="tool-card card-6" data-category="management">
-                <div class="icon-container">
-                    <i class="fas fa-exchange-alt"></i>
-                </div>
+            <a href="fmru.html" target="_blank" class="tool-card" data-category="management" data-color="cyan" style="--card-index: 6;">
+                <div class="icon-container"><i class="fas fa-exchange-alt"></i></div>
                 <h3 class="tool-title">File Movement Records</h3>
                 <p class="tool-description">Track file movements across departments with timestamps.</p>
-                <div class="tool-meta">
-                    <span class="tool-category">Management</span>
-                    <span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span>
-                </div>
+                <div class="tool-meta"><span class="tool-category">Management</span><span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span></div>
             </a>
 
-            <a href="firu.html" target="_blank" class="tool-card card-7" data-category="productivity">
-                <div class="icon-container">
-                    <i class="fas fa-search"></i>
-                </div>
+            <a href="firu.html" target="_blank" class="tool-card" data-category="productivity" data-color="pink" style="--card-index: 7;">
+                <div class="icon-container"><i class="fas fa-search"></i></div>
                 <h3 class="tool-title">Digital File Index</h3>
                 <p class="tool-description">Quickly locate files with advanced search capabilities.</p>
-                <div class="tool-meta">
-                    <span class="tool-category">Productivity</span>
-                    <span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span>
-                </div>
+                <div class="tool-meta"><span class="tool-category">Productivity</span><span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span></div>
             </a>
 
-            <a href="dabook.html" target="_blank" class="tool-card card-8" data-category="finance">
-                <div class="icon-container">
-                    <i class="fas fa-book"></i>
-                </div>
+            <a href="dabook.html" target="_blank" class="tool-card" data-category="finance" data-color="teal" style="--card-index: 8;">
+                <div class="icon-container"><i class="fas fa-book"></i></div>
                 <h3 class="tool-title">Digital Account Book</h3>
                 <p class="tool-description">Maintain comprehensive account records with automated calculations.</p>
-                <div class="tool-meta">
-                    <span class="tool-category">Finance</span>
-                    <span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span>
-                </div>
+                <div class="tool-meta"><span class="tool-category">Finance</span><span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span></div>
             </a>
 
-            <a href="dcbook.html" target="_blank" class="tool-card card-9" data-category="finance">
-                <div class="icon-container">
-                    <i class="fas fa-money-bill-wave"></i>
-                </div>
+            <a href="dcbook.html" target="_blank" class="tool-card" data-category="finance" data-color="orange" style="--card-index: 9;">
+                <div class="icon-container"><i class="fas fa-money-bill-wave"></i></div>
                 <h3 class="tool-title">Digital Cash Book</h3>
                 <p class="tool-description">Track daily cash transactions with real-time balance updates.</p>
-                <div class="tool-meta">
-                    <span class="tool-category">Finance</span>
-                    <span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span>
-                </div>
+                <div class="tool-meta"><span class="tool-category">Finance</span><span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span></div>
             </a>
 
-            <a href="payfixation.html" target="_blank" class="tool-card card-10" data-category="finance">
-                <div class="icon-container">
-                    <i class="fas fa-calculator"></i>
-                </div>
+            <a href="payfixation.html" target="_blank" class="tool-card" data-category="finance" data-color="indigo" style="--card-index: 10;">
+                <div class="icon-container"><i class="fas fa-calculator"></i></div>
                 <h3 class="tool-title">Pay Fixation Comparator</h3>
                 <p class="tool-description">Compare options 1 & 2 for Pay Fixation on Promotion/MACP.</p>
-                <div class="tool-meta">
-                    <span class="tool-category">Finance</span>
-                    <span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span>
-                </div>
+                <div class="tool-meta"><span class="tool-category">Finance</span><span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span></div>
             </a>
 
-            <a href="daratetracker.html" target="_blank" class="tool-card card-11" data-category="finance">
-                <div class="icon-container">
-                    <i class="fas fa-percentage"></i>
-                </div>
+            <a href="daratetracker.html" target="_blank" class="tool-card" data-category="finance" data-color="purple" style="--card-index: 11;">
+                <div class="icon-container"><i class="fas fa-percentage"></i></div>
                 <h3 class="tool-title">DA Rate Tracker</h3>
                 <p class="tool-description">Monitor and calculate Dearness Allowance rates.</p>
-                <div class="tool-meta">
-                    <span class="tool-category">Finance</span>
-                    <span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span>
-                </div>
+                <div class="tool-meta"><span class="tool-category">Finance</span><span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span></div>
             </a>
 
-            <a href="quicknotes.html" target="_blank" class="tool-card card-12" data-category="productivity">
-                <div class="icon-container">
-                    <i class="fas fa-sticky-note"></i>
-                </div>
+            <a href="quicknotes.html" target="_blank" class="tool-card" data-category="productivity" data-color="sky" style="--card-index: 12;">
+                <div class="icon-container"><i class="fas fa-sticky-note"></i></div>
                 <h3 class="tool-title">Sticky Notes</h3>
                 <p class="tool-description">Create and organize digital sticky notes with color coding.</p>
-                <div class="tool-meta">
-                    <span class="tool-category">Productivity</span>
-                    <span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span>
-                </div>
+                <div class="tool-meta"><span class="tool-category">Productivity</span><span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span></div>
             </a>
 
-            <a href="taic.html" target="_blank" class="tool-card card-13" data-category="productivity">
-                <div class="icon-container">
-                    <i class="fas fa-bullseye"></i>
-                </div>
+            <a href="taic.html" target="_blank" class="tool-card" data-category="productivity" data-color="crimson" style="--card-index: 13;">
+                <div class="icon-container"><i class="fas fa-bullseye"></i></div>
                 <h3 class="tool-title">Target Achievement</h3>
                 <p class="tool-description">Track progress towards goals with visual dashboards.</p>
-                <div class="tool-meta">
-                    <span class="tool-category">Productivity</span>
-                    <span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span>
-                </div>
+                <div class="tool-meta"><span class="tool-category">Productivity</span><span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span></div>
             </a>
 
-            <a href="advanceincalc.html" target="_blank" class="tool-card card-14" data-category="finance">
-                <div class="icon-container">
-                    <i class="fas fa-rocket"></i>
-                </div>
+            <a href="advanceincalc.html" target="_blank" class="tool-card" data-category="finance" data-color="emerald" style="--card-index: 14;">
+                <div class="icon-container"><i class="fas fa-rocket"></i></div>
                 <h3 class="tool-title">Advance Increment</h3>
                 <p class="tool-description">Calculate potential salary increments with scenario modeling.</p>
-                <div class="tool-meta">
-                    <span class="tool-category">Finance</span>
-                    <span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span>
-                </div>
+                <div class="tool-meta"><span class="tool-category">Finance</span><span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span></div>
             </a>
 
-            <a href="sixthtoseventh.html" target="_blank" class="tool-card card-15" data-category="finance">
-                <div class="icon-container">
-                    <i class="fas fa-business-time"></i>
-                </div>
+            <a href="sixthtoseventh.html" target="_blank" class="tool-card" data-category="finance" data-color="brown" style="--card-index: 15;">
+                <div class="icon-container"><i class="fas fa-business-time"></i></div>
                 <h3 class="tool-title">6th to 7th Pay Commission</h3>
                 <p class="tool-description">Seamless calculation between sixth and seventh pay commission scales.</p>
-                <div class="tool-meta">
-                    <span class="tool-category">Finance</span>
-                    <span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span>
-                </div>
+                <div class="tool-meta"><span class="tool-category">Finance</span><span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span></div>
             </a>
 
-            <a href="eightcpcprojection.html" target="_blank" class="tool-card card-16" data-category="finance">
+            <a href="eightcpcprojection.html" target="_blank" class="tool-card" data-category="finance" data-color="dark-indigo" style="--card-index: 16;">
                 <div class="icon-container">
-                    <i class="fas fa-crystal-ball"></i>
-                </div>
+                    <i class="fas fa-chart-area"></i> </div>
                 <h3 class="tool-title">8th CPC Projection</h3>
                 <p class="tool-description">Forecast potential salary structures under eighth Pay Commission.</p>
-                <div class="tool-meta">
-                    <span class="tool-category">Finance</span>
-                    <span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span>
-                </div>
+                <div class="tool-meta"><span class="tool-category">Finance</span><span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span></div>
             </a>
 
-            <a href="ppfcalc.html" target="_blank" class="tool-card card-17" data-category="finance">
-                <div class="icon-container">
-                    <i class="fas fa-piggy-bank"></i>
-                </div>
+            <a href="ppfcalc.html" target="_blank" class="tool-card" data-category="finance" data-color="rose" style="--card-index: 17;">
+                <div class="icon-container"><i class="fas fa-piggy-bank"></i></div>
                 <h3 class="tool-title">PPF Investment Calculator</h3>
                 <p class="tool-description">Calculate Public Provident Fund returns with compound interest.</p>
-                <div class="tool-meta">
-                    <span class="tool-category">Finance</span>
-                    <span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span>
-                </div>
+                <div class="tool-meta"><span class="tool-category">Finance</span><span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span></div>
             </a>
 
-            <a href="gratuity.html" target="_blank" class="tool-card card-18" data-category="finance">
-                <div class="icon-container">
-                    <i class="fas fa-gift"></i>
-                </div>
+            <a href="gratuity.html" target="_blank" class="tool-card" data-category="finance" data-color="dark-blue" style="--card-index: 18;">
+                <div class="icon-container"><i class="fas fa-gift"></i></div>
                 <h3 class="tool-title">Gratuity Calculator</h3>
                 <p class="tool-description">Calculate gratuity amount based on years of service and last drawn salary.</p>
-                <div class="tool-meta">
-                    <span class="tool-category">Finance</span>
-                    <span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span>
-                </div>
+                <div class="tool-meta"><span class="tool-category">Finance</span><span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span></div>
             </a>
-
-            <a href="pencommute.html" target="_blank" class="tool-card card-21" data-category="finance">
-                <div class="icon-container">
-                    <i class="fas fa-coins"></i>
-                </div>
+            
+            <a href="pencommute.html" target="_blank" class="tool-card" data-category="finance" data-color="dark-cyan" style="--card-index: 19;">
+                <div class="icon-container"><i class="fas fa-coins"></i></div>
                 <h3 class="tool-title">Pension Commutation Calculator</h3>
                 <p class="tool-description">Calculate commuted value of pension for financial planning purposes.</p>
-                <div class="tool-meta">
-                    <span class="tool-category">Finance</span>
-                    <span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span>
-                </div>
+                <div class="tool-meta"><span class="tool-category">Finance</span><span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span></div>
             </a>
 
-            <a href="leavencash.html" target="_blank" class="tool-card card-20" data-category="finance">
-                <div class="icon-container">
-                    <i class="fas fa-umbrella-beach"></i>
-                </div>
+            <a href="leavencash.html" target="_blank" class="tool-card" data-category="finance" data-color="light-red" style="--card-index: 20;">
+                <div class="icon-container"><i class="fas fa-umbrella-beach"></i></div>
                 <h3 class="tool-title">Leave Encashment Calculator</h3>
                 <p class="tool-description">Calculate leave encashment amount at the time of retirement or resignation.</p>
-                <div class="tool-meta">
-                    <span class="tool-category">Finance</span>
-                    <span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span>
-                </div>
+                <div class="tool-meta"><span class="tool-category">Finance</span><span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span></div>
             </a>
 
-            <!-- New Leave Management Tools -->
-            <a href="empleavemgr.html" target="_blank" class="tool-card card-22" data-category="management">
-                <div class="icon-container">
-                    <i class="fas fa-user-clock"></i>
-                </div>
+            <a href="empleavemgr.html" target="_blank" class="tool-card" data-category="management" data-color="dark-teal" style="--card-index: 21;">
+                <div class="icon-container"><i class="fas fa-user-clock"></i></div>
                 <h3 class="tool-title">Employee Leave Tracker</h3>
                 <p class="tool-description">Personal tool to track your available leave balance and usage history.</p>
-                <div class="tool-meta">
-                    <span class="tool-category">Management</span>
-                    <span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span>
-                </div>
+                <div class="tool-meta"><span class="tool-category">Management</span><span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span></div>
             </a>
 
-            <a href="supleavemgr.html" target="_blank" class="tool-card card-23" data-category="management">
-                <div class="icon-container">
-                    <i class="fas fa-users-cog"></i>
-                </div>
+            <a href="supleavemgr.html" target="_blank" class="tool-card" data-category="management" data-color="dark-violet" style="--card-index: 22;">
+                <div class="icon-container"><i class="fas fa-users-cog"></i></div>
                 <h3 class="tool-title">Supervisor Leave Dashboard</h3>
                 <p class="tool-description">Track leave balances and patterns for all employees under your supervision.</p>
-                <div class="tool-meta">
-                    <span class="tool-category">Management</span>
-                    <span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span>
-                </div>
+                <div class="tool-meta"><span class="tool-category">Management</span><span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span></div>
             </a>
 
-            <div class="tool-card card-19" style="cursor: default;" data-category="appreciation">
-                <div class="icon-container">
-                    <i class="fas fa-heart"></i>
-                </div>
+            <div class="tool-card" data-category="appreciation" data-color="heart" style="cursor: default; --card-index: 23;">
+                <div class="icon-container"><i class="fas fa-heart"></i></div>
                 <h3 class="tool-title">Thank You!</h3>
                 <p class="tool-description">We appreciate your trust in our tools. Stay productive and have an amazing day!</p>
-                <div class="tool-meta">
-                    <span class="tool-category">Appreciation</span>
-                    <span class="tool-launch"><i class="fas fa-star"></i></span>
-                </div>
+                <div class="tool-meta"><span class="tool-category">Appreciation</span><span class="tool-launch"><i class="fas fa-star"></i></span></div>
             </div>
         </div>
 
@@ -727,46 +547,92 @@
     </div>
 
     <script>
-        // Search functionality
-        document.getElementById('searchInput').addEventListener('input', function(e) {
-            const searchTerm = e.target.value.toLowerCase();
-            const cards = document.querySelectorAll('.tool-card');
-            
-            cards.forEach(card => {
-                const title = card.querySelector('.tool-title').textContent.toLowerCase();
-                const description = card.querySelector('.tool-description').textContent.toLowerCase();
-                
-                if (searchTerm === '' || title.includes(searchTerm) || description.includes(searchTerm)) {
-                    card.style.display = 'flex';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-        });
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('searchInput');
+            const toolCards = document.querySelectorAll('.tool-card');
+            const categoryBtns = document.querySelectorAll('.category-btn');
+            const themeBtns = document.querySelectorAll('.theme-btn');
+            const body = document.body;
 
-        // Category filtering
-        document.querySelectorAll('.category-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const category = this.getAttribute('data-category');
+            // --- Theme Switching Functionality ---
+            function setTheme(themeName) {
+                body.className = ''; 
+                if (themeName !== 'default-dark') {
+                    body.classList.add('theme-' + themeName);
+                }
                 
-                // Update active button
-                document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
+                themeBtns.forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.getAttribute('data-theme') === themeName) {
+                        btn.classList.add('active');
+                    }
+                });
+
+                localStorage.setItem('officeSuiteTheme', themeName);
+            }
+
+            // Load theme on page load (defaults to 'default-dark')
+            const savedTheme = localStorage.getItem('officeSuiteTheme') || 'default-dark';
+            setTheme(savedTheme);
+
+            // Attach event listeners to theme buttons
+            themeBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    setTheme(this.getAttribute('data-theme'));
+                });
+            });
+
+            // --- Search & Filter Functionality ---
+
+            // Initial Animation Staggering
+            toolCards.forEach((card, index) => {
+                card.style.setProperty('--card-index', index + 1);
+            });
+
+            // Search Filter
+            searchInput.addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase().trim();
+                const activeCategory = document.querySelector('.category-btn.active').getAttribute('data-category');
                 
-                // Filter cards
-                const cards = document.querySelectorAll('.tool-card');
-                cards.forEach(card => {
-                    if (category === 'all' || card.getAttribute('data-category') === category) {
+                toolCards.forEach(card => {
+                    const title = card.querySelector('.tool-title').textContent.toLowerCase();
+                    const description = card.querySelector('.tool-description').textContent.toLowerCase();
+                    const cardCategory = card.getAttribute('data-category');
+                    
+                    const matchesSearch = searchTerm === '' || title.includes(searchTerm) || description.includes(searchTerm);
+                    const matchesCategory = activeCategory === 'all' || cardCategory === activeCategory;
+                    
+                    if (matchesSearch && matchesCategory) {
                         card.style.display = 'flex';
                     } else {
                         card.style.display = 'none';
                     }
                 });
             });
-        });
 
-        // Add pulse animation to the thank you card
-        document.querySelector('.card-19').classList.add('pulse');
+            // Category Filter
+            categoryBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const category = this.getAttribute('data-category');
+                    
+                    categoryBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    searchInput.value = ''; // Clear search input on category switch
+
+                    toolCards.forEach(card => {
+                        if (category === 'all' || card.getAttribute('data-category') === category) {
+                            card.style.display = 'flex';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                });
+            });
+
+            // --- Pulse Animation ---
+            document.querySelector('.tool-card[data-category="appreciation"]').classList.add('pulse');
+        });
     </script>
 </body>
 </html>

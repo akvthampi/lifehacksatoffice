@@ -495,24 +495,42 @@
 
         /**
          * Logic to add a new employee.
+         * MODIFIED: To prompt for a unique Employee ID and prevent duplicates.
          */
         async function requestAddEmployee() {
+            // 1. Prompt for Employee Name
             const newName = prompt("Enter the Name of the New Employee (e.g., C. D. Kumar):");
             if (!newName || !newName.trim()) {
                 return; // User cancelled or entered empty name
             }
+
+            // 2. Prompt for Employee ID (Mandatory)
+            const newId = prompt(`Enter the Unique Employee ID for ${newName.trim()} (e.g., E00123):`);
+            if (!newId || !newId.trim()) {
+                showToast("Employee ID is mandatory. Operation cancelled.", 'error');
+                return; // User cancelled or entered empty ID
+            }
+
+            const trimmedId = newId.trim();
+
+            // 3. Check for Duplicates using the Employee ID
+            if (supervisorData[trimmedId]) {
+                showToast(`Employee ID "${trimmedId}" already exists for employee: ${supervisorData[trimmedId].name}.`, 'error');
+                return;
+            }
             
-            // Use a simple timestamp-based internal ID
-            const internalId = 'emp_' + Date.now(); 
-            supervisorData[internalId] = {
-                id: internalId, // Internal unique key for the object
+            // 4. Create New Employee Record
+            supervisorData[trimmedId] = {
+                id: trimmedId, // NEW: The internal unique key is now the provided Employee ID
                 name: newName.trim(),
                 initialBalance: { CL: 8, RH: 2 }, 
                 leaveTransactions: []
             };
+            
+            // 5. Save, Switch, and Notify
             saveData();
-            switchEmployee(internalId);
-            showToast(`Employee ${newName.trim()} added successfully.`);
+            switchEmployee(trimmedId);
+            showToast(`Employee ${newName.trim()} (ID: ${trimmedId}) added successfully.`);
         }
         
         /**
@@ -526,7 +544,7 @@
             
             const confirmed = await showConfirmation(
                 "Delete Employee Record",
-                `Are you sure you want to permanently delete ALL data for ${employeeData.name}? This action is irreversible, typically used for employee transfer/exit.`,
+                `Are you sure you want to permanently delete ALL data for ${employeeData.name} (ID: ${employeeData.id})? This action is irreversible, typically used for employee transfer/exit.`,
                 "Yes, Delete Employee"
             );
             
@@ -588,8 +606,8 @@
                     <p style="font-size: 12pt; margin: 5px 0 10px;">OfficeSuite Pro - Supervisor's Leave Tracker</p>
                 </div>
                 
-                <h2 style="font-size: 14pt; margin-bottom: 10px; border-bottom: 2px solid #ccc; padding-bottom: 5px;">
-                    Employee: ${employeeData.name}
+                <h2 style="font-size: 14pt; margin-bottom: 5px; border-bottom: 2px solid #ccc; padding-bottom: 5px;">
+                    Employee: ${employeeData.name} (ID: ${employeeData.id})
                 </h2>
 
                 <div style="margin-bottom: 20px; font-size: 10pt;">
@@ -848,6 +866,7 @@
             const selector = document.getElementById('employee-select');
             selector.innerHTML = '';
             
+            // Sort by employee name, but the value is the ID
             const sortedEmployees = Object.values(supervisorData)
                 .sort((a, b) => a.name.localeCompare(b.name));
 
@@ -860,7 +879,7 @@
                 sortedEmployees.forEach(data => { 
                     const option = document.createElement('option');
                     option.value = data.id; 
-                    option.textContent = data.name; 
+                    option.textContent = `${data.name} (ID: ${data.id})`; // Display both name and ID
                     selector.appendChild(option);
                 });
             }
@@ -881,7 +900,7 @@
                 return;
             }
             
-            empNameSpan.textContent = employeeData.name;
+            empNameSpan.textContent = `${employeeData.name} (ID: ${employeeData.id})`;
             balanceDisplay.innerHTML = '';
             
             const currentBalance = calculateCurrentBalances(employeeData);
@@ -915,7 +934,7 @@
                 return;
             }
             
-            empNameSpan.textContent = employeeData.name;
+            empNameSpan.textContent = `${employeeData.name} (ID: ${employeeData.id})`;
             listElement.innerHTML = '';
 
             const sortedTransactions = [...employeeData.leaveTransactions].sort((a, b) => {

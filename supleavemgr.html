@@ -1,12 +1,11 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Supervisor's Leave Tracker</title>
-    <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Use Inter font -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
         body {
@@ -25,6 +24,59 @@
             transform: translateY(-2px);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
+
+        /* --- PRINT STYLES --- */
+        @media print {
+            body {
+                /* Set standard paper color and font */
+                background-color: #fff !important;
+                color: #000 !important;
+                font-size: 10pt;
+            }
+            
+            /* Hide all UI elements not part of the report */
+            #app > .max-w-7xl > header, 
+            #toast-message,
+            section:not(.print-report-container), /* Hide all forms/sections except the report container */
+            .flex-col button,
+            .flex-col label,
+            .flex-col select,
+            .flex-col input,
+            #transactions-list-container,
+            #custom-confirm-modal {
+                display: none !important;
+            }
+
+            /* Show the dedicated print content */
+            .print-report-container {
+                display: block !important;
+                margin: 0;
+                padding: 0;
+                width: 100%;
+                /* Ensure A4 dimensions for portrait (approx 8.27in wide) */
+                max-width: 8.27in; 
+            }
+            
+            /* Adjust table styles for clean printing */
+            .report-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 15px;
+            }
+            .report-table th, .report-table td {
+                border: 1px solid #999;
+                padding: 6px;
+                text-align: left;
+            }
+            .report-table th {
+                background-color: #e5e7eb;
+            }
+            
+            /* Ensure the print button itself is hidden */
+            .print-hide {
+                display: none !important;
+            }
+        }
     </style>
 </head>
 <body class="min-h-screen">
@@ -32,7 +84,6 @@
     <div id="app" class="w-full bg-white shadow-none p-4 sm:p-8">
         <div class="max-w-7xl mx-auto">
 
-            <!-- Title & Employee Selector -->
             <header class="mb-8 border-b pb-4 flex flex-col md:flex-row md:justify-between md:items-end">
                 <h1 class="text-3xl font-extrabold text-blue-700 flex items-center mb-4 md:mb-0">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8 mr-2 text-blue-500">
@@ -53,19 +104,17 @@
                 </div>
             </header>
 
-            <!-- Toast Notification Area -->
             <div id="toast-message" class="fixed top-4 right-4 z-50 transition-opacity duration-300 opacity-0"></div>
+            
+            <div id="print-report-container" class="print-report-container hidden"></div>
 
-            <!-- Section 1: Leave Balances Display (CL/RH ONLY) -->
             <section class="mb-8 p-6 bg-blue-50 border border-blue-300 rounded-xl shadow-soft">
                 <h2 class="text-2xl font-semibold mb-4 text-blue-700">CL/RH Balances for <span id="current-employee-name" class="font-extrabold"></span></h2>
                 <div id="balance-display" class="grid grid-cols-2 gap-4 max-w-lg">
-                    <!-- CL and RH balance cards injected here by JavaScript -->
-                </div>
+                    </div>
                 <p class="text-sm text-gray-500 mt-4">*Only CL and RH are actively debited from the balances maintained here.</p>
             </section>
 
-            <!-- Section 2: Initial Balance Setup (Collapsible/Modal-like area) -->
             <section class="mb-10 p-6 bg-indigo-50 border border-indigo-300 rounded-xl shadow-soft">
                 <h2 class="text-xl font-bold text-indigo-800 mb-4 cursor-pointer flex justify-between items-center" onclick="toggleVisibility('initial-balance-form-container')">
                     Set CL/RH Initial Balances
@@ -92,7 +141,6 @@
                 </div>
             </section>
             
-            <!-- Section 3: Add New Leave Transaction (All Types) -->
             <section class="mb-10 p-6 bg-gray-50 border border-gray-200 rounded-xl shadow-soft">
                 <h2 class="text-2xl font-semibold mb-4 text-gray-700">Record a New Leave Transaction (All Types)</h2>
                 <form id="leave-transaction-form" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -129,7 +177,6 @@
                 </form>
             </section>
 
-            <!-- Section 4: Transaction History & Data Management -->
             <section class="mb-8">
                 <h2 class="text-2xl font-semibold mb-4 text-gray-700">Transaction History for <span id="current-employee-name-history" class="font-extrabold"></span></h2>
 
@@ -141,6 +188,22 @@
                         </svg>
                         Download ALL Data (.json)
                     </button>
+                    
+                    <label class="flex-1 py-2 px-4 border border-transparent rounded-lg shadow-md text-sm font-medium text-white bg-green-600 hover:bg-green-700 transition duration-150 ease-in-out flex items-center justify-center cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 mr-1">
+                            <path fill-rule="evenodd" d="M10 2c-1.748 0-3.155 1.34-3.415 3H3a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-3.585c-.26-1.66-1.667-3-3.415-3Zm1 12a1 1 0 1 0-2 0v-4a1 1 0 1 0 2 0v4Z" clip-rule="evenodd" />
+                        </svg>
+                        Upload ALL Data (.json)
+                        <input type="file" id="upload-file-input" accept=".json" class="hidden" onchange="uploadData(event)">
+                    </label>
+                    
+                    <button onclick="generatePrintReport()" class="flex-1 py-2 px-4 border border-transparent rounded-lg shadow-md text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 transition duration-150 ease-in-out flex items-center justify-center print-hide">
+                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 mr-1">
+                            <path fill-rule="evenodd" d="M7.875 1.5C6.839 1.5 6 2.34 6 3.375v2.25c0 .324.21.588.498.667L7.5 7.5h9l1.002-.208a.75.75 0 0 0 .498-.667V3.375C18 2.339 17.161 1.5 16.125 1.5h-8.25ZM2.25 8.25c0-.414.336-.75.75-.75h1.5a.75.75 0 0 1 .75.75v.75H3a.75.75 0 0 0-.75.75v6.125a3 3 0 0 0 3 3.001h12.75a3 3 0 0 0 3-3.001V9.75a.75.75 0 0 0-.75-.75h-3.75V8.25a.75.75 0 0 0-.75-.75h-1.5a.75.75 0 0 0-.75.75v.75h-9V8.25ZM6 12a.75.75 0 0 0 0 1.5h.008a.75.75 0 0 0 0-1.5H6Zm2.25.75a.75.75 0 0 1 .75-.75h.008a.75.75 0 0 1 0 1.5H9a.75.75 0 0 1-.75-.75Zm3-.75a.75.75 0 0 0 0 1.5h.008a.75.75 0 0 0 0-1.5H11.25ZM15 12a.75.75 0 0 0 0 1.5h.008a.75.75 0 0 0 0-1.5H15Z" clip-rule="evenodd" />
+                        </svg>
+                        Print Leave Report
+                    </button>
+                    
                     <button onclick="requestClearAllData()" class="flex-1 py-2 px-4 border border-transparent rounded-lg shadow-md text-sm font-medium text-white bg-red-600 hover:bg-red-700 transition duration-150 ease-in-out flex items-center justify-center">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 mr-1">
                             <path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 0 0 6 3.75v.5H4.25a.75.75 0 0 0 0 1.5h.75v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-10h.75a.75.75 0 0 0 0-1.5H14v-.5A2.75 2.75 0 0 0 11.25 1h-2.5ZM10 4.25a1.25 1.25 0 1 1 2.5 0v.5h-2.5v-.5ZM10 7a.75.75 0 0 1 .75.75v7.5a.75.75 0 0 1-1.5 0v-7.5A.75.75 0 0 1 10 7Zm4.75 0a.75.75 0 0 1 .75.75v7.5a.75.75 0 0 1-1.5 0v-7.5a.75.75 0 0 1 .75-.75ZM5.25 8.5a.75.75 0 0 0 0 1.5h7.5a.75.75 0 0 0 0-1.5h-7.5Z" clip-rule="evenodd" />
@@ -161,13 +224,11 @@
                             </tr>
                         </thead>
                         <tbody id="transactions-list" class="bg-white divide-y divide-gray-200">
-                            <!-- Transactions injected here by JavaScript -->
-                        </tbody>
+                            </tbody>
                     </table>
                 </div>
             </section>
             
-            <!-- Custom Confirmation Modal Structure (Replaces native confirm()) -->
             <div id="custom-confirm-modal" class="fixed inset-0 bg-gray-900 bg-opacity-70 hidden items-center justify-center z-50 transition-opacity duration-300">
                 <div class="bg-white p-6 rounded-xl shadow-2xl max-w-sm w-full transform scale-100 transition-transform duration-300">
                     <h3 id="confirm-title" class="text-xl font-bold mb-4 text-red-700">Confirm Action</h3>
@@ -179,10 +240,7 @@
                 </div>
             </div>
 
-        </div> <!-- End of max-w-7xl mx-auto -->
-    </div> <!-- End of #app -->
-
-    <script>
+        </div> </div> <script>
         // Global data structure, stores ALL employees' data
         let supervisorData = {}; 
         let currentEmployeeId = null;
@@ -365,6 +423,58 @@
         }
 
         /**
+         * Handles the uploading and restoration of data from a JSON file.
+         * @param {Event} event 
+         */
+        function uploadData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    
+                    // Basic Validation: Check if imported data is an object and has keys (employee IDs)
+                    if (typeof importedData === 'object' && importedData !== null && Object.keys(importedData).length > 0) {
+                        
+                        // Check if the data structure looks like multi-employee data
+                        const firstKey = Object.keys(importedData)[0];
+                        if (importedData[firstKey].name && importedData[firstKey].initialBalance && Array.isArray(importedData[firstKey].leaveTransactions)) {
+                            
+                            // Ask for confirmation before overwriting ALL data
+                            showConfirmation(
+                                "Restore Data Confirmation",
+                                `Are you sure you want to overwrite ALL current supervisor data with the uploaded file?`,
+                                "Yes, Overwrite"
+                            ).then(confirmed => {
+                                if (confirmed) {
+                                    supervisorData = importedData;
+                                    
+                                    const employeeIds = Object.keys(supervisorData);
+                                    currentEmployeeId = employeeIds.length > 0 ? employeeIds[0] : null;
+
+                                    saveData();
+                                    renderAll();
+                                    showToast("All data restored successfully from JSON file!", 'success');
+                                }
+                            });
+                        } else {
+                            showToast("Invalid JSON structure. Expecting multi-employee object format.", 'error');
+                        }
+                    } else {
+                        showToast("Invalid JSON file content. Must be a non-empty object.", 'error');
+                    }
+                } catch (error) {
+                    console.error("Error processing uploaded file:", error);
+                    showToast("Error reading or parsing JSON file.", 'error');
+                }
+            };
+
+            reader.readAsText(file);
+        }
+        
+        /**
          * Initiates the custom confirmation for clearing all data.
          */
         async function requestClearAllData() {
@@ -449,70 +559,151 @@
             saveData(); 
         }
 
-        // --- UI Rendering ---
-
-        // Configuration for display (Note: only CL/RH affect balance here)
-        const LEAVE_CONFIG = {
-            'CL': { name: 'Casual Leave', icon: '🏡', color: 'bg-yellow-100', balanceKey: 'CL' },
-            'RH': { name: 'Restricted Holiday', icon: '🙏', color: 'bg-yellow-100', balanceKey: 'RH' },
-            'EL': { name: 'Earned Leave', icon: '🏖️', color: 'bg-indigo-100' },
-            'HPL': { name: 'Half Pay Leave', icon: '🤒', color: 'bg-indigo-100' },
-            'COMMUTED_HPL': { name: 'Commuted Leave', icon: '🏥', color: 'bg-indigo-100' },
-            'CCL': { name: 'Child Care Leave', icon: '👶', color: 'bg-indigo-100' },
-            'ML': { name: 'Maternity Leave', icon: '🤰', color: 'bg-indigo-100' },
-        };
-        const TRACKED_BALANCES = ['CL', 'RH'];
-
-
         /**
-         * Updates the Employee Selector dropdown.
+         * Generates the structured leave report HTML and triggers printing.
          */
-        function renderEmployeeSelector() {
-            const selector = document.getElementById('employee-select');
-            selector.innerHTML = '';
+        function generatePrintReport() {
+            const employeeData = getCurrentEmployeeData();
+            if (!employeeData) {
+                return showToast("Please select an employee to generate a report.", 'error');
+            }
             
-            const sortedEmployees = Object.values(supervisorData)
-                .sort((a, b) => a.name.localeCompare(b.name));
+            const transactions = employeeData.leaveTransactions;
+            const balanceData = calculateCurrentBalances(employeeData);
 
-            if (sortedEmployees.length === 0) {
-                const option = document.createElement('option');
-                option.disabled = true;
-                option.textContent = "No employees added yet";
-                selector.appendChild(option);
-            } else {
-                sortedEmployees.forEach(data => { 
-                    const option = document.createElement('option');
-                    option.value = data.id; // Use internal ID for value
-                    option.textContent = data.name; // Display only the name
-                    selector.appendChild(option);
-                });
+            // 1. Group transactions by leave type
+            const groupedTransactions = transactions.reduce((acc, t) => {
+                const type = t.type;
+                if (!acc[type]) {
+                    acc[type] = [];
+                }
+                acc[type].push(t);
+                return acc;
+            }, {});
+
+            // 2. Build the main report HTML
+            let reportHTML = `
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h1 style="font-size: 18pt; font-weight: bold; margin: 0; padding: 0;">Leave Record Report</h1>
+                    <p style="font-size: 12pt; margin: 5px 0 10px;">OfficeSuite Pro - Supervisor's Leave Tracker</p>
+                </div>
+                
+                <h2 style="font-size: 14pt; margin-bottom: 10px; border-bottom: 2px solid #ccc; padding-bottom: 5px;">
+                    Employee: ${employeeData.name}
+                </h2>
+
+                <div style="margin-bottom: 20px; font-size: 10pt;">
+                    <p style="font-weight: bold;">Current Balances:</p>
+                    <ul style="list-style-type: none; margin: 5px 0 0 10px; padding: 0;">
+                        <li>Casual Leave (CL): <span style="font-weight: bold; color: ${balanceData.CL < 0 ? 'red' : 'green'};">${Math.round(balanceData.CL * 10) / 10} Days</span></li>
+                        <li>Restricted Holidays (RH): <span style="font-weight: bold; color: ${balanceData.RH < 0 ? 'red' : 'green'};">${Math.round(balanceData.RH * 10) / 10} Days</span></li>
+                        </ul>
+                </div>
+                
+                <h3 style="font-size: 14pt; margin-top: 20px; border-bottom: 1px solid #ccc; padding-bottom: 5px;">Leave Transactions History</h3>
+            `;
+            
+            // 3. Generate tables for each availed leave type
+            const leaveTypesInOrder = ['CL', 'RH', 'EL', 'HPL', 'COMMUTED_HPL', 'CCL', 'ML'];
+            let hasTransactions = false;
+
+            leaveTypesInOrder.forEach(type => {
+                const transactionsOfType = groupedTransactions[type];
+                if (transactionsOfType && transactionsOfType.length > 0) {
+                    hasTransactions = true;
+                    const leaveName = LEAVE_CONFIG[type].name;
+
+                    // Sort transactions by start date ascending for the table
+                    transactionsOfType.sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
+                    
+                    let tableRows = '';
+                    transactionsOfType.forEach(t => {
+                        const dateRange = `${formatDate(t.startDate)} - ${formatDate(t.endDate)}`;
+                        const daysChange = `-${t.days}`;
+                        tableRows += `
+                            <tr>
+                                <td>${dateRange}</td>
+                                <td>${daysChange}</td>
+                                <td>${t.purpose || 'N/A'}</td>
+                            </tr>
+                        `;
+                    });
+
+                    reportHTML += `
+                        <div style="margin-top: 15px;">
+                            <h4 style="font-size: 11pt; font-weight: bold; margin-bottom: 5px;">— ${leaveName} Availment —</h4>
+                            <table class="report-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 35%;">Date Range</th>
+                                        <th style="width: 15%;">Days Debited</th>
+                                        <th style="width: 50%;">Purpose / Remarks</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${tableRows}
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                }
+            });
+
+            if (!hasTransactions) {
+                 reportHTML += `<p style="margin-top: 15px; font-style: italic; color: #555;">No leave transactions recorded for this employee.</p>`;
             }
 
-            if (currentEmployeeId) {
-                selector.value = currentEmployeeId;
-            }
+
+            // 4. Inject, Print, and Clean up
+            const printWindow = window.open('', '', 'height=600,width=800');
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Leave Report - ${employeeData.name}</title>
+                    <style>
+                        /* Base Print Styles for A4 Portrait */
+                        body { 
+                            margin: 20px; 
+                            font-family: 'Inter', sans-serif; 
+                            font-size: 10pt;
+                        }
+                        .report-table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            margin-bottom: 15px;
+                        }
+                        .report-table th, .report-table td {
+                            border: 1px solid #999;
+                            padding: 6px;
+                            text-align: left;
+                        }
+                        .report-table th {
+                            background-color: #e5e7eb;
+                        }
+                    </style>
+                </head>
+                <body>
+                    ${reportHTML}
+                    <div style="margin-top: 50px; border-top: 1px dashed #ccc; padding-top: 10px;">
+                        <p style="font-size: 8pt; text-align: right;">Report Generated: ${formatDate(new Date().toISOString().split('T')[0])}</p>
+                        <p style="font-size: 8pt; text-align: right;">Supervisor's Leave Tracker V1.0</p>
+                    </div>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.focus();
+            printWindow.print();
+            // Optional: Close the window after printing (often best left open)
+            // printWindow.close(); 
         }
 
-
         /**
-         * Calculates and renders the current CL/RH balances.
+         * Helper function to calculate current balances for the report.
+         * (This duplicates some logic from renderBalances but is isolated for the print job)
          */
-        function renderBalances() {
-            const employeeData = getCurrentEmployeeData();
-            const balanceDisplay = document.getElementById('balance-display');
-            const empNameSpan = document.getElementById('current-employee-name');
-
-            if (!employeeData) {
-                balanceDisplay.innerHTML = `<p class="col-span-2 text-center text-gray-500 italic">No employee selected. Please add or select an employee to begin.</p>`;
-                empNameSpan.textContent = 'N/A';
-                return;
-            }
-            
-            empNameSpan.textContent = employeeData.name;
-            balanceDisplay.innerHTML = '';
-            
-            const currentBalance = { ...employeeData.initialBalance }; 
-
+        function calculateCurrentBalances(employeeData) {
+            const currentBalance = { ...employeeData.initialBalance };
             employeeData.leaveTransactions.forEach(transaction => {
                 const type = transaction.type;
                 const days = transaction.days;
@@ -520,95 +711,11 @@
                     currentBalance[type] -= days;
                 }
             });
-
-            TRACKED_BALANCES.forEach(key => {
-                const config = LEAVE_CONFIG[key];
-                const value = currentBalance[key];
-                const isExceeded = (value < 0);
-                
-                let colorClass = isExceeded ? 'bg-red-100 text-red-800 border-red-200' : 'bg-green-100 text-green-800 border-green-200';
-                
-                const cardHtml = `
-                    <div class="data-card rounded-xl p-4 shadow-soft ${colorClass} transition duration-300 border border-2">
-                        <div class="text-3xl font-extrabold flex items-center">${config.icon} ${Math.round(value * 10) / 10}</div>
-                        <p class="text-sm font-semibold mt-2">${config.name}</p>
-                        <p class="text-xs">Remaining Days</p>
-                    </div>
-                `;
-                balanceDisplay.innerHTML += cardHtml;
-            });
-        }
-        
-        /**
-         * Renders the transaction history table.
-         */
-        function renderTransactions() {
-            const employeeData = getCurrentEmployeeData();
-            const listElement = document.getElementById('transactions-list');
-            const empNameSpan = document.getElementById('current-employee-name-history');
-            
-            if (!employeeData) {
-                listElement.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-gray-500 italic">No employee selected.</td></tr>`;
-                empNameSpan.textContent = 'N/A';
-                return;
-            }
-            
-            empNameSpan.textContent = employeeData.name;
-            listElement.innerHTML = '';
-
-            const sortedTransactions = [...employeeData.leaveTransactions].sort((a, b) => {
-                const dateA = a.startDate;
-                const dateB = b.startDate;
-                return new Date(dateB).getTime() - new Date(dateA).getTime();
-            });
-
-            if (sortedTransactions.length === 0) {
-                listElement.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-gray-500 italic">No leave records added yet for ${employeeData.name}.</td></tr>`;
-                return;
-            }
-
-            sortedTransactions.forEach((t) => {
-                const leaveName = LEAVE_CONFIG[t.type]?.name || t.type;
-                const dateDisplay = `${formatDate(t.startDate)} - ${formatDate(t.endDate)}`;
-                const daysDisplay = `-${t.days}`;
-                const daysClass = (t.type === 'CL' || t.type === 'RH') ? 'text-red-600 font-extrabold' : 'text-gray-500 font-medium';
-                const typeClass = (t.type === 'CL' || t.type === 'RH') ? 'font-semibold text-blue-700' : 'text-gray-600';
-
-                const row = `
-                    <tr class="hover:bg-blue-50 transition duration-100">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${dateDisplay}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm ${typeClass}">${leaveName}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm ${daysClass}">${daysDisplay}</td>
-                        <td class="px-6 py-4 text-sm text-gray-500 hidden sm:table-cell truncate max-w-xs">${t.purpose || 'N/A'}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <button onclick="requestDeleteTransaction('${t.id}')" class="text-red-600 hover:text-red-800 font-semibold transition duration-150">Delete</button>
-                        </td>
-                    </tr>
-                `;
-                listElement.innerHTML += row;
-            });
-        }
-
-        /**
-         * Renders all parts of the UI.
-         */
-        function renderAll() {
-            renderEmployeeSelector();
-            renderBalances();
-            renderTransactions();
-
-            const employeeData = getCurrentEmployeeData();
-            if (employeeData) {
-                document.getElementById('initial-cl').value = employeeData.initialBalance.CL;
-                document.getElementById('initial-rh').value = employeeData.initialBalance.RH;
-            } else {
-                // Clear form if no employee is selected
-                document.getElementById('initial-balance-form').reset();
-            }
+            return currentBalance;
         }
 
 
-        // --- Form Handlers and Logic ---
+        // --- Form Handlers and Logic (Unchanged) ---
 
         /**
          * Handles submission of the initial/adjustment CL/RH balance form.
@@ -723,6 +830,141 @@
             }
         }
 
+        // --- UI Rendering (Standard) ---
+        
+        // Configuration for display (Note: only CL/RH affect balance here)
+        const LEAVE_CONFIG = {
+            'CL': { name: 'Casual Leave', icon: '🏡', color: 'bg-yellow-100', balanceKey: 'CL' },
+            'RH': { name: 'Restricted Holiday', icon: '🙏', color: 'bg-yellow-100', balanceKey: 'RH' },
+            'EL': { name: 'Earned Leave', icon: '🏖️', color: 'bg-indigo-100' },
+            'HPL': { name: 'Half Pay Leave', icon: '🤒', color: 'bg-indigo-100' },
+            'COMMUTED_HPL': { name: 'Commuted Leave', icon: '🏥', color: 'bg-indigo-100' },
+            'CCL': { name: 'Child Care Leave', icon: '👶', color: 'bg-indigo-100' },
+            'ML': { name: 'Maternity Leave', icon: '🤰', color: 'bg-indigo-100' },
+        };
+        const TRACKED_BALANCES = ['CL', 'RH'];
+
+        function renderEmployeeSelector() {
+            const selector = document.getElementById('employee-select');
+            selector.innerHTML = '';
+            
+            const sortedEmployees = Object.values(supervisorData)
+                .sort((a, b) => a.name.localeCompare(b.name));
+
+            if (sortedEmployees.length === 0) {
+                const option = document.createElement('option');
+                option.disabled = true;
+                option.textContent = "No employees added yet";
+                selector.appendChild(option);
+            } else {
+                sortedEmployees.forEach(data => { 
+                    const option = document.createElement('option');
+                    option.value = data.id; 
+                    option.textContent = data.name; 
+                    selector.appendChild(option);
+                });
+            }
+
+            if (currentEmployeeId) {
+                selector.value = currentEmployeeId;
+            }
+        }
+
+        function renderBalances() {
+            const employeeData = getCurrentEmployeeData();
+            const balanceDisplay = document.getElementById('balance-display');
+            const empNameSpan = document.getElementById('current-employee-name');
+
+            if (!employeeData) {
+                balanceDisplay.innerHTML = `<p class="col-span-2 text-center text-gray-500 italic">No employee selected. Please add or select an employee to begin.</p>`;
+                empNameSpan.textContent = 'N/A';
+                return;
+            }
+            
+            empNameSpan.textContent = employeeData.name;
+            balanceDisplay.innerHTML = '';
+            
+            const currentBalance = calculateCurrentBalances(employeeData);
+
+            TRACKED_BALANCES.forEach(key => {
+                const config = LEAVE_CONFIG[key];
+                const value = currentBalance[key];
+                const isExceeded = (value < 0);
+                
+                let colorClass = isExceeded ? 'bg-red-100 text-red-800 border-red-200' : 'bg-green-100 text-green-800 border-green-200';
+                
+                const cardHtml = `
+                    <div class="data-card rounded-xl p-4 shadow-soft ${colorClass} transition duration-300 border border-2">
+                        <div class="text-3xl font-extrabold flex items-center">${config.icon} ${Math.round(value * 10) / 10}</div>
+                        <p class="text-sm font-semibold mt-2">${config.name}</p>
+                        <p class="text-xs">Remaining Days</p>
+                    </div>
+                `;
+                balanceDisplay.innerHTML += cardHtml;
+            });
+        }
+        
+        function renderTransactions() {
+            const employeeData = getCurrentEmployeeData();
+            const listElement = document.getElementById('transactions-list');
+            const empNameSpan = document.getElementById('current-employee-name-history');
+            
+            if (!employeeData) {
+                listElement.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-gray-500 italic">No employee selected.</td></tr>`;
+                empNameSpan.textContent = 'N/A';
+                return;
+            }
+            
+            empNameSpan.textContent = employeeData.name;
+            listElement.innerHTML = '';
+
+            const sortedTransactions = [...employeeData.leaveTransactions].sort((a, b) => {
+                const dateA = a.startDate;
+                const dateB = b.startDate;
+                return new Date(dateB).getTime() - new Date(dateA).getTime();
+            });
+
+            if (sortedTransactions.length === 0) {
+                listElement.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-gray-500 italic">No leave records added yet for ${employeeData.name}.</td></tr>`;
+                return;
+            }
+
+            sortedTransactions.forEach((t) => {
+                const leaveName = LEAVE_CONFIG[t.type]?.name || t.type;
+                const dateDisplay = `${formatDate(t.startDate)} - ${formatDate(t.endDate)}`;
+                const daysDisplay = `-${t.days}`;
+                const daysClass = (t.type === 'CL' || t.type === 'RH') ? 'text-red-600 font-extrabold' : 'text-gray-500 font-medium';
+                const typeClass = (t.type === 'CL' || t.type === 'RH') ? 'font-semibold text-blue-700' : 'text-gray-600';
+
+                const row = `
+                    <tr class="hover:bg-blue-50 transition duration-100">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${dateDisplay}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm ${typeClass}">${leaveName}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm ${daysClass}">${daysDisplay}</td>
+                        <td class="px-6 py-4 text-sm text-gray-500 hidden sm:table-cell truncate max-w-xs">${t.purpose || 'N/A'}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button onclick="requestDeleteTransaction('${t.id}')" class="text-red-600 hover:text-red-800 font-semibold transition duration-150">Delete</button>
+                        </td>
+                    </tr>
+                `;
+                listElement.innerHTML += row;
+            });
+        }
+
+        function renderAll() {
+            renderEmployeeSelector();
+            renderBalances();
+            renderTransactions();
+
+            const employeeData = getCurrentEmployeeData();
+            if (employeeData) {
+                document.getElementById('initial-cl').value = employeeData.initialBalance.CL;
+                document.getElementById('initial-rh').value = employeeData.initialBalance.RH;
+            } else {
+                document.getElementById('initial-balance-form').reset();
+            }
+        }
+
         /**
          * Initializes the application.
          */
@@ -733,9 +975,18 @@
             // Attach form submission handlers
             document.getElementById('initial-balance-form').addEventListener('submit', addInitialBalance);
             document.getElementById('leave-transaction-form').addEventListener('submit', addLeaveTransaction);
+            
+            // Expose utility functions globally for button handlers
+            window.downloadData = downloadData;
+            window.requestClearAllData = requestClearAllData;
+            window.requestAddEmployee = requestAddEmployee;
+            window.requestDeleteCurrentEmployee = requestDeleteCurrentEmployee;
+            window.switchEmployee = switchEmployee;
+            window.uploadData = uploadData;
+            window.generatePrintReport = generatePrintReport; // New Function
+            window.requestDeleteTransaction = requestDeleteTransaction;
         };
 
     </script>
 </body>
 </html>
-

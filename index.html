@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -36,6 +35,9 @@
             --border-color: rgba(255, 255, 255, 0.1);
             --logo-drop-shadow: drop-shadow(0 0 15px rgba(37, 99, 235, 0.5)); 
             --header-accent-bg: #1c2a44; 
+            --theme-toggle-bg: rgba(255, 255, 255, 0.1);
+            --theme-toggle-active-bg: var(--primary);
+            --theme-toggle-active-color: white;
         }
 
         /* LIGHT MODE THEME OVERRIDE */
@@ -54,7 +56,10 @@
             --input-bg: #ffffff;
             --border-color: #cbd5e1;
             --logo-drop-shadow: drop-shadow(0 0 10px rgba(5, 150, 105, 0.6));
-            --header-accent-bg: #e2e8f0; 
+            --header-accent-bg: #e8edf2; /* Lighter shade for light theme accent */
+            --theme-toggle-bg: #ffffff;
+            --theme-toggle-active-bg: var(--primary);
+            --theme-toggle-active-color: white;
         }
 
         body {
@@ -66,8 +71,8 @@
             position: relative;
             transition: background 0.5s ease, color 0.5s ease;
         }
-
-        /* BACKGROUND & ANIMATION (Standard) */
+        
+        /* ... (BACKGROUND & ANIMATION styles remain standard) ... */
         body::before { 
             content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2;
             background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAMAAAADCAYAAABWKkQ1AAAAD0lEQVQIW2NkYGBoYGAAAhAAAGfQCX51X/gAAAAASUVORK5CYII=');
@@ -93,7 +98,7 @@
         /* --- HEADER STYLING --- */
         header {
             text-align: center;
-            padding: 0 0 1rem; 
+            padding: 0; /* Removed bottom padding here */
             position: relative; 
         }
         
@@ -102,7 +107,7 @@
             background: var(--header-accent-bg);
             border-bottom: 1px solid var(--border-color);
             margin: 0 -1.5rem 1rem; 
-            padding: 0 1.5rem;
+            padding: 0 1.5rem 0.5rem; /* Added bottom padding here instead */
         }
 
         /* Top Bar Layout (Logo + Theme Selector) */
@@ -110,19 +115,24 @@
             display: flex;
             justify-content: space-between; 
             align-items: center;
-            padding: 1rem 0; 
+            padding-top: 1.2rem; /* Reduced top padding slightly */
         }
         
         .logo-group {
             display: flex;
+            flex-direction: column; /* Stacks title and subtitle vertically */
+            align-items: flex-start; /* Aligns contents to the left */
+        }
+
+        /* Container for Logo Icon and H1 */
+        .title-line {
+            display: flex;
             align-items: center;
-            text-align: left;
         }
 
         .logo {
             font-size: 2rem;
             margin-right: 0.5rem; 
-            margin-bottom: 0; 
             background: linear-gradient(45deg, var(--primary), var(--accent));
             -webkit-background-clip: text;
             background-clip: text;
@@ -133,20 +143,28 @@
         h1 {
             font-size: 1.8rem;
             font-weight: 700;
-            margin-bottom: 0; 
             background: linear-gradient(45deg, var(--text-color), var(--gray));
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
             letter-spacing: -0.5px;
-            line-height: 1; 
+            line-height: 1.1; /* Adjusted line height */
+            margin-bottom: 0;
         }
         
+        /* SUBTITLE MOVED INSIDE THE BAND */
         .subtitle {
-            font-size: 1rem;
+            font-size: 0.75rem; /* Very small font size */
             color: var(--gray);
-            margin: 0 auto 1.2rem; 
-            line-height: 1.5;
+            margin: 0.1rem 0 0 2.5rem; /* Aligns roughly under the H1 text, shifting it past the logo icon */
+            line-height: 1.3;
+            max-width: 600px; /* Re-applied max-width for better control */
+            text-align: left;
+        }
+        
+        /* Adjustments for centering search/categories below the band */
+        .centered-content {
+            text-align: center;
         }
 
         /* --- SEARCH BAR --- */
@@ -155,133 +173,86 @@
             margin: 0 auto 1rem; 
             position: relative;
         }
-
+        /* ... (rest of search bar styles remain standard) ... */
         .search-bar input {
-            width: 100%;
-            padding: 0.8rem 1.2rem; 
-            padding-left: 2.8rem;
-            border: none;
-            border-radius: 30px;
-            background: var(--input-bg);
-            color: var(--text-color);
-            font-size: 0.95rem;
-            border: 1px solid var(--card-border);
-            backdrop-filter: blur(10px); 
-            transition: all 0.3s ease;
+            width: 100%; padding: 0.8rem 1.2rem; padding-left: 2.8rem; border: none; border-radius: 30px;
+            background: var(--input-bg); color: var(--text-color); font-size: 0.95rem; border: 1px solid var(--card-border);
+            backdrop-filter: blur(10px); transition: all 0.3s ease;
         }
-
         .search-bar input:focus {
-            outline: none;
-            background: var(--card-hover-bg);
-            border-color: var(--secondary);
+            outline: none; background: var(--card-hover-bg); border-color: var(--secondary);
             box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.5); 
         }
-
         .search-bar i {
-            position: absolute;
-            left: 1.2rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--gray);
-            font-size: 1rem;
+            position: absolute; left: 1.2rem; top: 50%; transform: translateY(-50%); color: var(--gray); font-size: 1rem;
         }
 
         /* --- CATEGORIES --- */
         .categories {
-            display: flex;
-            justify-content: center;
-            gap: 0.8rem;
-            margin: 1rem 0 1.5rem; 
-            flex-wrap: wrap;
+            display: flex; justify-content: center; gap: 0.8rem; margin: 1rem 0 1.5rem; flex-wrap: wrap;
         }
-
+        /* ... (rest of category styles remain standard) ... */
         .category-btn {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            color: var(--gray);
-            padding: 0.6rem 1.2rem;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 500;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+            background: var(--card-bg); border: 1px solid var(--card-border); color: var(--gray); padding: 0.6rem 1.2rem;
+            border-radius: 25px; cursor: pointer; transition: all 0.3s ease; font-weight: 500; font-size: 0.9rem;
+            display: flex; align-items: center; gap: 0.5rem;
         }
-
         .category-btn:hover, .category-btn.active {
-            background: var(--primary);
-            color: var(--light);
-            border-color: var(--primary);
-            transform: translateY(-2px);
+            background: var(--primary); color: var(--light); border-color: var(--primary); transform: translateY(-2px);
         }
         body.theme-light .category-btn { color: #1f2937; }
         body.theme-light .category-btn:hover, body.theme-light .category-btn.active { color: white; }
 
-        /* --- TOOL CARDS --- */
-        .tools-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 1.25rem; 
-            margin: 1.5rem 0;
-        }
-
-        .tool-card {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 1.5rem;
-            text-decoration: none;
-            color: inherit;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: 1px solid var(--card-border);
-            backdrop-filter: blur(10px);
-            position: relative;
-            overflow: hidden;
-            height: 100%;
+        /* --- THEME SELECTOR REDESIGN --- */
+        .theme-selector {
             display: flex;
-            flex-direction: column;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); 
+            align-items: center;
+            padding: 0;
+            border-radius: 8px;
+            background: var(--theme-toggle-bg);
+            border: 1px solid var(--card-border);
+            overflow: hidden; /* Important for the segmented look */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         
-        body.theme-light .tool-card {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            backdrop-filter: none;
+        .theme-btn {
+            /* Reset button styles */
+            border: none;
+            background: transparent;
+            color: var(--gray);
+            padding: 0.5rem 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin: 0;
+            border-radius: 0;
+            position: relative;
+        }
+        
+        .theme-btn.active {
+            background: var(--theme-toggle-active-bg);
+            color: var(--theme-toggle-active-color);
+            box-shadow: 0 0 10px rgba(37, 99, 235, 0.4);
+            transform: none; /* Override hover/active transform */
         }
 
-        .tool-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: linear-gradient(90deg, var(--primary), var(--accent));
-            transform: scaleX(0);
-            transform-origin: left;
-            transition: transform 0.3s ease;
+        /* Light theme active glow adjustment */
+        body.theme-light .theme-btn.active {
+            box-shadow: 0 0 10px rgba(5, 150, 105, 0.4);
         }
-
-        .tool-card:hover {
-            transform: translateY(-8px) scale(1.02) rotateZ(0.5deg); 
-            background: var(--card-hover-bg);
-            border-color: var(--border-color);
-            box-shadow: 
-                0 20px 40px rgba(0, 0, 0, 0.6),
-                0 0 15px rgba(37, 99, 235, 0.5);
-        }
-        body.theme-light .tool-card:hover {
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15), 0 0 5px rgba(5, 150, 105, 0.2);
-        }
-
+        
+        /* --- TOOL CARDS (Standard) --- */
+        .tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; margin: 1.5rem 0; }
+        .tool-card { background: var(--card-bg); border-radius: 16px; padding: 1.5rem; text-decoration: none; color: inherit; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border: 1px solid var(--card-border); backdrop-filter: blur(10px); position: relative; overflow: hidden; height: 100%; display: flex; flex-direction: column; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); }
+        body.theme-light .tool-card { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); backdrop-filter: none; }
+        .tool-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, var(--primary), var(--accent)); transform: scaleX(0); transform-origin: left; transition: transform 0.3s ease; }
+        .tool-card:hover { transform: translateY(-8px) scale(1.02) rotateZ(0.5deg); background: var(--card-hover-bg); border-color: var(--border-color); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 15px rgba(37, 99, 235, 0.5); }
+        body.theme-light .tool-card:hover { box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15), 0 0 5px rgba(5, 150, 105, 0.2); }
         .tool-card:hover::before { transform: scaleX(1); }
-
-        .icon-container {
-            width: 50px; height: 50px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.2rem; font-size: 1.5rem; transition: all 0.3s ease;
-        }
+        .icon-container { width: 50px; height: 50px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.2rem; font-size: 1.5rem; transition: all 0.3s ease; }
         .tool-card:hover .icon-container { transform: scale(1.1) rotate(5deg); box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); }
         body.theme-light .tool-card:hover .icon-container { box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
-
         .tool-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.7rem; color: var(--text-color); }
         .tool-description { color: var(--gray); font-size: 0.85rem; line-height: 1.4; margin-bottom: 1.2rem; flex-grow: 1; }
         .tool-meta { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; }
@@ -289,48 +260,33 @@
         body.theme-light .tool-category { background: rgba(5, 150, 105, 0.1); color: #059669; }
         .tool-launch { color: var(--primary); font-weight: 600; display: flex; align-items: center; gap: 0.4rem; transition: all 0.3s ease; }
         .tool-card:hover .tool-launch { color: var(--secondary); transform: translateX(3px); }
-
-        /* CARD COLOR ABSTRACTION (Standard) */
+        /* ... (CARD COLOR ABSTRACTION styles remain standard) ... */
         .tool-card[data-color="blue"] { --gc-start: #3b82f6; --gc-end: #60a5fa; } .tool-card[data-color="green"] { --gc-start: #10b981; --gc-end: #34d399; } .tool-card[data-color="amber"] { --gc-start: #f59e0b; --gc-end: #fbbf24; } .tool-card[data-color="red"] { --gc-start: #ef4444; --gc-end: #f87171; } .tool-card[data-color="violet"] { --gc-start: #8b5cf6; --gc-end: #a78bfa; } .tool-card[data-color="cyan"] { --gc-start: #06b6d4; --gc-end: #22d3ee; } .tool-card[data-color="pink"] { --gc-start: #ec4899; --gc-end: #f472b6; } .tool-card[data-color="teal"] { --gc-start: #14b8a6; --gc-end: #2dd4bf; } .tool-card[data-color="orange"] { --gc-start: #f97316; --gc-end: #fb923c; } .tool-card[data-color="indigo"] { --gc-start: #6366f1; --gc-end: #818cf8; } .tool-card[data-color="purple"] { --gc-start: #a855f7; --gc-end: #c084fc; } .tool-card[data-color="sky"] { --gc-start: #0ea5e9; --gc-end: #38bdf8; } .tool-card[data-color="crimson"] { --gc-start: #dc2626; --gc-end: #ef4444; } .tool-card[data-color="emerald"] { --gc-start: #059669; --gc-end: #10b981; } .tool-card[data-color="brown"] { --gc-start: #7c2d12; --gc-end: #92400e; } .tool-card[data-color="dark-indigo"] { --gc-start: #4338ca; --gc-end: #4f46e5; } .tool-card[data-color="rose"] { --gc-start: #be185d; --gc-end: #db2777; } .tool-card[data-color="dark-blue"] { --gc-start: #454ade; --gc-end: #6366f1; } .tool-card[data-color="fuchsia"] { --gc-start: #8b5cf6; --gc-end: #d946ef; } .tool-card[data-color="light-red"] { --gc-start: #f43f5e; --gc-end: #fb7185; } .tool-card[data-color="dark-cyan"] { --gc-start: #06b6d4; --gc-end: #0891b2; } .tool-card[data-color="dark-teal"] { --gc-start: #0891b2; --gc-end: #0e7490; } .tool-card[data-color="dark-violet"] { --gc-start: #4f46e5; --gc-end: #4338ca; } .tool-card[data-color="heart"] { --gc-start: #f43f5e; --gc-end: #ec4899; }
         .tool-card .icon-container { background: linear-gradient(45deg, var(--gc-start), var(--gc-end)); }
-
-        /* --- FOOTER (Standard) --- */
+        
+        /* ... (FOOTER & ANIMATIONS styles remain standard) ... */
         footer { text-align: center; padding: 2rem 0 1.5rem; color: #64748b; border-top: 1px solid var(--border-color); margin-top: 2rem; font-size: 0.9rem; }
         .creator { font-weight: 600; color: #93c5fd; }
         body.theme-light .creator { color: #059669; }
-
-        /* --- ANIMATIONS (Standard) --- */
         .pulse { animation: pulse 2s infinite; } @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(124, 58, 237, 0); } 100% { box-shadow: 0 0 0 0 rgba(124, 58, 237, 0); } }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .tool-card { opacity: 0; animation: fadeInUp 0.4s ease forwards; animation-delay: calc(0.1s + (var(--card-index) * 0.05s)); }
 
-        /* --- THEME SELECTOR --- */
-        .theme-selector { display: flex; align-items: center; margin: 0; padding: 0; }
-
         /* --- MEDIA QUERIES --- */
         @media (max-width: 768px) {
             .container { padding: 1rem; }
-            .header-top { 
-                flex-direction: column; 
-                text-align: center;
-                padding-top: 1rem;
-                margin-bottom: 0.5rem;
-            }
-            .logo-group {
-                flex-direction: column;
-                margin-bottom: 0.5rem;
-            }
+            .header-top { flex-direction: column; text-align: center; padding-top: 1rem; margin-bottom: 0.5rem; }
+            .logo-group { align-items: center; } /* Centers entire group on mobile */
+            .title-line { flex-direction: column; }
             .logo { margin-right: 0; margin-bottom: 0.3rem; }
-            .theme-selector { justify-content: center; margin-bottom: 0; }
+            .subtitle { text-align: center; margin: 0.1rem auto 0; font-size: 0.8rem; }
+            .theme-selector { justify-content: center; margin-bottom: 0; margin-top: 0.5rem; }
             h1 { font-size: 1.7rem; }
             .logo { font-size: 2rem; }
             .tools-grid { grid-template-columns: 1fr; }
             .categories { gap: 0.5rem; }
             .category-btn { padding: 0.5rem 0.9rem; font-size: 0.85rem; }
-            .header-accent {
-                 margin: 0 -1rem 1rem; 
-                 padding: 0 1rem;
-            }
+            .header-accent { margin: 0 -1rem 1rem; padding: 0 1rem 0.5rem; }
         }
     </style>
 </head>
@@ -346,24 +302,31 @@
             <div class="header-accent">
                 <div class="header-top">
                     <div class="logo-group">
-                        <div class="logo">
-                            <i class="fas fa-briefcase"></i>
+                        <div class="title-line">
+                            <div class="logo">
+                                <i class="fas fa-briefcase"></i>
+                            </div>
+                            <h1>OfficeSuite Pro</h1>
                         </div>
-                        <h1>OfficeSuite Pro</h1>
+                        <p class="subtitle">Your ultimate productivity hub with powerful tools for streamlined office workflows</p>
                     </div>
                     
                     <div class="theme-selector">
-                        <button id="themeDarkBtn" class="theme-btn active" data-theme="default-dark"><i class="fas fa-moon"></i> Dark</button>
-                        <button id="themeLightBtn" class="theme-btn" data-theme="light"><i class="fas fa-sun"></i> Light</button>
+                        <button id="themeDarkBtn" class="theme-btn active" data-theme="default-dark">
+                            <i class="fas fa-moon"></i> Dark
+                        </button>
+                        <button id="themeLightBtn" class="theme-btn" data-theme="light">
+                            <i class="fas fa-sun"></i> Light
+                        </button>
                     </div>
                 </div>
             </div>
             
-            <p class="subtitle">Your ultimate productivity hub with powerful tools for streamlined office workflows</p>
-            
-            <div class="search-bar">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="Search tools by name or description..." id="searchInput">
+            <div class="centered-content">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search tools by name or description..." id="searchInput">
+                </div>
             </div>
         </header>
         
@@ -484,7 +447,8 @@
 
             <a href="eightcpcprojection.html" target="_blank" class="tool-card" data-category="finance" data-color="dark-indigo" style="--card-index: 16;">
                 <div class="icon-container">
-                    <i class="fas fa-chart-area"></i> </div>
+                    <i class="fas fa-chart-area"></i>
+                </div>
                 <h3 class="tool-title">8th CPC Projection</h3>
                 <p class="tool-description">Forecast potential salary structures under eighth Pay Commission.</p>
                 <div class="tool-meta"><span class="tool-category">Finance</span><span class="tool-launch">Launch <i class="fas fa-arrow-right"></i></span></div>

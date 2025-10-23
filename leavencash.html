@@ -901,7 +901,7 @@
                     // Add notes about unused leaves
                     const unusedEL = earnedLeave - elDaysToEncash;
                     if (unusedEL > 0) {
-                        notes.push(`${unusedEL} days of Earned Leave will remain unused.`);
+                        notes.push(`${unusedEL} days of Earned Leave will lapse.`);
                     }
 
                 } else {
@@ -966,10 +966,10 @@
                         const unusedEL = earnedLeave - elDaysToEncash;
                         const unusedHPL = halfPayLeave - hplDaysToEncash;
                         if (unusedEL > 0) {
-                            notes.push(`${unusedEL} days of Earned Leave will remain unused.`);
+                            notes.push(`${unusedEL} days of Earned Leave will lapse.`);
                         }
                         if (unusedHPL > 0) {
-                            notes.push(`${unusedHPL} days of Half Pay Leave will remain unused.`);
+                            notes.push(`${unusedHPL} days of Half Pay Leave will lapse.`);
                         }
                     } else { // Resignation
                         // Resignation/Quitting case: Only 50% of EL encashment allowed, HPL lapses
@@ -994,7 +994,7 @@
                         notes.push(`${halfPayLeave} days of Half Pay Leave will lapse.`);
                         const unusedEL = earnedLeave - elDaysToEncash;
                         if (unusedEL > 0) {
-                            notes.push(`${unusedEL} days of Earned Leave will remain unused.`);
+                            notes.push(`${unusedEL} days of Earned Leave will lapse.`);
                         }
                     }
                 }

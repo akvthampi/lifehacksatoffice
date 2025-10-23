@@ -4,104 +4,564 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Personal Leave Balance Tracker</title>
-    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #eef2ff; /* Light indigo background */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
+        
+        body {
+            background: linear-gradient(135deg, #0a192f 0%, #0d1b2a 100%);
+            color: #e0e0e0;
+            line-height: 1.4;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        
+        .main-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: rgba(13, 27, 42, 0.7);
+            border: 1px solid rgba(100, 150, 255, 0.1);
+        }
+        
+        .main-header h1 {
+            color: #64b5f6;
+            margin-bottom: 8px;
+            font-size: 2.2rem;
+            text-shadow: 0 0 10px rgba(100, 181, 246, 0.7);
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .main-header .subtitle {
+            color: #90caf9;
+            font-size: 1.1rem;
+        }
+        
+        .container {
+            width: 100%;
+            margin: 0;
+            background-color: rgba(13, 27, 42, 0.7);
+            padding: 20px 0;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(100, 150, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .section {
+            width: 100%;
+            padding: 0 20px;
+            margin-bottom: 20px;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(100, 150, 255, 0.3);
+        }
+        
+        .section-header h2 {
+            color: #64b5f6;
+            font-size: 20px;
+            margin-bottom: 3px;
+        }
+        
+        .section-header p {
+            color: #90caf9;
+            font-size: 13px;
+        }
+        
+        .balance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .balance-card {
+            background: rgba(20, 30, 48, 0.8);
+            border: 2px solid rgba(100, 150, 255, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .balance-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(100, 181, 246, 0.3);
+            border-color: #64b5f6;
+        }
+        
+        .balance-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .balance-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: #64b5f6;
+        }
+        
+        .balance-label {
+            font-size: 14px;
+            color: #90caf9;
+            margin-bottom: 5px;
+        }
+        
+        .balance-description {
+            font-size: 11px;
+            color: #90a4ae;
+        }
+        
+        .form-container {
+            background: rgba(20, 30, 48, 0.8);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid rgba(100, 150, 255, 0.2);
+            margin-bottom: 20px;
+        }
+        
+        .form-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+        
+        .form-header h2 {
+            color: #64b5f6;
+            font-size: 18px;
+        }
+        
+        .toggle-icon {
+            color: #64b5f6;
+            transition: transform 0.3s ease;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .input-group {
+            margin-bottom: 12px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #90caf9;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 10px;
+            background-color: rgba(20, 30, 48, 0.8);
+            border: 2px solid rgba(100, 150, 255, 0.3);
+            font-size: 14px;
+            color: #e0e0e0;
+            transition: all 0.3s ease;
+            border-radius: 4px;
+        }
+        
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #64b5f6;
+            box-shadow: 0 0 15px rgba(100, 181, 246, 0.5);
+        }
+        
+        .input-group input::placeholder {
+            color: #90a4ae;
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #64b5f6, #1976d2);
+            color: white;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 8px;
+            margin-bottom: 15px;
+            border: 2px solid rgba(100, 150, 255, 0.3);
+            border-radius: 4px;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(100, 181, 246, 0.4);
+        }
+        
+        .green-btn {
+            background: linear-gradient(135deg, #4caf50, #2e7d32);
+        }
+        
+        .red-btn {
+            background: linear-gradient(135deg, #f44336, #c62828);
+        }
+        
+        .blue-btn {
+            background: linear-gradient(135deg, #2196f3, #1565c0);
+        }
+        
+        .info-box {
+            background: rgba(100, 181, 246, 0.1);
+            border-left: 4px solid #64b5f6;
+            padding: 12px;
+            margin: 12px 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 13px;
+        }
+        
+        .transactions-container {
+            background: rgba(20, 30, 48, 0.8);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid rgba(100, 150, 255, 0.2);
+            margin-bottom: 20px;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            border: 1px solid rgba(100, 150, 255, 0.3);
+            border-radius: 4px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+        }
+        
+        th, td {
+            padding: 8px 10px;
+            text-align: left;
+            border: 1px solid rgba(100, 150, 255, 0.2);
+            color: #e0e0e0;
+            white-space: nowrap;
+        }
+        
+        th {
+            background: rgba(13, 27, 42, 0.9);
+            font-weight: 600;
+            color: #64b5f6;
+            position: sticky;
+            top: 0;
+        }
+        
+        tr:hover {
+            background: rgba(100, 150, 255, 0.1);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .action-btn {
+            flex: 1;
+            padding: 12px;
+            color: white;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(100, 181, 246, 0.4);
+        }
+        
+        .file-input-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .footer {
+            margin-top: auto;
+            text-align: center;
+            padding-top: 10px;
+            border-top: 1px solid rgba(100, 150, 255, 0.3);
+        }
+        
+        .disclaimer {
+            font-size: 11px;
+            color: #90a4ae;
+            line-height: 1.3;
+            margin-bottom: 3px;
+        }
+        
+        .creator {
+            font-size: 10px;
+            color: #90a4ae;
+            font-style: italic;
+        }
+        
+        #toast-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            transition: opacity 0.3s ease;
+            opacity: 0;
+        }
+        
+        .toast {
+            padding: 12px 20px;
+            border-radius: 4px;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .toast-success {
+            background: linear-gradient(135deg, #4caf50, #2e7d32);
+        }
+        
+        .toast-error {
+            background: linear-gradient(135deg, #f44336, #c62828);
+        }
+        
+        #custom-confirm-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        
+        .modal-content {
+            background: rgba(20, 30, 48, 0.95);
+            padding: 25px;
+            border-radius: 8px;
+            border: 2px solid rgba(100, 150, 255, 0.3);
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+        
+        .modal-title {
+            color: #f44336;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .modal-message {
+            color: #e0e0e0;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .modal-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-cancel {
+            background: rgba(100, 150, 255, 0.3);
+            color: #e0e0e0;
+        }
+        
+        .modal-confirm {
+            background: linear-gradient(135deg, #f44336, #c62828);
+            color: white;
+        }
+        
+        .modal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px 0;
+            }
+            
+            .section {
+                padding: 0 15px;
+            }
+            
+            .main-header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .main-header .subtitle {
+                font-size: 1rem;
+            }
+            
+            .balance-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 12px 0;
+            }
+            
+            .section {
+                padding: 0 10px;
+            }
+            
+            .main-header h1 {
+                font-size: 1.6rem;
+            }
+            
+            .main-header .subtitle {
+                font-size: 0.9rem;
+            }
+            
+            .balance-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
         /* Style for the collapsible section transition */
         .transition-max-height {
             transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        /* Custom styles for buttons and elements to add polish */
-        .shadow-soft {
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.05);
-        }
-        .data-card {
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            border: 1px solid transparent;
-        }
-        .data-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
         }
     </style>
 </head>
-<body class="min-h-screen"> 
+<body>
+    <div class="main-header">
+        <h1>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="width: 32px; height: 32px; margin-right: 10px;">
+                <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm4.878 12.015-3.839 3.84c-.45.45-1.18.45-1.63 0l-3.84-3.838a.75.75 0 0 1 1.061-1.06l3.319 3.318 3.318-3.318a.75.75 0 1 1 1.06 1.06Z" clip-rule="evenodd" />
+            </svg>
+            Personal Leave Tracker (Offline)
+        </h1>
+        <p class="subtitle">Manage Earned Leave (EL), HPL, CL, RH, CCL, and ML balances against your transactions. | Tool designed by Anil Kumar VT</p>
+    </div>
 
-    <div id="app" class="w-full bg-white shadow-none p-4 sm:p-8">
-        <div class="max-w-7xl mx-auto"> 
+    <div id="toast-message"></div>
 
-            <header class="mb-8 border-b pb-4">
-                <h1 class="text-3xl font-extrabold text-indigo-700 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8 mr-2 text-indigo-500">
-                        <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm4.878 12.015-3.839 3.84c-.45.45-1.18.45-1.63 0l-3.84-3.838a.75.75 0 0 1 1.061-1.06l3.319 3.318 3.318-3.318a.75.75 0 1 1 1.06 1.06Z" clip-rule="evenodd" />
-                    </svg>
-                    Personal Leave Tracker (Offline)
-                </h1>
-                <p class="text-gray-500 mt-1">Manage Earned Leave (EL), HPL, CL, RH, CCL, and ML balances against your transactions. | Tool designed by Anil Kumar VT</p>
-            </header>
+    <div class="container">
+        <div class="section">
+            <div class="section-header">
+                <h2>Current Leave Balances</h2>
+            </div>
+            <div id="balance-display" class="balance-grid"></div>
+            <div class="info-box">
+                <p><strong>Note:</strong> EL, HPL, CCL, ML debit <strong>calendar days</strong>. CL, RH, and Commuted Leave debit <strong>working days</strong> or <strong>x2 HPL</strong>, respectively, as per typical CGE rules.</p>
+            </div>
+        </div>
 
-            <div id="toast-message" class="fixed top-4 right-4 z-50 transition-opacity duration-300 opacity-0"></div>
-
-            <section class="mb-8">
-                <h2 class="text-2xl font-semibold mb-4 text-gray-700">Current Leave Balances</h2>
-                <div id="balance-display" class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    </div>
-                <p class="text-sm text-gray-500 mt-4">*Note: EL, HPL, CCL, ML debit **calendar days**. CL, RH, and Commuted Leave debit **working days** or **x2 HPL**, respectively, as per typical CGE rules.</p>
-            </section>
-
-            <section class="mb-10 p-6 bg-indigo-50 border border-indigo-300 rounded-xl shadow-soft">
-                <h2 class="text-xl font-bold text-indigo-800 mb-4 cursor-pointer flex justify-between items-center" onclick="toggleVisibility('initial-balance-form-container')">
-                    Initial/Adjust Leave Balance Setup (Days)
-                    <svg id="toggle-icon-init" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 transition-transform duration-300 transform rotate-180 text-indigo-600">
+        <div class="section">
+            <div class="form-container">
+                <div class="form-header" onclick="toggleVisibility('initial-balance-form-container')">
+                    <h2>Initial/Adjust Leave Balance Setup (Days)</h2>
+                    <svg id="toggle-icon-init" class="toggle-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="width: 20px; height: 20px; transition: transform 0.3s ease; transform: rotate(180deg);">
                         <path fill-rule="evenodd" d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z" clip-rule="evenodd" />
                     </svg>
-                </h2>
-                <div id="initial-balance-form-container" class="transition-max-height overflow-hidden" style="max-height: 0;">
-                    <form id="initial-balance-form" class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
-                        <div>
-                            <label for="initial-el" class="block text-sm font-medium text-gray-700">Earned Leave (EL - Max 300)</label>
-                            <input type="number" id="initial-el" name="EL" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border" placeholder="e.g., 250">
+                </div>
+                <div id="initial-balance-form-container" class="transition-max-height" style="max-height: 0;">
+                    <form id="initial-balance-form" class="form-grid">
+                        <div class="input-group">
+                            <label for="initial-el">Earned Leave (EL - Max 300)</label>
+                            <input type="number" id="initial-el" name="EL" placeholder="e.g., 250">
                         </div>
-                        <div>
-                            <label for="initial-hpl" class="block text-sm font-medium text-gray-700">Half Pay Leave (HPL)</label>
-                            <input type="number" id="initial-hpl" name="HPL" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border" placeholder="e.g., 100">
+                        <div class="input-group">
+                            <label for="initial-hpl">Half Pay Leave (HPL)</label>
+                            <input type="number" id="initial-hpl" name="HPL" placeholder="e.g., 100">
                         </div>
-                        <div>
-                            <label for="initial-cl" class="block text-sm font-medium text-gray-700">Casual Leave (CL - Annual)</label>
-                            <input type="number" id="initial-cl" name="CL" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border" placeholder="e.g., 8">
+                        <div class="input-group">
+                            <label for="initial-cl">Casual Leave (CL - Annual)</label>
+                            <input type="number" id="initial-cl" name="CL" placeholder="e.g., 8">
                         </div>
-                        <div>
-                            <label for="initial-rh" class="block text-sm font-medium text-gray-700">Restricted Holiday (RH - Annual)</label>
-                            <input type="number" id="initial-rh" name="RH" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border" placeholder="e.g., 2">
+                        <div class="input-group">
+                            <label for="initial-rh">Restricted Holiday (RH - Annual)</label>
+                            <input type="number" id="initial-rh" name="RH" placeholder="e.g., 2">
                         </div>
-                        <div>
-                            <label for="initial-ccl" class="block text-sm font-medium text-gray-700">Child Care Leave (CCL - Lifetime Quota)</label>
-                            <input type="number" id="initial-ccl" name="CCL_Quota" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border" placeholder="e.g., 730">
+                        <div class="input-group">
+                            <label for="initial-ccl">Child Care Leave (CCL - Lifetime Quota)</label>
+                            <input type="number" id="initial-ccl" name="CCL_Quota" placeholder="e.g., 730">
                         </div>
-                        <div>
-                            <label for="initial-ml" class="block text-sm font-medium text-gray-700">Maternity Leave (ML - Total Days Used)</label>
-                            <input type="number" id="initial-ml" name="ML_Used" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border" placeholder="e.g., 0">
-                            <p class="text-xs text-gray-500 mt-1">Enter 0 if unused.</p>
+                        <div class="input-group">
+                            <label for="initial-ml">Maternity Leave (ML - Total Days Used)</label>
+                            <input type="number" id="initial-ml" name="ML_Used" placeholder="e.g., 0">
+                            <p style="font-size: 11px; color: #90a4ae; margin-top: 5px;">Enter 0 if unused.</p>
                         </div>
-                        <div class="md:col-span-3 pt-2">
-                            <button type="submit" class="w-full py-2 px-4 border border-transparent rounded-lg shadow-md text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out">
-                                Set/Update Initial Balances
-                            </button>
+                        <div style="grid-column: 1 / -1;">
+                            <button type="submit" class="submit-btn">Set/Update Initial Balances</button>
                         </div>
                     </form>
                 </div>
-            </section>
-            
-            <section class="mb-10 p-6 bg-green-50 border border-green-300 rounded-xl shadow-soft">
-                <h2 class="text-xl font-bold text-green-800 mb-4">Record Periodic Leave Credit (Accrual)</h2>
-                <form id="leave-credit-form" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div class="lg:col-span-2">
-                        <label for="credit-type" class="block text-sm font-medium text-gray-700">Leave Type</label>
-                        <select id="credit-type" name="type" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 p-2 border">
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="form-container">
+                <div class="section-header">
+                    <h2>Record Periodic Leave Credit (Accrual)</h2>
+                </div>
+                <form id="leave-credit-form" class="form-grid">
+                    <div class="input-group" style="grid-column: 1 / -1;">
+                        <label for="credit-type">Leave Type</label>
+                        <select id="credit-type" name="type" required>
                             <option value="">Select Type</option>
                             <option value="EL">Earned Leave (EL - 15 Days)</option>
                             <option value="HPL">Half Pay Leave (HPL - 10 Days)</option>
@@ -109,29 +569,33 @@
                             <option value="RH">Restricted Holiday (RH - 2 Days)</option>
                         </select>
                     </div>
-                    <div>
-                        <label for="credit-date" class="block text-sm font-medium text-gray-700">Date of Credit</label>
-                        <input type="date" id="credit-date" name="creditDate" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 p-2 border">
+                    <div class="input-group">
+                        <label for="credit-date">Date of Credit</label>
+                        <input type="date" id="credit-date" name="creditDate" required>
                     </div>
-                    <div class="lg:col-span-1">
-                        <label for="credit-remark" class="block text-sm font-medium text-gray-700">Remarks (Optional)</label>
-                        <input type="text" id="credit-remark" name="remark" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 p-2 border" placeholder="e.g., July 1st Accrual">
+                    <div class="input-group">
+                        <label for="credit-remark">Remarks (Optional)</label>
+                        <input type="text" id="credit-remark" name="remark" placeholder="e.g., July 1st Accrual">
                     </div>
-                    <div class="lg:col-span-4 pt-2">
-                        <button type="submit" class="w-full py-2 px-4 border border-transparent rounded-lg shadow-md text-sm font-medium text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-600 transition duration-150 ease-in-out">
-                            Record Leave Credit
-                        </button>
-                        <p class="text-xs text-green-800 mt-2">Use this for half-yearly EL/HPL credits (Jan 1, Jul 1) or annual CL/RH credits (Jan 1).</p>
+                    <div style="grid-column: 1 / -1;">
+                        <button type="submit" class="submit-btn green-btn">Record Leave Credit</button>
+                        <div class="info-box">
+                            <p>Use this for half-yearly EL/HPL credits (Jan 1, Jul 1) or annual CL/RH credits (Jan 1).</p>
+                        </div>
                     </div>
                 </form>
-            </section>
+            </div>
+        </div>
 
-            <section class="mb-10 p-6 bg-gray-50 border border-gray-200 rounded-xl shadow-soft">
-                <h2 class="text-2xl font-semibold mb-4 text-gray-700">Record a New Leave Transaction</h2>
-                <form id="leave-transaction-form" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div class="lg:col-span-2">
-                        <label for="leave-type" class="block text-sm font-medium text-gray-700">Leave Type</label>
-                        <select id="leave-type" name="type" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border">
+        <div class="section">
+            <div class="form-container">
+                <div class="section-header">
+                    <h2>Record a New Leave Transaction</h2>
+                </div>
+                <form id="leave-transaction-form" class="form-grid">
+                    <div class="input-group" style="grid-column: 1 / -1;">
+                        <label for="leave-type">Leave Type</label>
+                        <select id="leave-type" name="type" required>
                             <option value="">Select Type</option>
                             <option value="EL">Earned Leave (EL)</option>
                             <option value="HPL">Half Pay Leave (HPL)</option>
@@ -142,83 +606,95 @@
                             <option value="ML">Maternity Leave (ML)</option>
                         </select>
                     </div>
-                    <div>
-                        <label for="start-date" class="block text-sm font-medium text-gray-700">Start Date</label>
-                        <input type="date" id="start-date" name="startDate" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border">
+                    <div class="input-group">
+                        <label for="start-date">Start Date</label>
+                        <input type="date" id="start-date" name="startDate" required>
                     </div>
-                    <div>
-                        <label for="end-date" class="block text-sm font-medium text-gray-700">End Date</label>
-                        <input type="date" id="end-date" name="endDate" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border">
+                    <div class="input-group">
+                        <label for="end-date">End Date</label>
+                        <input type="date" id="end-date" name="endDate" required>
                     </div>
-                    <div class="lg:col-span-4">
-                        <label for="purpose" class="block text-sm font-medium text-gray-700">Purpose / Remarks</label>
-                        <input type="text" id="purpose" name="purpose" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border" placeholder="e.g., Family Vacation">
+                    <div class="input-group" style="grid-column: 1 / -1;">
+                        <label for="purpose">Purpose / Remarks</label>
+                        <input type="text" id="purpose" name="purpose" placeholder="e.g., Family Vacation">
                     </div>
-                    <div class="lg:col-span-4">
-                        <button type="submit" class="w-full py-2 px-4 border border-transparent rounded-lg shadow-md text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150 ease-in-out">
-                            Add Leave Period & Recalculate
-                        </button>
+                    <div style="grid-column: 1 / -1;">
+                        <button type="submit" class="submit-btn green-btn">Add Leave Period & Recalculate</button>
                     </div>
                 </form>
-            </section>
+            </div>
+        </div>
 
-            <section class="mb-8">
-                <h2 class="text-2xl font-semibold mb-4 text-gray-700">Transaction History & Data Management</h2>
-
-                <div class="flex flex-col sm:flex-row gap-4 mb-6">
-                    <button onclick="downloadData()" class="flex-1 py-2 px-4 border border-transparent rounded-lg shadow-md text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition duration-150 ease-in-out flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 mr-1">
+        <div class="section">
+            <div class="transactions-container">
+                <div class="section-header">
+                    <h2>Transaction History & Data Management</h2>
+                </div>
+                
+                <div class="action-buttons">
+                    <button onclick="downloadData()" class="action-btn blue-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style="width: 16px; height: 16px; margin-right: 8px;">
                             <path d="M10 2.5a.5.5 0 0 0-1 0v8.793l-1.646-1.647a.5.5 0 0 0-.708.708l2.5 2.5a.5.5 0 0 0 .708 0l2.5-2.5a.5.5 0 0 0-.708-.708L10 11.293V2.5Z" />
                             <path d="M5.5 15.5A1.5 1.5 0 0 0 7 17h6a1.5 1.5 0 0 0 1.5-1.5V13h-1v2.5a.5.5 0 0 1-.5.5H7a.5.5 0 0 1-.5-.5V13h-1v2.5Z" />
                         </svg>
                         Download Data (.json)
                     </button>
                     
-                    <label class="flex-1 py-2 px-4 border border-transparent rounded-lg shadow-md text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 transition duration-150 ease-in-out flex items-center justify-center cursor-pointer">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 mr-1">
+                    <label class="action-btn blue-btn file-input-label">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style="width: 16px; height: 16px; margin-right: 8px;">
                             <path fill-rule="evenodd" d="M10 2c-1.748 0-3.155 1.34-3.415 3H3a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-3.585c-.26-1.66-1.667-3-3.415-3Zm1 12a1 1 0 1 0-2 0v-4a1 1 0 1 0 2 0v4Z" clip-rule="evenodd" />
                         </svg>
                         Upload Data (.json)
-                        <input type="file" id="upload-file-input" accept=".json" class="hidden" onchange="uploadData(event)">
+                        <input type="file" id="upload-file-input" accept=".json" class="file-input" onchange="uploadData(event)">
                     </label>
 
-                    <button onclick="requestClearAllData()" class="flex-1 py-2 px-4 border border-transparent rounded-lg shadow-md text-sm font-medium text-white bg-red-600 hover:bg-red-700 transition duration-150 ease-in-out flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 mr-1">
+                    <button onclick="requestClearAllData()" class="action-btn red-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style="width: 16px; height: 16px; margin-right: 8px;">
                             <path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 0 0 6 3.75v.5H4.25a.75.75 0 0 0 0 1.5h.75v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-10h.75a.75.75 0 0 0 0-1.5H14v-.5A2.75 2.75 0 0 0 11.25 1h-2.5ZM10 4.25a1.25 1.25 0 1 1 2.5 0v.5h-2.5v-.5ZM10 7a.75.75 0 0 1 .75.75v7.5a.75.75 0 0 1-1.5 0v-7.5A.75.75 0 0 1 10 7Zm4.75 0a.75.75 0 0 1 .75.75v7.5a.75.75 0 0 1-1.5 0v-7.5a.75.75 0 0 1 .75-.75ZM5.25 8.5a.75.75 0 0 0 0 1.5h7.5a.75.75 0 0 0 0-1.5h-7.5Z" clip-rule="evenodd" />
                         </svg>
                         Clear All Local Data (Permanent)
                     </button>
                 </div>
 
-                <div id="transactions-list-container" class="border border-gray-300 rounded-lg shadow-soft max-h-96 overflow-y-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-100 sticky top-0">
+                <div id="transactions-list-container" class="table-container">
+                    <table>
+                        <thead>
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Date Range / Credit Date</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Type</th>
-                                <th class="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Days Change</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider hidden sm:table-cell">Purpose</th>
-                                <th class="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Action</th>
+                                <th>Date Range / Credit Date</th>
+                                <th>Type</th>
+                                <th style="text-align: right;">Days Change</th>
+                                <th class="hidden-mobile">Purpose</th>
+                                <th style="text-align: right;">Action</th>
                             </tr>
                         </thead>
-                        <tbody id="transactions-list" class="bg-white divide-y divide-gray-200">
-                            </tbody>
+                        <tbody id="transactions-list"></tbody>
                     </table>
                 </div>
-            </section>
-            
-            <div id="custom-confirm-modal" class="fixed inset-0 bg-gray-900 bg-opacity-70 hidden items-center justify-center z-50 transition-opacity duration-300">
-                <div class="bg-white p-6 rounded-xl shadow-2xl max-w-sm w-full transform scale-100 transition-transform duration-300">
-                    <h3 id="confirm-title" class="text-xl font-bold mb-4 text-red-700">Confirm Deletion</h3>
-                    <p id="confirm-message" class="text-sm text-gray-600 mb-6 font-medium"></p>
-                    <div class="flex justify-end space-x-3">
-                        <button id="confirm-cancel" class="px-4 py-2 text-sm font-medium rounded-lg text-gray-700 bg-gray-200 hover:bg-gray-300 transition duration-150">Cancel</button>
-                        <button id="confirm-ok" class="px-4 py-2 text-sm font-medium rounded-lg text-white bg-red-600 hover:bg-red-700 transition duration-150 shadow-md">Delete Permanently</button>
-                    </div>
-                </div>
             </div>
+        </div>
+        
+        <div class="footer">
+            <div class="disclaimer">
+                Disclaimer: This is a personal leave tracker for informational purposes only. Always verify with official records.
+            </div>
+            <div class="creator">
+                Created by Anil Kumar V.T.
+            </div>
+        </div>
+    </div>
 
-        </div> </div> <script>
+    <div id="custom-confirm-modal">
+        <div class="modal-content">
+            <h3 id="confirm-title" class="modal-title">Confirm Deletion</h3>
+            <p id="confirm-message" class="modal-message"></p>
+            <div class="modal-buttons">
+                <button id="confirm-cancel" class="modal-btn modal-cancel">Cancel</button>
+                <button id="confirm-ok" class="modal-btn modal-confirm">Delete Permanently</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
         // Global data structure, initialized on load
         let employeeData = {
             initialBalance: { EL: 0, HPL: 0, CL: 0, RH: 0, CCL_Quota: 730, ML_Used: 0 },
@@ -248,19 +724,17 @@
          */
         function showToast(message, type = 'success') {
             const toastElement = document.getElementById('toast-message');
-            const color = type === 'success' ? 'bg-green-500' : 'bg-red-500';
+            const colorClass = type === 'success' ? 'toast-success' : 'toast-error';
             
             toastElement.innerHTML = `
-                <div class="px-4 py-2 text-white ${color} rounded-lg shadow-lg">
+                <div class="toast ${colorClass}">
                     ${message}
                 </div>
             `;
-            toastElement.classList.remove('opacity-0');
-            toastElement.classList.add('opacity-100');
+            toastElement.style.opacity = '1';
 
             setTimeout(() => {
-                toastElement.classList.remove('opacity-100');
-                toastElement.classList.add('opacity-0');
+                toastElement.style.opacity = '0';
             }, 3000);
         }
         
@@ -276,20 +750,17 @@
                 document.getElementById('confirm-title').textContent = title;
                 document.getElementById('confirm-message').textContent = message;
 
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
+                modal.style.display = 'flex';
 
                 const handleCancel = () => {
-                    modal.classList.add('hidden');
-                    modal.classList.remove('flex');
+                    modal.style.display = 'none';
                     document.getElementById('confirm-cancel').removeEventListener('click', handleCancel);
                     document.getElementById('confirm-ok').removeEventListener('click', handleOk);
                     resolve(false);
                 };
 
                 const handleOk = () => {
-                    modal.classList.add('hidden');
-                    modal.classList.remove('flex');
+                    modal.style.display = 'none';
                     document.getElementById('confirm-cancel').removeEventListener('click', handleCancel);
                     document.getElementById('confirm-ok').removeEventListener('click', handleOk);
                     resolve(true);
@@ -359,12 +830,10 @@
 
             if (container.style.maxHeight === '0px' || container.style.maxHeight === '') {
                 container.style.maxHeight = container.scrollHeight + "px";
-                icon.classList.remove('rotate-180');
-                icon.classList.add('rotate-0');
+                icon.style.transform = 'rotate(0deg)';
             } else {
                 container.style.maxHeight = '0px';
-                icon.classList.remove('rotate-0');
-                icon.classList.add('rotate-180');
+                icon.style.transform = 'rotate(180deg)';
             }
         }
         
@@ -382,53 +851,41 @@
         }
 
         /**
-         * Loads data from LocalStorage on app initialization.
+         * Loads data from LocalStorage into the employeeData object.
          */
         function loadData() {
-            const storedData = localStorage.getItem('leaveData');
-            if (storedData) {
-                try {
-                    const parsedData = JSON.parse(storedData);
-                    // Simple merge for robustness against new fields
-                    employeeData = { ...employeeData, ...parsedData };
-                    // Ensure nested objects are handled
-                    employeeData.initialBalance = { ...employeeData.initialBalance, ...parsedData.initialBalance };
-                    if (!Array.isArray(employeeData.leaveTransactions)) {
-                        employeeData.leaveTransactions = [];
-                    }
-                } catch (error) {
-                    console.error("Error parsing stored data, loading default state.", error);
-                    showToast("Corrupted data found. Starting fresh.", 'error');
+            try {
+                const storedData = localStorage.getItem('leaveData');
+                if (storedData) {
+                    employeeData = JSON.parse(storedData);
                 }
+            } catch (error) {
+                console.error("Error loading data from LocalStorage:", error);
+                // Reset to defaults if there's an error
+                employeeData = {
+                    initialBalance: { EL: 0, HPL: 0, CL: 0, RH: 0, CCL_Quota: 730, ML_Used: 0 },
+                    leaveTransactions: []
+                };
             }
         }
 
         /**
-         * Downloads the current state as a JSON file.
+         * Downloads the current employeeData as a JSON file.
          */
         function downloadData() {
-            if (employeeData.leaveTransactions.length === 0) {
-                showToast("No transactions to download yet!", 'error');
-                return;
-            }
-            const dataStr = JSON.stringify(employeeData, null, 2);
-            const blob = new Blob([dataStr], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'cge_leave_data_backup.json';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            
-            URL.revokeObjectURL(url);
-            showToast("Data downloaded successfully!", 'success');
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(employeeData, null, 2));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "leave_data_" + new Date().toISOString().slice(0, 10) + ".json");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+            showToast('Data downloaded successfully!', 'success');
         }
-        
+
         /**
-         * Handles the uploading and restoration of data from a JSON file.
-         * @param {Event} event 
+         * Handles the upload of a JSON file to replace the current employeeData.
+         * @param {Event} event The file input change event.
          */
         function uploadData(event) {
             const file = event.target.files[0];
@@ -437,214 +894,250 @@
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
-                    const importedData = JSON.parse(e.target.result);
+                    const uploadedData = JSON.parse(e.target.result);
                     
-                    // Basic Validation: Check for required keys
-                    if (
-                        importedData && 
-                        importedData.initialBalance && 
-                        Array.isArray(importedData.leaveTransactions)
-                    ) {
-                        // Reset current data and replace with imported data
-                        employeeData = {
-                            initialBalance: { EL: 0, HPL: 0, CL: 0, RH: 0, CCL_Quota: 730, ML_Used: 0 },
-                            leaveTransactions: []
-                        };
-                        
-                        // Use object spread for robustness
-                        employeeData.initialBalance = { ...employeeData.initialBalance, ...importedData.initialBalance };
-                        employeeData.leaveTransactions = importedData.leaveTransactions;
-
+                    // Basic validation of the uploaded data structure
+                    if (uploadedData && uploadedData.initialBalance && Array.isArray(uploadedData.leaveTransactions)) {
+                        employeeData = uploadedData;
                         saveData();
-                        renderAll();
-                        showToast("Data restored successfully from JSON file!", 'success');
+                        updateUI();
+                        showToast('Data uploaded successfully!', 'success');
                     } else {
-                        showToast("Invalid JSON file format. Missing essential keys.", 'error');
+                        throw new Error("Invalid data structure");
                     }
                 } catch (error) {
-                    console.error("Error processing uploaded file:", error);
-                    showToast("Error reading or parsing JSON file.", 'error');
+                    console.error("Error parsing uploaded file:", error);
+                    showToast('Error: Invalid file format or data structure.', 'error');
                 }
             };
-
             reader.readAsText(file);
+            
+            // Reset the file input
+            event.target.value = '';
         }
 
         /**
-         * Initiates the custom confirmation for clearing all data.
+         * Prompts the user and clears all local data if confirmed.
          */
-        async function requestClearAllData() {
-            const confirmed = await showConfirmation(
-                "Permanent Data Dletion",
-                "Are you absolutely sure you want to permanently delete ALL leave data from your browser? This action cannot be undone."
-            );
-            
-            if (confirmed) {
-                localStorage.removeItem('leaveData');
-                employeeData = {
-                    initialBalance: { EL: 0, HPL: 0, CL: 0, RH: 0, CCL_Quota: 730, ML_Used: 0 },
-                    leaveTransactions: []
-                };
-                renderAll();
-                showToast("All data cleared and reset.", 'error');
-            }
+        function requestClearAllData() {
+            showConfirmation(
+                "Clear All Data", 
+                "This will permanently delete all your leave balances and transaction history. This action cannot be undone. Are you sure?"
+            ).then(confirmed => {
+                if (confirmed) {
+                    localStorage.removeItem('leaveData');
+                    employeeData = {
+                        initialBalance: { EL: 0, HPL: 0, CL: 0, RH: 0, CCL_Quota: 730, ML_Used: 0 },
+                        leaveTransactions: []
+                    };
+                    updateUI();
+                    showToast('All data has been cleared.', 'success');
+                }
+            });
         }
 
-
-        // --- UI Rendering ---
-
-        const LEAVE_CONFIG = {
-            'EL': { name: 'Earned Leave', icon: '🏖️', max: 300 },
-            'HPL': { name: 'Half Pay Leave', icon: '🤒', max: Infinity },
-            'COMMUTED_HPL': { name: 'Commuted Leave', icon: '🏥', max: Infinity },
-            'CL': { name: 'Casual Leave', icon: '🏡', max: 8 },
-            'RH': { name: 'Restricted Holiday', icon: '🙏', max: 2 },
-            'CCL': { name: 'Child Care Leave', icon: '👶', max: 730 },
-            'ML': { name: 'Maternity Leave', icon: '🤰', max: 180 },
-            // Placeholder for credit display
-            'CREDIT': { name: 'Credit (Accrual)', icon: '➕' }
-        };
-
-        const BALANCE_KEYS = ['EL', 'HPL', 'CL', 'RH', 'CCL', 'ML'];
-
+        // --- Balance Calculation ---
 
         /**
-         * Calculates and renders the current leave balances.
+         * Calculates the current balances for all leave types based on initial balances and transactions.
+         * @returns {Object} An object containing current balances for each leave type.
          */
-        function renderBalances() {
-            const balanceDisplay = document.getElementById('balance-display');
-            balanceDisplay.innerHTML = '';
+        function calculateCurrentBalances() {
+            // Start with the initial balances
+            const currentBalances = { ...employeeData.initialBalance };
             
-            // Create a copy to work with for aggregation
-            const currentBalance = { ...employeeData.initialBalance }; 
-
-            // Aggregate transactions
+            // Process each transaction
             employeeData.leaveTransactions.forEach(transaction => {
                 const type = transaction.type;
-                const days = transaction.days;
-                const isCredit = transaction.isCredit;
-
-                let effectiveDays = isCredit ? days : -days;
-
-                if (type === 'EL') {
-                    currentBalance.EL += effectiveDays;
-                } else if (type === 'HPL' || type === 'COMMUTED_HPL') { 
-                    currentBalance.HPL += effectiveDays;
-                } else if (type === 'CL' || type === 'RH') {
-                    currentBalance[type] += effectiveDays; 
+                const days = transaction.days || 0;
+                
+                if (type === 'EL' || type === 'HPL' || type === 'CL' || type === 'RH') {
+                    // For standard leave types, subtract the days used
+                    currentBalances[type] -= days;
                 } else if (type === 'CCL') {
-                    currentBalance.CCL_Quota += effectiveDays;
-                } else if (type === 'ML' && !isCredit) {
-                    currentBalance.ML_Used += -effectiveDays; // ML is tracked as USED days
+                    // For CCL, subtract from the quota
+                    currentBalances.CCL_Quota -= days;
+                } else if (type === 'ML') {
+                    // For ML, add to the used total
+                    currentBalances.ML_Used += days;
+                } else if (type === 'COMMUTED_HPL') {
+                    // For Commuted Leave, debit from HPL at 2x the rate
+                    currentBalances.HPL -= (days * 2);
                 }
             });
+            
+            // Ensure balances don't go below zero (except for ML_Used which is cumulative)
+            currentBalances.EL = Math.max(0, currentBalances.EL);
+            currentBalances.HPL = Math.max(0, currentBalances.HPL);
+            currentBalances.CL = Math.max(0, currentBalances.CL);
+            currentBalances.RH = Math.max(0, currentBalances.RH);
+            currentBalances.CCL_Quota = Math.max(0, currentBalances.CCL_Quota);
+            
+            return currentBalances;
+        }
 
-            // Map and render the data
-            BALANCE_KEYS.forEach(key => {
-                const config = LEAVE_CONFIG[key];
-                let value, label, isQuota, isExceeded = false;
-                
-                if (key === 'CCL') {
-                    value = currentBalance.CCL_Quota;
-                    label = 'Remaining (Max 730)';
-                    isQuota = true;
-                    isExceeded = (value < 0);
-                } else if (key === 'ML') {
-                    value = currentBalance.ML_Used;
-                    label = 'Days Used (Max 180)';
-                    isQuota = true;
-                    isExceeded = (value > 180);
-                } else {
-                    value = currentBalance[key];
-                    label = 'Remaining';
-                    isQuota = false;
-                    isExceeded = (value < 0);
-                    if (key === 'EL' && value > 300) {
-                        label = 'Max Accum. Exceeded';
-                        isExceeded = false; 
-                    }
-                }
+        // --- UI Update Functions ---
 
-                // Determine color based on status
-                let colorClass = 'bg-indigo-100 text-indigo-800 border-indigo-200';
-                if (isExceeded && !isQuota) {
-                    colorClass = 'bg-red-100 text-red-800 border-red-200'; 
-                } else if (value < 10 && !isQuota && key !== 'ML' && value >= 0) {
-                    colorClass = 'bg-yellow-100 text-yellow-800 border-yellow-200'; 
-                } else if (isQuota && key === 'ML') {
-                    colorClass = isExceeded ? 'bg-red-100 text-red-800 border-red-200' : 'bg-green-100 text-green-800 border-green-200';
-                } else if (!isQuota && value > 0) {
-                    colorClass = 'bg-green-100 text-green-800 border-green-200';
+        /**
+         * Updates the balance display cards with current calculated balances.
+         */
+        function updateBalanceDisplay() {
+            const currentBalances = calculateCurrentBalances();
+            const balanceDisplay = document.getElementById('balance-display');
+            
+            const balanceData = [
+                { 
+                    type: 'EL', 
+                    label: 'Earned Leave', 
+                    value: currentBalances.EL, 
+                    max: 300,
+                    description: 'Max 300 days. Credits: 15 days every Jan 1 & Jul 1.',
+                    icon: '📅'
+                },
+                { 
+                    type: 'HPL', 
+                    label: 'Half Pay Leave', 
+                    value: currentBalances.HPL, 
+                    description: 'Credits: 10 days every Jan 1 & Jul 1.',
+                    icon: '⏳'
+                },
+                { 
+                    type: 'CL', 
+                    label: 'Casual Leave', 
+                    value: currentBalances.CL, 
+                    description: 'Annual 8 days. Credits: Jan 1.',
+                    icon: '🏖️'
+                },
+                { 
+                    type: 'RH', 
+                    label: 'Restricted Holiday', 
+                    value: currentBalances.RH, 
+                    description: 'Annual 2 days. Credits: Jan 1.',
+                    icon: '🎉'
+                },
+                { 
+                    type: 'CCL', 
+                    label: 'Child Care Leave', 
+                    value: currentBalances.CCL_Quota, 
+                    description: 'Lifetime quota: 730 days. For children up to 18 years.',
+                    icon: '👶'
+                },
+                { 
+                    type: 'ML', 
+                    label: 'Maternity Leave', 
+                    value: currentBalances.ML_Used, 
+                    description: 'Total used: 180 days per child (max 2 children).',
+                    icon: '🤰'
+                }
+            ];
+            
+            let balanceHTML = '';
+            
+            balanceData.forEach(balance => {
+                let statusClass = '';
+                let statusText = '';
+                
+                if (balance.type === 'EL' && balance.value > (balance.max * 0.8)) {
+                    statusClass = 'high-balance';
+                    statusText = ' (High)';
+                } else if (balance.type === 'CL' && balance.value === 0) {
+                    statusClass = 'no-balance';
+                    statusText = ' (Used All)';
+                } else if (balance.type === 'CCL' && balance.value < 100) {
+                    statusClass = 'low-balance';
+                    statusText = ' (Low)';
                 }
                 
-                const cardHtml = `
-                    <div class="data-card rounded-xl p-4 shadow-soft ${colorClass} transition duration-300 border">
-                        <div class="text-3xl font-extrabold">${config.icon} ${Math.round(value * 10) / 10}</div>
-                        <p class="text-sm font-semibold mt-2">${config.name}</p>
-                        <p class="text-xs">${label}</p>
+                balanceHTML += `
+                    <div class="balance-card">
+                        <div class="balance-icon">${balance.icon}</div>
+                        <div class="balance-value">${balance.value}</div>
+                        <div class="balance-label">${balance.label}${statusText}</div>
+                        <div class="balance-description">${balance.description}</div>
                     </div>
                 `;
-                balanceDisplay.innerHTML += cardHtml;
             });
+            
+            balanceDisplay.innerHTML = balanceHTML;
         }
-        
+
         /**
-         * Renders the transaction history table.
+         * Populates the transactions list table with all recorded transactions.
          */
-        function renderTransactions() {
-            const listElement = document.getElementById('transactions-list');
-            listElement.innerHTML = '';
-
-            // Sort by date descending
-            const sortedTransactions = [...employeeData.leaveTransactions].sort((a, b) => {
-                const dateA = a.startDate || a.creditDate;
-                const dateB = b.startDate || b.creditDate;
-                return new Date(dateB).getTime() - new Date(dateA).getTime();
-            });
-
-            if (sortedTransactions.length === 0) {
-                listElement.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-gray-500 italic">No leave records added yet. Your history will appear here.</td></tr>`;
-                return;
-            }
-
-            sortedTransactions.forEach((t) => {
-                const isCredit = t.isCredit;
-                const leaveName = LEAVE_CONFIG[t.type]?.name || t.type;
-                
-                let dateDisplay, daysDisplay, daysClass;
-
-                if (isCredit) {
-                    dateDisplay = formatDate(t.creditDate);
-                    daysDisplay = `+${t.days}`;
-                    daysClass = 'text-green-600 font-extrabold';
-                } else {
-                    dateDisplay = `${formatDate(t.startDate)} - ${formatDate(t.endDate)}`;
-                    daysDisplay = `-${t.days}`;
-                    daysClass = 'text-red-600 font-extrabold';
-                }
-
-                const row = `
-                    <tr class="hover:bg-indigo-50 transition duration-100">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${dateDisplay}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">${leaveName}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm ${daysClass}">${daysDisplay}</td>
-                        <td class="px-6 py-4 text-sm text-gray-500 hidden sm:table-cell truncate max-w-xs">${t.purpose || t.remark || 'N/A'}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <button onclick="requestDeleteTransaction('${t.id}')" class="text-red-600 hover:text-red-800 font-semibold transition duration-150">Delete</button>
+        function updateTransactionsList() {
+            const transactionsList = document.getElementById('transactions-list');
+            
+            if (employeeData.leaveTransactions.length === 0) {
+                transactionsList.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 20px; color: #90a4ae;">
+                            No transactions recorded yet. Add a leave period or credit above.
                         </td>
                     </tr>
                 `;
-                listElement.innerHTML += row;
+                return;
+            }
+            
+            // Sort transactions by date (newest first)
+            const sortedTransactions = [...employeeData.leaveTransactions].sort((a, b) => {
+                const dateA = a.startDate || a.creditDate;
+                const dateB = b.startDate || b.creditDate;
+                return new Date(dateB) - new Date(dateA);
             });
+            
+            let transactionsHTML = '';
+            
+            sortedTransactions.forEach((transaction, index) => {
+                const isCredit = transaction.hasOwnProperty('creditDate');
+                const dateRange = isCredit 
+                    ? `Credit on ${formatDate(transaction.creditDate)}`
+                    : `${formatDate(transaction.startDate)} to ${formatDate(transaction.endDate)}`;
+                
+                const type = transaction.type;
+                let daysChange = transaction.days || 0;
+                let displayDays = '';
+                
+                if (isCredit) {
+                    displayDays = `<span style="color: #4caf50;">+${daysChange}</span>`;
+                } else {
+                    if (type === 'COMMUTED_HPL') {
+                        displayDays = `<span style="color: #f44336;">-${daysChange} (HPL -${daysChange * 2})</span>`;
+                    } else {
+                        displayDays = `<span style="color: #f44336;">-${daysChange}</span>`;
+                    }
+                }
+                
+                transactionsHTML += `
+                    <tr>
+                        <td>${dateRange}</td>
+                        <td>${type}</td>
+                        <td style="text-align: right;">${displayDays}</td>
+                        <td class="hidden-mobile">${transaction.purpose || transaction.remark || '-'}</td>
+                        <td style="text-align: right;">
+                            <button onclick="deleteTransaction(${index})" style="background: rgba(244, 67, 54, 0.2); color: #f44336; border: 1px solid rgba(244, 67, 54, 0.5); padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 10px;">
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            transactionsList.innerHTML = transactionsHTML;
         }
 
         /**
-         * Renders all parts of the UI.
+         * Updates all UI components with current data.
          */
-        function renderAll() {
-            renderBalances();
-            renderTransactions();
-            // Populate initial balance form with current data
+        function updateUI() {
+            updateBalanceDisplay();
+            updateTransactionsList();
+            populateInitialForm();
+        }
+
+        /**
+         * Populates the initial balance form with current values.
+         */
+        function populateInitialForm() {
             document.getElementById('initial-el').value = employeeData.initialBalance.EL;
             document.getElementById('initial-hpl').value = employeeData.initialBalance.HPL;
             document.getElementById('initial-cl').value = employeeData.initialBalance.CL;
@@ -653,223 +1146,222 @@
             document.getElementById('initial-ml').value = employeeData.initialBalance.ML_Used;
         }
 
-
-        // --- Form Handlers and Logic ---
-
-        /**
-         * Handles submission of the initial/adjustment balance form.
-         * @param {Event} e 
-         */
-        function addInitialBalance(e) {
-            e.preventDefault();
-            const form = e.target;
-            
-            // Collect and validate inputs
-            const newInitialBalance = {};
-            let isValid = true;
-
-            for (let i = 0; i < form.elements.length; i++) {
-                const element = form.elements[i];
-                if (element.name) {
-                    const value = parseFloat(element.value);
-                    if (isNaN(value) || value < 0) {
-                        showToast(`Please enter a valid non-negative number for ${element.name}.`, 'error');
-                        isValid = false;
-                        break;
-                    }
-                    newInitialBalance[element.name] = value;
-                }
-            }
-
-            if (!isValid) return;
-
-            // Update the global state
-            employeeData.initialBalance = newInitialBalance;
-            saveData();
-            renderAll();
-            showToast("Initial/Adjustment balances updated successfully.");
-            
-            // Close the setup form container
-            document.getElementById('initial-balance-form-container').style.maxHeight = '0px';
-            document.getElementById('toggle-icon-init').classList.add('rotate-180');
-        }
-        
-        /**
-         * Handles submission of the new leave CREDIT form.
-         * @param {Event} e 
-         */
-        function addLeaveCredit(e) {
-            e.preventDefault();
-            const form = e.target;
-            
-            const type = form.type.value;
-            const creditDate = form.creditDate.value;
-            const remark = form.remark.value;
-
-            if (!type || !creditDate) {
-                 showToast("Please select the Leave Type and Date of Credit.", 'error');
-                 return;
-            }
-
-            let daysToCredit;
-            let creditName;
-
-            switch (type) {
-                case 'EL':
-                    daysToCredit = 15;
-                    creditName = "Earned Leave (EL)";
-                    break;
-                case 'HPL':
-                    daysToCredit = 10;
-                    creditName = "Half Pay Leave (HPL)";
-                    break;
-                case 'CL':
-                    daysToCredit = 8;
-                    creditName = "Casual Leave (CL)";
-                    break;
-                case 'RH':
-                    daysToCredit = 2;
-                    creditName = "Restricted Holiday (RH)";
-                    break;
-                default:
-                    showToast("Invalid leave type selected for credit.", 'error');
-                    return;
-            }
-
-            const newCredit = {
-                id: crypto.randomUUID(),
-                type: type,
-                isCredit: true,
-                creditDate: creditDate,
-                days: daysToCredit,
-                remark: remark || `${creditName} Statutory Accrual`
-            };
-
-            employeeData.leaveTransactions.push(newCredit);
-            saveData();
-            renderAll();
-            form.reset();
-            showToast(`${daysToCredit} days of ${creditName} credited.`);
-        }
-
+        // --- Transaction Management ---
 
         /**
-         * Handles submission of the new leave DEBIT form.
-         * @param {Event} e 
+         * Deletes a transaction by index after user confirmation.
+         * @param {number} index The index of the transaction to delete.
          */
-        function addLeaveTransaction(e) {
-            e.preventDefault();
-            const form = e.target;
+        async function deleteTransaction(index) {
+            const transaction = employeeData.leaveTransactions[index];
+            const transactionType = transaction.type;
+            const transactionDate = transaction.startDate || transaction.creditDate;
             
-            const type = form.type.value;
-            const startDate = form.startDate.value;
-            const endDate = form.endDate.value;
-            const purpose = form.purpose.value;
-
-            if (!type || !startDate || !endDate) {
-                 showToast("Please fill out all required fields (Type, Start Date, End Date).", 'error');
-                 return;
-            }
-
-            if (new Date(startDate) > new Date(endDate)) {
-                showToast("Start Date cannot be after End Date.", 'error');
-                return;
-            }
-
-            const calendarDays = calculateDays(startDate, endDate);
-            let daysToDebit;
-
-            if (type === 'CL' || type === 'RH') {
-                // CL and RH debit only working days (excluding Sat/Sun)
-                daysToDebit = calculateWorkingDays(startDate, endDate);
-            } else if (type === 'COMMUTED_HPL') {
-                 // Commuted leave debits HPL at double the rate of calendar days availed.
-                daysToDebit = calendarDays * 2; 
-            } else {
-                // EL, HPL, CCL, ML debit calendar days (inclusive of weekends/holidays)
-                daysToDebit = calendarDays;
-            }
-
-            if (daysToDebit <= 0 && calendarDays > 0) {
-                 if (type === 'CL' || type === 'RH') {
-                    showToast("The selected period includes only non-working days (weekends). No CL/RH debited.", 'success');
-                 } else {
-                    showToast("Invalid calculation: days debited is zero.", 'error');
-                 }
-                return;
-            } else if (calendarDays <= 0) {
-                showToast("Invalid date range selected.", 'error');
-                return;
-            }
-            
-            const newTransaction = {
-                id: crypto.randomUUID(),
-                type: type,
-                isCredit: false,
-                startDate: startDate,
-                endDate: endDate,
-                days: daysToDebit,
-                purpose: purpose || 'Leave Applied'
-            };
-
-            employeeData.leaveTransactions.push(newTransaction);
-            saveData();
-            renderAll();
-            form.reset();
-            showToast(`${daysToDebit} days of ${LEAVE_CONFIG[type].name} recorded.`);
-        }
-
-        /**
-         * Requests deletion of a specific transaction via the modal.
-         * @param {string} id 
-         */
-        async function requestDeleteTransaction(id) {
-            const transaction = employeeData.leaveTransactions.find(t => t.id === id);
-            if (!transaction) return;
-
-            const leaveType = LEAVE_CONFIG[transaction.type]?.name || transaction.type;
-            const action = transaction.isCredit ? 'Credit' : 'Debit';
-            const dateInfo = transaction.isCredit ? formatDate(transaction.creditDate) : `${formatDate(transaction.startDate)}`;
-
             const confirmed = await showConfirmation(
-                "Delete Leave Record",
-                `Delete the ${action} record of ${transaction.days} days of ${leaveType} (on ${dateInfo})?`
+                "Delete Transaction",
+                `Are you sure you want to delete this ${transactionType} transaction from ${formatDate(transactionDate)}?`
             );
             
             if (confirmed) {
-                // Perform the actual deletion
-                const initialLength = employeeData.leaveTransactions.length;
-                employeeData.leaveTransactions = employeeData.leaveTransactions.filter(t => t.id !== id);
-                
-                if (employeeData.leaveTransactions.length < initialLength) {
-                    saveData();
-                    renderAll();
-                    showToast("Transaction successfully deleted. Balance restored.", 'success');
-                } else {
-                    showToast("Error: Transaction not found.", 'error');
-                }
+                employeeData.leaveTransactions.splice(index, 1);
+                saveData();
+                updateUI();
+                showToast('Transaction deleted successfully.', 'success');
             }
         }
 
+        // --- Form Handlers ---
+
         /**
-         * Initializes the application.
+         * Handles the initial balance form submission.
+         * @param {Event} event The form submit event.
          */
-        window.onload = function() {
-            loadData();
-            renderAll();
-
-            // Attach form submission handlers
-            document.getElementById('initial-balance-form').addEventListener('submit', addInitialBalance);
-            document.getElementById('leave-credit-form').addEventListener('submit', addLeaveCredit); 
-            document.getElementById('leave-transaction-form').addEventListener('submit', addLeaveTransaction);
+        function handleInitialBalanceForm(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
             
-            // Expose utility functions globally for button handlers
-            window.downloadData = downloadData;
-            window.requestClearAllData = requestClearAllData;
-            window.uploadData = uploadData;
-            window.requestDeleteTransaction = requestDeleteTransaction;
-        };
+            // Update initial balances from form
+            employeeData.initialBalance.EL = parseInt(formData.get('EL')) || 0;
+            employeeData.initialBalance.HPL = parseInt(formData.get('HPL')) || 0;
+            employeeData.initialBalance.CL = parseInt(formData.get('CL')) || 0;
+            employeeData.initialBalance.RH = parseInt(formData.get('RH')) || 0;
+            employeeData.initialBalance.CCL_Quota = parseInt(formData.get('CCL_Quota')) || 0;
+            employeeData.initialBalance.ML_Used = parseInt(formData.get('ML_Used')) || 0;
+            
+            // Validate EL doesn't exceed 300
+            if (employeeData.initialBalance.EL > 300) {
+                showToast('Warning: EL balance exceeds maximum of 300 days.', 'error');
+                employeeData.initialBalance.EL = 300;
+            }
+            
+            saveData();
+            updateUI();
+            showToast('Initial balances updated successfully!', 'success');
+        }
 
+        /**
+         * Handles the leave credit form submission.
+         * @param {Event} event The form submit event.
+         */
+        function handleLeaveCreditForm(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            
+            const type = formData.get('type');
+            const creditDate = formData.get('creditDate');
+            const remark = formData.get('remark');
+            
+            if (!type || !creditDate) {
+                showToast('Please select a leave type and date.', 'error');
+                return;
+            }
+            
+            // Determine the number of days to credit based on type
+            let days = 0;
+            switch(type) {
+                case 'EL':
+                    days = 15;
+                    break;
+                case 'HPL':
+                    days = 10;
+                    break;
+                case 'CL':
+                    days = 8;
+                    break;
+                case 'RH':
+                    days = 2;
+                    break;
+                default:
+                    days = 0;
+            }
+            
+            // Add the credit transaction
+            employeeData.leaveTransactions.push({
+                type: type,
+                creditDate: creditDate,
+                days: days,
+                remark: remark || `${type} Credit`
+            });
+            
+            saveData();
+            updateUI();
+            event.target.reset();
+            showToast(`${type} credit of ${days} days recorded successfully!`, 'success');
+        }
+
+        /**
+         * Handles the leave transaction form submission.
+         * @param {Event} event The form submit event.
+         */
+        function handleLeaveTransactionForm(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            
+            const type = formData.get('type');
+            const startDate = formData.get('startDate');
+            const endDate = formData.get('endDate');
+            const purpose = formData.get('purpose');
+            
+            if (!type || !startDate || !endDate) {
+                showToast('Please fill in all required fields.', 'error');
+                return;
+            }
+            
+            // Validate date range
+            if (new Date(startDate) > new Date(endDate)) {
+                showToast('End date must be after start date.', 'error');
+                return;
+            }
+            
+            let days = 0;
+            let transactionType = type;
+            
+            // Calculate days based on leave type
+            if (type === 'EL' || type === 'HPL' || type === 'CCL' || type === 'ML' || type === 'COMMUTED_HPL') {
+                days = calculateDays(startDate, endDate);
+            } else if (type === 'CL' || type === 'RH') {
+                days = calculateWorkingDays(startDate, endDate);
+            }
+            
+            // For Commuted Leave, we need to check if there's enough HPL (2x days)
+            if (type === 'COMMUTED_HPL') {
+                const currentBalances = calculateCurrentBalances();
+                const requiredHPL = days * 2;
+                
+                if (currentBalances.HPL < requiredHPL) {
+                    showToast(`Insufficient HPL balance. Required: ${requiredHPL} days, Available: ${currentBalances.HPL} days.`, 'error');
+                    return;
+                }
+            }
+            
+            // For other leave types, check if there's sufficient balance
+            if (type !== 'COMMUTED_HPL' && type !== 'ML') {
+                const currentBalances = calculateCurrentBalances();
+                
+                if (currentBalances[type] < days) {
+                    showToast(`Insufficient ${type} balance. Required: ${days} days, Available: ${currentBalances[type]} days.`, 'error');
+                    return;
+                }
+            }
+            
+            // For CCL, check against the lifetime quota
+            if (type === 'CCL') {
+                const currentBalances = calculateCurrentBalances();
+                
+                if (currentBalances.CCL_Quota < days) {
+                    showToast(`Insufficient CCL quota. Required: ${days} days, Remaining Quota: ${currentBalances.CCL_Quota} days.`, 'error');
+                    return;
+                }
+            }
+            
+            // Add the transaction
+            employeeData.leaveTransactions.push({
+                type: transactionType,
+                startDate: startDate,
+                endDate: endDate,
+                days: days,
+                purpose: purpose || `${type} Leave`
+            });
+            
+            saveData();
+            updateUI();
+            event.target.reset();
+            showToast(`${type} leave of ${days} days recorded successfully!`, 'success');
+        }
+
+        // --- Initialization ---
+
+        /**
+         * Initializes the application by setting up event listeners and loading data.
+         */
+        function init() {
+            // Load data from localStorage
+            loadData();
+            
+            // Set up form event listeners
+            document.getElementById('initial-balance-form').addEventListener('submit', handleInitialBalanceForm);
+            document.getElementById('leave-credit-form').addEventListener('submit', handleLeaveCreditForm);
+            document.getElementById('leave-transaction-form').addEventListener('submit', handleLeaveTransactionForm);
+            
+            // Set default dates to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('credit-date').value = today;
+            document.getElementById('start-date').value = today;
+            document.getElementById('end-date').value = today;
+            
+            // Initialize the UI
+            updateUI();
+            
+            // Show welcome message
+            setTimeout(() => {
+                if (employeeData.leaveTransactions.length === 0) {
+                    showToast('Welcome! Start by setting your initial leave balances.', 'success');
+                }
+            }, 1000);
+        }
+
+        // Start the application when the DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
